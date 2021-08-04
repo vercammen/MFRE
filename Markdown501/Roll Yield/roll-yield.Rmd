@@ -1,0 +1,230 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+
+# Backwardation, Contango and Roll Yield
+
+## Background
+Recall that the forward curve gives a snapshot of the prices of all active futures contracts for a particular commodity on a particular day. The two figures below show the corn forward curves for July 2, 2020 and June 2, 2021, respectively. There are two obvious differences between this two graphs. First, corn prices are much higher in 2021 than in 2020. This outcome reflects the surge in the price of most commodities in late 2020, after the worst of the COVID19 pandemic was behind us. Second, the July, 2020 forward curve is upward sloping whereas the June, 2021 forward curve is downward sloping. In this module we are interested in the slope of the forward curve.
+
+```{r}
+library(ggplot2)
+forward20 <- read.csv(file="./Data/forward-July20.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+forward20$month <- factor(forward20$month, levels = forward20$month) # to prevent alphabetical ordering of months
+p <- ggplot() + geom_col(data = forward20, aes(x = month, y = forward))
+p <- p + theme(axis.text.x=element_text(angle = -90, hjust = 0))
+p <- p + coord_cartesian(ylim = c(3, 4))
+p <- p + ggtitle("Fig 1: Corn Forward Curve, July 2, 2020") 
+p
+# I would like to change the colour to something other than black. Not sure how!
+
+forward21 <- read.csv(file="./Data/forward-June21.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+forward21$month <- factor(forward21$month, levels = forward21$month) # to prevent alphabetical ordering of months
+p2 <- ggplot() + geom_col(data = forward21, aes(x = month, y = forward))
+p2 <- p2 + theme(axis.text.x=element_text(angle = -90, hjust = 0))
+p2 <- p2 + coord_cartesian(ylim = c(4, 7))
+p2 <- p2 + ggtitle("Fig 2:Corn Forward Curve, June 2, 2021") 
+p2
+```
+
+The forward curves shown here are not typical. A typical forward curve tends to be approximately flat, and the seasonal features such as low prices in the period following harvest and high prices in the period prior to harvest are normally much more obvious. As we work through this module it will become obvious why these two particular forward curves were featured.
+
+It should be noted another name for the forward curve is the term structure of futures prices.
+
+## Backwardation and Contango
+
+A *contango* market means that the forward curve is sloping up. If the spot price is included as the first price in the forward curve, then contango implies that the futures price is above the spot price after adjusting for location. 
+
+A market in "backwardation" means that the forward curve is sloping down. If the spot price is included as the first price in the forward curve, then backwardation implies that the futures price is above the spot price after adjusting for location.
+
+Referring to the two previous diagrams, it should be clear that the July, 2020 forward curve for corn reflects market contango, and the June, 2021 forward curve reflects market backwardation.
+
+The CME [2017] notes that in a contango market there is over supply and/or low demand, and in a backwardated market there is under supply and/or high demand. The CME also notes that inventories typically build when a market is in contango and are depleted when a market is in backwardation. With reference to the previous figures, the CME explanations shed light on the market contango in the early days of the COVID-19 pandemic (i.e., July, 2020) and on the market backwardation in the recovery phase of the pandemic (i.e., June, 2021).
+
+If you read https://www.cmegroup.com/education/courses/introduction-to-ferrous-metals/what-is-contango-and-backwardation.html you will see that a market will be in contango when storage costs must be covered by higher prices in the futures. Conversely, a market will be in backwardation when the convenience yield is high. Both of these explanations are consistent with the determinants of the slope of the forward curve in our eight-quarter model.
+
+## Normal Backwardation
+In the theory of futures markets there also exists the concept of normal backwardation. Students often assume that backwardation is shortened notation for normal backwardation but this assumption is incorrect. As will be shown below, the two concepts are very different.
+
+Throughout this course our models of futures market will assume risk neutrality. This is obviously a very strong assumption because we should expect farmers and small merchants to be risk averse. In the next model you will learn about hedging. With a short hedge a farmer or a merchant who owns the commodity uses the hedge to reduce price risk. The long speculators who take on this price risk may depend compensation in the form of positive expected profits. Profits are positive for a long speculator if the futures price is expected to increase over time since this gives rise to a buy-low, sell-high scenario. The expected profits earned by speculators is equal in size to the expected loss in profits for short hedgers. This situation where the futures price is expected to increase over time is called Normal backwardation. The next set of figures show more precisely how normal backwardation differs from backwardation. The figures pertain to the base case of the eight quarter model with no uncertainty.
+
+In Figure 3 below the graph the left is the set of expected spot prices for the next four quarters, measured in Q1. The graph on the right is forward curve, also measured in Q1. This means that the Q1 through Q4 on the horizontal axis refer to the expiry date of the futures contract rather than the passage of time. The two graphs are identical, which means that for each of the four futures contracts in the forward curve, the futures price is equal to the expected spot price. Therefore, we know there is no normal backwardation in this market. 
+```{r}
+Expected_Spot <- c(3.490, 3.653, 3.708, 3.656) 
+Forward <- c(3.490, 3.653, 3.708, 3.656)
+full <- cbind(Expected_Spot ,Forward)
+rownames(full) <- c("Q1","Q2","Q3","Q4")
+barplot(full, main="Fig 3: Expected Spot Prices and Forward Curve",ylab="$/bu",legend = rownames(full), args.legend = list(x = "topleft", cex = .7), beside=TRUE, ylim=c(2, 5), xpd = FALSE, sub="Measured in Q1")
+```
+
+The left graph of Figure 5 is the same as the left graph in Figure 4 expect now the horizontal axis measures how the spot price moves over time. That is the first column is the spot price in Q1, the second column is the spot price in Q2, etc. The right graph shows how the Q3 contract (i.e., a contract which expires in Q3) moves over time. We can see from this graph that the price of the Q3 contract remains equal to the expected Q3 spot price for Q1, Q2 and Q3. The futures price is constant over time and thus once again we know there is no normal backwardation.
+
+```{r}
+spot <- c(3.490, 3.653, 3.708, 3.656)
+F3 <- c(3.780, 3.780, 3.780, 0)
+full2 <- cbind(spot,F3)
+rownames(full2) <- c("Q1","Q2","Q3","Q4")
+barplot(full2, main="Fig 4: Spot and Q3 Futures Over Time",ylab="$/bu",legend = rownames(full), args.legend = list(x = "topleft", cex = .7), beside=TRUE, ylim=c(2, 5), xpd = FALSE)
+```
+
+The left graph of Figure 5 is identical to the left graph of Figure4 -- both show how the spot price changes over time. The right graph shows that the price of the Q3 futures contract is increasing over time. We know that in Q3 the spot price and the futures price must be equal and so it must be the case that in Q1, the futures price is below the expected Q3 spot price. This is precisely the condition of normal backwardation. The futures price rises over time, and this creates positive expected profits for long speculators and negative expected profits for short hedgers.
+
+```{r}
+F3_nb <- c(3.522, 3.616, 3.780, 0)
+full3 <- cbind(spot,F3_nb)
+rownames(full3) <- c("Q1","Q2","Q3","Q4")
+barplot(full3, main="Fig 5: Q3 Futures Price with Normal Backwardation",ylab="$/bu",legend = rownames(full3), args.legend = list(x = "topleft", cex = .7), beside=TRUE, ylim=c(2, 5), xpd = FALSE, sub = "Q3 Futures with Normal Backwardation")
+```
+
+It is now easy to see why backwardation and normal backwardation are very different concepts. In all three of the above graphs, the forward curve slopes up and so the market is in contango. In the last contango market, the price of the Q3 contract rises over time and so there exists normal backwardation. For agricultural markets, normal backwardation co-existing with contango is the most common. In the market for crude oil it is common to observe normal backwardaton co-existing with backwardation.
+
+## Institutional Investors, Commodity ETFs, etc
+
+Similar to other sectors of our economy, there exists indexes which tracks the futures prices of agricultural commodities. These indexes are then used by large hedge funds, other institutional investors and regular investors through the purchase of an exchange trade fund (ETF). For example, the Invesco DB Agriculture Fund is an ETF with assets around $900 million. Indexes which track agricultural commodities are popular because they help investors diversity their financial portfolios.
+
+For the remainder of this module we will use simulation results from the eight-quarter model to examine in detain how profits for an index investor is calculated. We will also examine what has become known as the "roll yield" myth, which claims that index investors should expect to earn positive profits in a backwardated market due to a positive roll yield, and negative expected profits in a contango market due to a negative roll yield. We will show that the myth is common and persists because most in the world of professional investing view roll yield as a financial return which is generate when a close-to-expiring long futures contract is rolled into a new long contract.
+
+## Data
+
+The data that we will use for the examination of index investing was selected from the set of randomly simulated prices which were featured in the Futures Prices module. These prices, together with the ending stocks, are presented in the table below. Recall that each row corresponds to one of the eight quarters, and each column corresponds to one of the eight traded futures contracts. The prices along the diagonal are the spot prices. Thus, for example, the Q4 column shows how the price of a Q4 futures contract which changes over time until the contract expires in Q4. The prices can also be interpreted as a sequence of gradually-shortening forward curves.
+
+```{r}
+roll_data <- read.csv(file="./Data/roll-yield.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+knitr::kable(roll_data, "simple")
+```
+
+Let F_t^i$ denote the price of a $Qi$ contract in quarter $t$ where $t \leq i$. We can delete the first and last columns of data to create a matrix of forward curves which evolve over time.
+
+```{r}
+F <- roll_data[,-c(1,10)]
+```
+
+In the table above Q1 are the base case prices, which we have already analyzed. Let's take a closer look at Q2 forward curve. We extract it from the full matrix of forward curves, eliminate the first column (since it is blank) and then transpose it and rename rows and column:
+```{r}
+F_2 <- t(F[2,-1])
+rownames(F_2) <- c("Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8")
+colnames(F_2) <- "Q2_Forward"
+F_2
+```
+In the base case forward curve, the Q2 and Q6 forward prices were approximately equal as were the Q3 and Q7 forward prices. The values in the above table reveal that the Q2 forward curve is upward sloping because the Q6 forward price is greater than the Q2 forward price, and the Q7 forward price is greater than the Q3 forward price. This upward sloping curve implies that the Q2 market is in a state of contango. Keep this in mind as we analyze the index investment and describe the roll yield myth.
+
+## Index Investment Assumption
+
+We will assume the following about how the index fund tracks the futures price of corn. In Q1 the index manager takes a long position in a Q3 contract. When the contract is about to expire in Q3, the manager rolls the position in a Q5 contract by offsetting the existing Q3 contract and taking a new long position in the Q5 contract. The process is repeated in Q5 but this time rolling the Q5 contract into a Q7 contract. When the Q7 contract expires, the manager closes out her position and leaves the market.
+
+## Traditional Measures of Profits
+
+An economist would likely measure returns to the index investment as follows: 
+$$\pi_{econ} = -F_1^3 + F_3^3 - F_3^5 + F_5^5 - F_5^7 + F_7^7 $$
+This can be calculated as
+```{r}
+(pi_econ <- -F[1,3] + F[3,3] - F[3,5] + F[5,5] - F[5,7] + F[7,7])
+```
+So we see that the index investment yields positive profits.
+
+An accountant prefers to use the marketing-to-market procedure, which is consistent with how the balance in the margin account is calculated. To simplify, assume the initial margin is zero and there are no margin calls. The margin account is updated at the end of each quarter.
+
+| Quarter | Action   | Margin Adjust |
+|---------|----------|---------------|
+| 1       | Long Q3  |               |
+| 2       | Nothing  | F[2,3]-F[1,3] |
+| 3       | Roll Q5  | F[3,3]-F[2,3] |
+| 4       | Nothing  | F[4,5]-F[3,5] |
+| 5       | Roll Q7  | F[5,5]-F[4,5] |
+| 6       | Nothing  | F[6,7]-F[5,7] |
+| 7       | Short Q7 | F[7,7]-F[6,7] |
+Profits on the index investment is the sum of the six margin adjustments. We can calculate these as:
+
+```{r}
+(pi_acct <- F[2,3]-F[1,3]+F[3,3]-F[2,3]+F[4,5]-F[3,5]+F[5,5]-F[4,5]+F[6,7]-F[5,7]+F[7,7]-F[6,7])
+```
+Fortunately, the profit caculated by the accountant and the economist are the same.
+
+## Futures Index and Roll Yield
+In real world futures markets, an index of futures prices is created which accounts for the rolling long futures positions. With this index calculating profits is straight forward because it is simply the difference in the index value when exiting and entering the market. To construct this index we need to define *roll yield *.
+
+*In this example the Q3 roll yield is given by $F_3^3 - F_3^5$ and the Q5 roll yield is given by $F_5^5-F_5^7$.*
+
+In other words, roll yield for quarter $t$ is the price of the expiring contract minus the price of the new contract. We can calculate the two roll yields as follows:
+```{r}
+(Roll3 <- F[3,3]-F[3,5])
+(Roll5 <- F[5,5]-F[5,7])
+```
+
+We create the index as follows. For Q1 through Q3, the value of the index is equal to the price of the Q3 contract. For Q4 and Q5 we add the Q3 roll yield to the respective prices of the Q5 contract. For Q6 and Q7 we add the cumulative roll yield (i.e, Roll3 + Roll5) to the respective prices of the Q7 contract. We don't calculate the index beyond Q7 because the long rolling position is terminated in Q7.
+
+Specifically, the index is calculated as follow:
+
+| Quarter | Action   | Index Value        |
+|---------|----------|--------------------|
+| 1       | Start Q3 | F[1,3]             |
+| 2       | Nothing  | F[2,3]             |
+| 3       | Roll Q5  | F[3,3]             |
+| 4       | Nothing  | F[4,5]+ Roll3      |
+| 5       | Roll Q7  | F[5,5]+ Roll3      |
+| 6       | Nothing  | F[6,7]+Roll3+Roll5 |
+| 7       | Nothing  | F[7,7]+Roll3+Roll5 |
+
+Let's use R to calculate the Index for the seven quarters:
+```{r}
+Index <- c()
+Index[1] <- F[1,3]
+Index[2] <- F[2,3]
+Index[3] <- F[3,3]
+Index[4] <- F[4,5] + Roll3
+Index[5] <- F[5,5] + Roll3
+Index[6] <- F[6,7] + Roll3 + Roll5
+Index[7] <- F[7,7] + Roll3 + Roll5
+Index
+```
+We can now calculate profits as the terminal index value, $Index[7]$, minus the initial index value, $Index[1]$. This calculation gives
+```{r}
+(pi_ind <- Index[7]-Index[1])
+```
+
+We see that profit calculated with this index method is the same as the profits calculated with the economist and accountant method. If you want to challenge yourself you can prove that the accountants measure of profits and the index measure of profits both reduce to the economist measure of profits by canceling and regrouping terms in the various formulas.
+
+## Comparing the Futures Index and the Spot Price
+Lets create a sequence of spot prices and then compare the spot price sequence with the futures price index
+```{r}
+Spot <- c()
+for (t in 1:7) {
+  Spot[t] <- F[t,t]
+}
+Spot
+```
+We can combine the Spot and Index sequence in a common matrix and print out as a table
+```{r}
+Spot_Index <- cbind(Spot,Index)
+rownames(Spot_Index) <- c("Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7")
+Spot_Index
+```
+
+Even though the spot price begins at a lower value than the index it should be obvious that the increase in the spot price over the seven quarters is greater than the increase in the index. Indeed, the change in the two sequences over the seven quarters can be calculated as follows:
+```{r}
+(Spot[7]-Spot[1])
+(Index[7]-Index[1])
+```
+
+## Roll Yield Myth
+We can now state the roll yield myth. Suppose you invested in the index in Q1 and terminated the investment in Q7. We know from above that your profits will equal `r pi_ind`. You were okay with this profit until you noticed that the spot price increased by `r (Spot[7]-Spot[1])`. You are now upset that you earned much less than someone who invested in the physical commodity. 
+
+Your friend tells you that you should not be surprised because the market is in contango. Recall that with a contango market the roll yield (i.e., the price of the expiring contract minus the price of the new contract) is negative. Your friend tells you that if the market is in contango on the day of the roll you lock a loss equal to the size of the negative roll yield. Had the market instead been in backwardation then on the day of the roll you would have locked in a profit equal to the size of the positive roll yield. In our case, the sum of the two roll yields is negative since the positive roll in Q3 (`r Roll3`) is less than the negative roll in Q5 (`r Roll5`). 
+
+Your friend's claim is the roll yield myth. It is true that the spot price rises faster than the futures price in contango market and slower than the futures price in a backwardated market. This is not part of the myth (more details below). The myth is two fold: (1) that roll yield is a financial yield: negative in a contango market and positive in a backwardated market; and (2) roll yield generate the loss or gain on the day of the roll. Each s discussed in turn.
+
+It is unfortunate that the term "roll-yield" was used to describe the the difference between the price of the expiring futures contract and the price of the new futures contract. Cumulative roll yield is a measure of the difference between the current spot price and the value of the futures index assuming that both sequences started at the same value. In a competitive market this difference must exactly equal the cumulative carrying cost. In other words, in a competitive market there is no "free lunch" and so the following must hold:
+
+*Futures Index = Spot Price - Cumulative Carrying cost*
+
+Given this formula it must be the case that:
+
+*Cumulatie Roll Yield = Cumulative Carrying Cost *
+
+The first table of this module shows us the level of stocks and so it is possible to calculate cumulative carrying cost using the $m_0+m_1 S_t$ formula. We can then validate the above equation. You will find that the equation does not exactly (for reasons which are too complicated to explain) but overall the validation is correct. sure, you may be jealous that someone who invested in the physical commodity experienced a more rapid price increase. However, after you account for the carrying costs (e.g., storage) you fill see that someone who holds futures and someone who holds the physical commodity earns the same NET rturn.
+
+The second part of the roll yield myth is that the loss or gain is locked in on the day of the actual roll. In fact some finacial services firms promote futures indexes which miniize the number of rolls in order to reduce the size of the loss in a contango market. This does not make sense because as noted above roll yield is not a financial return but rather a measure of cumulative carrying cost.  
+
+The idea that the loss or gain is incurred on the day of the roll makes sense on the surface but it quickly falls apart with some deepere thought. Indeed, with a contango market the index is being sold at a low price and re-purchased at a higher price and so a loss must be incurred. But this argument is not logical because it would be equivalent to buying Apple stock at \$130 per share, and selling it for \$150, and then buying Google stock at at \$180/share and eventually selling it for \$185. You would never claim that the difference between the selling price of Apple at \$150 and the buy price for Google at \$180 represents a \$30 loss in profit. The situation with rolling out of an expiring futures contract and into a new futures contract is no different. 

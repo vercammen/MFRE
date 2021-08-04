@@ -1,0 +1,189 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+
+# Convenience Yield: U.S. Corn
+
+## Background
+
+In the previous module we used a simple model which predicts a saw-toothed pattern of prices over time due to a recurring pre-harvest stock-out. Real world commodity markets seldom stock out because pipeline stocks must be carried across marketing years to ensure a continuation of commodity processing. In the U.S. corn market, stocks seldom drop below 10 percent of annual production.
+
+In the previous module the intertemporal law-of-one price (LOP) predicts that price continues to rise over time when stocks are positive. How can we rationalize our observation that real-world stocks are always positive and the LOP which indicates that price must continue to rise over time when stocks are positive?
+
+In this module we introduce the concept of *convenience yield* to address this inconsistency. By adding convenience yield to the simple storage model, the simulated pricing pattern for corn is reasonably close to the real-world corn pricing patterns.
+
+The chart below shows the average quarterly price of U.S. corn over the period 1980 - 2019. The first quarter is the September to November harvesting period, the second quarter is the December to February winter period, etc. Notice that price is lowest in Q1, which is the harvesting quarter, and is highest in Q3, which is the spring quarter. In Q4, which is the pre-harvest quarter, the price begins its decline to the Q5 low point.
+```{r}
+historic <- c(2.866, 2.993, 3.123, 3.105, 2.866, 2.993, 3.123, 3.105)
+barplot(historic,names.arg = c(1,2,3,4,5,6,7,8), main="Average Quarterly Corn Price: 1980-2019.",
+        xlab="Quarter: Sept-Nov = 1, Dec-Feb = 2, etc", ylab="$/bu",
+        beside=TRUE, ylim=c(2, 4), xpd = FALSE)
+```
+
+This pricing pattern has the same general shape as the saw-tooth pattern that we saw in the previous section. Specifically, price must rise over time to compensate those merchants who are bearing the cost of storing the corn rather than selling it immediately. The big difference is that price falls as the old crop year finishes and the the new crop year begins, even with positive stocks carried across years.
+
+## Convenience Yield
+Imagine in the days prior to debit and credit cards how you would decide how much money you would withdraw from the bank in order to pay for your purchases for the coming week. It is likely that you would take out money than what you expect to use in case you need to make an unexpected purchase. You are willing to give up the interest earnings on the extra amount that you withdraw in order to have the convenience of cash on hand when an unexpected purchase is necessary. The more inconvenient it is to obtain more cash, the greater the convenience yield you will obtain from having the extra cash on hand.
+
+The situation is similar for merchants and processors. They will want to keep more inventory on hand than what they expect to use. The implicit benefit that merchants and processors receive from having inventory on hand rather than having to buy it in the spot market is called *convenience yield*. Convenience yield, which is equivalent to a negative cost of storage, is larger when stocks are scarce and smaller when stocks are plentiful. This makes sense because when stocks are scare it is more costly to search and find stocks in the spot market when an unexpected order comes along.
+
+## Combining Convience Yield and Storage Costs
+Our goal is to create an integrated model of storage costs and convenience yield. In the previous module the marginal physical cost of a unit of the stored commodity was assumed to be constant at level $m$, and the capital cost of storage was assumed to equal $rP_t$ where $r$ is the rate of interest and $P_t$ is the commodity's price. The rate of interest is currently very low and so we will simplify by assuming $r=0$. However, the assumption that the unit cost of storage does not depend on aggregate stocks in the market is not very realistic. We expect a higher unit cost storage with higher stocks because congestion will require high-cost storage options to be utilized.
+
+With these additional assumptions, the marginal cost of storage in period $t$ can be expressed as $k_t =k_0 +k_1S_t$ where $S_t$ is a measure of aggregate stocks in the market. The marginal convenience yield can be expressed as $c_t =c_0 - c_1S_t$. The negative slope of this function shows that marginal convenience yield is lower when stocks are larger. The net cost of storage is given by $k_t-c_t$. We subtract $c_t$ because it is a benefit, which is equivalent to a negative cost. We call this net cost of storage the commodity's *carrying cost*
+
+Similar to the previous module, the intertemporal LOP tells us that when storage is positive then the price increase must equal the carrying cost. A merchant is indifferent between selling the commodity immediately and receiving price $P_t$, or storing the commodity for one period and then selling it for a net price of $P_{t+1}-(c_t-k_t)$. Indifference implies $P_t = P_{t+1}-(c_t-k_t)$. We can rearrange to obtain a revised LOP expression:
+
+$$P_{t+1}-P_t = c_t - k_t $$
+Let $m_0=k_0-c_0$ and $m_1 = k_1+c_1$. If we substitute this pair of expressions together with $k_t =k_0 +k_1S_t$ and $c_t =c_0 - c_1S_t$ we obtain the final LOP expression:
+
+$$P_{t+1}-P_t = m_0+m_1S_t $$
+## Pricing Dynamics
+The goal is to generate a pricing pattern similar to that shown in the diagram above. In the Q4 summer quarter the price is falling, which means that $m_0+m_1S_t<0$. We know that $m_1>0$ because storage costs are higher and convenience yield is lower when stocks increase. Thus, it must be the case that $m_0<0$. In Q1 when stocks are largest and convenience yield is smallest, we see that $m_0+m_1S_t$ takes on its largest value, and thus the price increases are the largest. As stocks diminish as we progress from Q1 to Q2 to Q3 the value of $m_0+m_1S_t$ remains positive but it is getting smaller and smaller. Thus, the price increases are weakening. By the time we hit Q4 the convenience yield is larger than the storage costs, which means that $m_0+m_1S_t<0$ and the price decreases instead of increases.
+
+The LOP price equation is one of three key equations which governing how prices change over time. The general stock adjustment equation is $S_{t+1}-S_t = H_t - x_t$ where $H_t$ is the level of new production (i.e., harvest) in period $t$ and $x_t$ is the level of consumption in period $t$. For the case of quarterly data, the full stock adjustment equation can be written as
+$$
+\begin{align*}
+S_1 &= S_0 + H_1 - x_1  \\
+S_2 &= S_1 - X_2 \\
+S_3 &= S_2 - X_3 \\
+S_4 &= S_3 - X_4 \\
+S_5 &= S_4 + H_5 - X_5 \\
+S_6 &= S_5 - X_6 \\
+S_7 &= S_6 - X_7 \\
+S_8 &= S_7 - X_8 = \bar S + D
+\end{align*}
+$$
+In the above equation $S_0$ represents starting stocks, $\bar S$ represents the level of stocks which are typically carried over from year to year (i.e., long-run carry over) and $D$ is a measure of the short run demand for year 2 stocks to be carried into year 3 net of $\bar S$. These three variables, $S_0$, $\bar S$ and $D$, together with the two harvest variables, $H_1$ and $H_5$, are exogenous in the model. An exogenous variable means that we must attach values to these variables from outside the model rather than calculating equilbrium values from within the model. 
+
+The final equation for simulating prices over the eight quarters is the inverse demand for the commodity by the processor. We will use the standard linear demand schedule, $P_t = a - bX_t$. The model has seven LOP equations, eight stock adjustment equations and eight demand equations for a total of 23 equations. There are also 23 variables to be solved for: eight quarterly prices ($P_t$), eight quarterly consumption levels ($X_t$) and seven ending stocks ($S_t$). There are only seven stock variables because as you can see above the value of $S_8$ is determined by $\bar S+D$. After assigning values to the model parameters and the exogenous variables we can solve this system of equations and then recover the equilibrium prices, which we are interested in analyzing.
+
+## Data
+We will simulate eight quarterly prices, which means two full years beginning with Q1 in the fall of year 1 and ending with Q8 in the summer of year 2. Data from the USDA Feed Grains Database reveals that average corn harvested acres, yield per harvested acre and beginning stocks for the most recent five crop years (2015/16 - 2019/20) was 82.91 million acres, 173.4 bushels per acre and 2.015 billion bushels, respectively.12 Multiplying the five year average acreage and yield gives five year average production of 14.38 billion bushels. If these estimates are used as the long term average it follows that $H_1 = 14:38$ for the base case. Similarly, if the five year average level of stocks is viewed as normal pipeline stocks it follows that $S_0 = \bar S = 2:015$ for the base case.
+
+The two parameters from the demand equation are set to $a = 16.21$ and $b = 3.5$. These
+parameters ensure that the average price across all eight quarters is $3.628/bu, which is very close to the $3.648/bu average farm gate price for 2016 - 2020. Moreover, the demand elasticity, which is calculated with the simulated \$3.628/bu average quarterly price and the simulated 3.595 billion bushel average quarterly consumption, is equal to -0.288. This simulated elasticity is reasonably close to the -0.2 corn demand elasticity estimate which was reported by Moschini et al. [2017].
+
+Data on storage costs and convenience yields are not available and so it is not possible to
+directly estimate values for m0 and m1. The chosen values, $m_0 = -0.22$ and $m_1 = 0.03$, are those which achieve a reasonably close match between the seasonal pattern of the simulated prices and real-world prices. More is said about this below.
+
+Let's formally assign these values to the model parameters and exogenous variables.
+```{r}
+a <- 16.21
+b <- 3.50
+m0 <- -0.22
+m1 <- 0.03
+S0 <- 2.015
+H1 <- 14.38
+S_bar <- 2.015
+v <- c(a, b, m0, m1, S0, H1, S_bar)
+```
+## Simulation
+We could tell R to solve the systems of 23 equations and 23 variables and then recover the eight equilibrium quarterly prices. However, to tie in better with the next module it is useful to specify the equilibrium prices as linear functions of $H_5$ and $D$. These two variables are chosen because it is natural to view $H_5$ (i.e., year 2 harvest) as a random variable in Q1 through Q4, and to view $D$ (i.e., long term net demand for stocks) as a random variable in all eight quarters. The USDA provides a forecast for both of these variables and the properties of these forecasts will be used when using the model to generate random prices.
+
+The desired equation is
+
+$$P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D  $$
+In this equation the $~$ (tilde) on the $H_5$ and $D$ variables indicate that they are random as described above.
+
+There are eight values for each of $\delta_0$, $\delta_1$ and $\delta_2$, which means that we need 24 $\delta$ values to generate the set of eight quarterly prices. The complex set of equations which are required to obtain the 24 $\delta$ values are contained in a R function titled "get_delta" (this function is stored in file titled "price_function.R"). We can call this function into our program, generate the 24 delta values and store these values in a matrix titled "del" as follows:
+
+```{r}
+source("price_function.R")
+del <- get_delta(v)
+del
+```
+
+The next step is to use these 24 $\delta$ values together with $P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D$ to generate the eight quarterly prices. The following function does the necessary calculations:
+
+```{r}
+get_price <- function(H5,D) {
+   Price <- del[,1] + del[,2]*H5 + del[,3]*D 
+}  
+```
+
+If we assume $H_5 = H_1 = 14.38$ and $D=0$, which implies that year 2 harvest and long term net demand are both normal, then the prices which are generated will equal the base case prices. We first assign these values to $H_5$ and $D$ and then call the above pricing function:
+
+```{r}
+H5 <- 14.38
+D <- 0
+P <- get_price(H5,D)
+P
+```
+
+## Comparing Simulated and Real-World Corn Prices
+The chart below compares the simulated prices for Q1 through Q4 with the average quarterly corn prices received by farmers for the 1980 - 2019. The similarity of the seasonal pattern in the simulated and real-world prices suggests that despite its simplicity the calibrated model is well suited to analyzing the forward curve for corn.
+
+```{r}
+historic_4 <- historic[1:4]
+simulated <- P[1:4]
+all_price <- cbind(historic_4,simulated)
+rownames(all_price) <- c("Q1","Q2","Q3","Q4")
+all_price
+
+barplot(all_price, main="Quarterly Corn Price: Historic vs Simulated",ylab="$/bu",
+         col=c("darkblue","red", "green", "brown"),
+        legend = rownames(all_price), args.legend = list(x = "topleft", cex = .7), beside=TRUE, ylim=c(2, 4), xpd = FALSE)
+```
+
+It should be obvious from this chart that the simple model we are using does a reasonably good job capturing the seasonality in real-world corn prices. This is especially important when when we examine hedging in a future module.
+
+## Verifying the LOP
+It is a good idea to verify that the model is working as intended. First, we should check that the LOP equation, $P_{t+1}-P_t=m_0+m_1S_t$, holds for all eight quarters. Second, we should check that consumption of the inventory across all eight quarters is equal to $S_0+H_1+H_5-S_8$. In other words, all stocks are fully accounted for. Both of these verifications are conducted in the Appendix of this module.
+
+## What If Analysis
+Now that we have the model built we can do "what if" analysis. An obvious "what if" is how does the set of 8 prices respond to a change in the size of the year 2 harvest (e.g., a smaller value for $H5$ due to fewer planted acres)? For example, suppose $H_5-13$, which is below the level of year 1 harvest, $H_1=14.38$. Generating a new set of eight quarterly prices requires using the pricing function, "get_price", with the revised value for $H_5$.
+
+```{r}
+H5 <- 13
+D <- 0
+P_rev <- get_price(H5,D)
+P_rev
+```
+
+To graph this revised set of prices together with the base set of prices we first combine the two price series into a single matrix and then generate a side-by-side bar chart similar to what what shown in the previous section.
+```{r}
+all_price2 <- cbind(P,P_rev)
+all_price2
+
+barplot(all_price2, main="Low H5 Prices versus Base Prices",ylab="$/bu", sub="Left Plot is Base Prices, Right Plot is Low H5 Prices", names.arg=c(1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8),
+         col=c("darkblue","red", "green", "brown"),
+         beside=TRUE, ylim=c(3, 5), xpd = FALSE)
+```
+
+The chart shows that the lower year 2 harvest raises all eight prices by roughly the same amount. This is an important pricing property of storable commodities. A supply or demand shock in the current year will impact prices in future years by roughly the same amount. This is because merchants are continually shifting the level of stocks being carried through time in order to maximize the average selling price of the commodity.
+
+When prices adjust in response to a supply or demand shock such as the one implied by the previous chart the impact on the eight prices is similar but not identical. This is because the shock will typically change the level of stocks, which in turn affects storage costs and convenient yield. The pricing impacts are calculated as follows:
+
+```{r}
+impacts <- P_rev - P
+impacts
+```
+
+## Appendix
+The purpose of this Appendix is to demonstrate the LOP and the stock adjustment equation hold for the base case set of eight similated prices. The verification begins by substituting the equilibrium price into the inverse demand schedule to obtain the quarterly consumption, $X_t$, Then substitute quarterly consumption into the stock adjustment equation to derive the quarterly stock levels, $S_t$. Finally, substitute the derived values of $S_t$ and the equilibrium prices into the LOP equation, $P_{t+1}-P_t-m_0_m_1 S_t$, to verify that the equation holds.
+
+```{r}
+H5 <- 14.38
+D <- 0
+X <- a/b - 1/b*P
+S <- rep(0, times = 8)
+S[1] <- S0 + H1 - X[1]
+S[2] <- S[1] - X[2]
+S[3] <- S[2] - X[3]
+S[4] <- S[3] - X[4]
+S[5] <- S[4] + H5 - X[5]
+S[6] <- S[5] - X[6]
+S[7] <- S[6] - X[7]
+S[8] <- S[7] - X[8]
+S
+
+lop <- rep(0, times = 8)
+for(i in 1:7)
+{
+  lop[i+1] <- P[i+1]-P[i]-(m0+m1*S[i])
+}
+lop
+```

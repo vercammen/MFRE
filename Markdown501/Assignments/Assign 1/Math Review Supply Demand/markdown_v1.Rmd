@@ -1,0 +1,89 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+# Question 1: Supply and Demand
+
+The supply of ethanol (billions of gallons) is given by $Q_S^E=11+3P^E-1.5P^C$ where $P^C$ is the price ethanol in \$/gallon, and $P^C$ is the price of corn in \$/bushel. Producing one gallon of ethanol requires 0.4 bushels of corn. The feedlot demand for corn (billions of bushels) is given by $Q_F^C=17.5-2P^C$. The supply of corn is 15 billion bushels.
+ 
+1. Let $Q_E^C$ denote the demand for corn used in ethanol production and $Q_D^C$ the total demand for corn. Use substitution to calculate the equilibrium price of corn as a function of the price of ethanol.
+2. Set the price of ethanol, $P^E$, to \$2.25/gallon. There are now four variables in the system: $Q_S^E$, $Q_E^C$, $Q_F^C$  and $P^C$. There are also four equation: (1) the supply of ethanol; (2) the conversion equation, $Q_E^C=0.4Q_F^C$; (3) corn demand for feed; and (4) market clearing in the corn market: $Q_E^C+Q_F^C=15$. Write this system as a matrix $X\beta=Y$ where $\beta$ contains the four variables. Use the matrix tools in Excel or R to solve the system. Report the equilibrium corn price, and the fraction of the 15 billion bushels of corn which is used in the production of ethanol.
+
+## Solution to (1)
+Begin by creating an expression for the demand for corn used in ethanol production: $Q_E^C=0.4Q_S^E=0.4 (11+3P^E-1.5P^C)$. Create an expression for the total demand for corn: $Q_D^C=Q_E^C+Q_E^C=0.4 (11+3P^E-1.5P^C)+17.5-2P^C$. Tee market clearing condition is that the total supply of corn, 15 billion bushels, is equal to total demand:
+$$15 = 0.4 (11+3P^E-1.5P^C)+17.5-2P^C  $$
+Solve this equation for $P^C$ as a function of $P^E$:
+$$P^C=2.654+0.462P^E $$
+## Solution to (2)
+
+The system of equations can be written as
+
+$$
+\begin{eqnarray*}
+Q_S^F+0Q_E^C+0Q_F^C+1.5P^C &=& 11+3*2.25 \\
+-0.4Q_S^E+Q_E^C +0Q_F^C+0P^C &=& 0 \\
+0Q_S^E+0E_E^C+Q_F^C+2P^c&=& 17.5 \\
+0Q_S^E+Q_E^C+Q_F^C+0P^C &=& 15
+\end{eqnarray*}
+$$
+This system can be written as $X\beta=Y$ where 
+$$
+X = 
+\begin{bmatrix}
+1 & 0 & 0 & 1.5\\
+-0.4 & 1 & 0 & 0\\
+0 & 0 & 1 & 2\\
+0 & 1 & 1 & 0 
+\end{bmatrix}
+\beta = 
+\begin{bmatrix}
+Q_S^E\\
+Q_E^C\\
+Q_F^C\\
+P^C 
+\end{bmatrix}
+Y = 
+\begin{bmatrix}
+17.75\\
+0\\
+17.5\\
+15
+\end{bmatrix}
+$$
+
+
+The solution values for the four variables are given by:
+$$
+\beta = 
+\begin{bmatrix}
+Q_S^E\\
+Q_E^C\\
+Q_F^C\\
+P^C 
+\end{bmatrix}
+=
+\left[
+\begin{array}{cccc}
+1 & 0  & 0 & 1.5\\ 
+-0.4 & 1  & 0 & 0\\ 
+0 & 0  & 1 & 2\\ 
+0 & 1  & 1 & 0\\ 
+\end{array}
+\right]^{-1}
+\begin{bmatrix}
+17.75\\
+0\\
+17.5\\
+15
+\end{bmatrix}
+$$
+ 
+Create the X and Y matrices in R (note use %*% for matrix multiplication)
+```{r} 
+x <- cbind(c(1,-0.4,0,0),c(0,1,0,1),c(0,0,1,1),c(1.5,0,2,0))
+y <- cbind(c(17.75,0,17.5,15))
+x_inv <- solve(x)
+beta <- x_inv %*% y
+beta
+```

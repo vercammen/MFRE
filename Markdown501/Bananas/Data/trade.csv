@@ -1,0 +1,72 @@
+exporter,exp_code,importer,imp_code,trade_value
+Bolivia (Plurinational State of),BOL,Argentina,ARG,35004187
+Brazil,BRA,Argentina,ARG,8397279
+Brazil,BRA,Australia,AUS,100
+Brazil,BRA,Canada,CAN,263
+Brazil,BRA,China,CHN,1624
+Myanmar,MMR,China,CHN,40504707
+Sri Lanka,LKA,Australia,AUS,43824
+Sri Lanka,LKA,Canada,CAN,8924
+China,CHN,Australia,AUS,26868
+China,CHN,Canada,CAN,14902
+China,CHN,Russian Federation,RUS,324998
+Czechia,CZE,China,CHN,174
+France,FRA,China,CHN,26020
+Germany,DEU,Australia,AUS,799
+Germany,DEU,Russian Federation,RUS,19105
+Guatemala,GTM,Russian Federation,RUS,3667965
+"China, Hong Kong SAR",HKG,China,CHN,173104
+Kenya,KEN,Australia,AUS,3392
+Lithuania,LTU,Russian Federation,RUS,10918
+"Other Asia, nes",,China,CHN,335072
+Netherlands,NLD,China,CHN,234601
+Netherlands,NLD,Russian Federation,RUS,197344
+New Zealand,NZL,Australia,AUS,3930
+Pakistan,PAK,China,CHN,109127
+Poland,POL,Canada,CAN,23
+India,IND,Australia,AUS,3021
+India,IND,Canada,CAN,8473
+India,IND,China,CHN,24
+India,IND,Russian Federation,RUS,16968
+Uganda,UGA,Australia,AUS,63115
+Uganda,UGA,Canada,CAN,6315
+Ukraine,UKR,Canada,CAN,36
+Ukraine,UKR,China,CHN,283
+Ukraine,UKR,Russian Federation,RUS,196
+USA,USA,Australia,AUS,8640
+USA,USA,Canada,CAN,417082929
+Mexico,MEX,Canada,CAN,519625
+Mexico,MEX,Russian Federation,RUS,372145
+Australia,AUS,Japan,JPN,25492
+Belgium,BEL,Japan,JPN,483
+Brazil,BRA,Iceland,ISL,86
+Brazil,BRA,Japan,JPN,1679
+Brazil,BRA,Rep. of Korea,KOR,179
+Sri Lanka,LKA,Japan,JPN,15410
+Sri Lanka,LKA,Rep. of Korea,KOR,4625
+China,CHN,Japan,JPN,42034
+Denmark,DNK,Iceland,ISL,145
+France,FRA,Japan,JPN,856
+Guatemala,GTM,Japan,JPN,655022
+Guatemala,GTM,Rep. of Korea,KOR,705810
+Ireland,IRL,Iceland,ISL,2629
+"Other Asia, nes",,Japan,JPN,5680816
+Netherlands,NLD,Iceland,ISL,19705
+Pakistan,PAK,Japan,JPN,2339
+India,IND,Japan,JPN,2186
+Ukraine,UKR,Japan,JPN,96
+Ukraine,UKR,Rep. of Korea,KOR,85
+United Kingdom,GBR,Iceland,ISL,30628
+USA,USA,Japan,JPN,7310
+Mexico,MEX,Japan,JPN,29879876
+Australia,AUS,New Zealand,NZL,19885
+Brazil,BRA,South Africa,ZAF,41
+Sri Lanka,LKA,New Zealand,NZL,77762
+Sri Lanka,LKA,South Africa,ZAF,0
+Germany,DEU,New Zealand,NZL,3880
+Germany,DEU,South Africa,ZAF,1522
+Guatemala,GTM,New Zealand,NZL,24940
+Netherlands,NLD,South Africa,ZAF,435346
+India,IND,New Zealand,NZL,1183
+Zimbabwe,ZWE,South Africa,ZAF,1467587
+Mexico,MEX,New Zealand,NZL,736997

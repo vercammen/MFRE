@@ -1,0 +1,4 @@
+name,open,close,contract,futures,basis,cash_price
+Corn,"July 1, 2021","July 31, 2021",Sep-21,547-0,50,5.97
+Corn,"Aug 1, 2021","Aug 31, 2021",Sep-21,547-0,50,5.97
+Corn,"Oct 1, 2021","Nov 30, 2021",Dec-21,545-2,-40,5.05

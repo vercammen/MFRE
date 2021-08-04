@@ -1,0 +1,132 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+
+# Futures Prices in the U.S. Corn Market
+
+Begin by defining the path of the directory which has the "get_delta" function. In RMark down the working directory should not changed in the code and so this more awkward method is used). The default directory is the same directory that this file is stored. 
+```{r}
+path_work_ftn <- "C:/Users/Jim/Dropbox/Git/Markdown501/Convenience Yield/price_function.R"
+```
+
+## Theory of Commodity Futures
+Recall that a long futures contract is a commitment to purchase the commodity when the contract expires. For the corn market, the contract expires the business day prior to the 15th calendar day of the contract month (e.g., December 14th for a December, 2021 contract). Further recall that a person who holds a futures contract will generally offset it prior to the contract expiring but they do have the option to accept delivery for a long contract and make delivery for a short contract. For the corn contract, the delivery location is Chicago.
+
+Arbitrage ensures that in the Chicago market the price of the futures contract on the day it expires must equal the spot price. Suppose the futures price of the expiring contract was higher than the spot price. In this case a speculator would purchase the spot commodity, take a short position, and deliver against that contract for a profit. In the opposite case, a speculator would take a long position, accept delivery of the commodity and sell the commodity at the higher spot price for a profit.
+
+This important relationship which connects the futures price and the spot price is worth emphasizing.
+
+**Arbitrage ensures that in the Chicago corn market, the price of an expiring futures contract is equal to the spot price. **
+
+What price should we *expect* for an expiring December futures contract in early October? Based on the discussion above, it should be obvious that prior to expiry the price of a futures contract is equal to the spot price which is expected in the Chicago market on the day the contract expires. Thus, on October 1, 2021 the price of a December futures contract should equal the price that speculators expect to prevail in the Chicago market on December 14, 2021.
+
+The previous result assumes risk neutral pricing. In reality the futures price may be above or below the expected spot price by an amount equal to the risk premium. We will revisit this topic later but for now it is sufficient to assume risk neutral pricing. What remains to be determined is the determination of the expected spot price at some distant time in the future. The pricing models we have been using do not have uncertainty and so the expected price is equal to the actual price which will eventually emerge. In this module we incorporate uncertainty into the eight quarter pricing model so that we can identify expected spot prices and futures prices in a meaningful way.
+
+## USDA Forecasts
+Recall that in the eight quarter model the price in quarter $t$ can be expressed as
+
+$$P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D   $$
+In this equation, $\tilde H_5$ is the random level of year 2 harvest, which is revealed in Q5, and $\tilde D$ is the random level of demand for stocks which are carried out of year 2 (i.e., long-term In the above equation, $\tilde H_5$ is random year 2 harvest, the value of which becomes known in Q5, and $\tilde D$ is the random demand for ending year 2 stocks (i.e., long term net demand).
+
+Let $\hat H_t$ denote the forecast of year two harvest in quarter $t=1,2,3,4$. As well, let $\hat D_t$ denote the forecast of long term net demand in quarter $t=1,2...,8$. We believe that prices are determined using the forecasted values of $\tilde H_5$ and $\tilde D$. Thus,
+to calculate the current price $P_t$ we substitute $\hat H_t$ for $\hat H_5$ and substitute $\hat D_t$ for $\tilde D$ in the above equation. Similarly, if when in quarter $t$ we knew what the forecast was going to be in future quarter $i$ then we can calculate the expected price for quarter given that we are currently in quarter $t$ as
+
+$$E_t(P_i) = \delta_0^i + \delta_1^i \hat H_i + \delta_2^i \hat D_i   $$
+The problem becomes a lot easier if we assume that the forecasted values for crop production and long-term net demand follows a random walk over time. Specifically, $\hat H_{t+1}=\hat H_t + \epsilon_H$ and $\hat D_{t+1}=\hat D_t + \epsilon_t^D$  where $\epsilon_t^H$ and $\epsilon_t^D$ are white-noise error terms. With this assumption, the forecast we expect to see in period $i$ is the same forecast that we see today. This allows us to use the above pricing equation as
+
+$$E_t(P_i) = \delta_0^i + \delta_1^i \hat H_t + \delta_2^i \hat D_t   $$
+In words, the expected value of the spot price in a future period can be obtained by substituting the current forecasts for $H_5$ and $D$ into the pricing equation that we derived in the previous module.
+
+## Futures Price and Forward Curve 
+We can derive a formal expression for the futures price. Let $F_t^i$ denote the quarter $t$ price of a futures contract which expires in quarter $i$. Using the previous equation we have
+
+$$F_t^i = E_t(P_i) = \delta_0^i + \delta_1^i \hat H_t + \delta_2^i \hat D_t   $$
+We know that $F_t^t=P_t$ because due to arbitrage the futures price must equal the Chicago spot price when the futures contract expires.
+
+The quarter $t$ forward curve is the collection of prices for all contracts which are actively trading during that quarter. For example, in Q4 there are four active futures contracts: Q5, Q6, Q7 and Q8. Thus, the Q4 forward curve has the following four prices:
+
+$$
+\begin{align*}
+F_4^5 &=  = \delta_0^5 + \delta_1^5 \hat H_4 + \delta_2^5 \hat D_4  \\
+F_4^6 &=  = \delta_0^6 + \delta_1^6 \hat H_4 + \delta_2^6 \hat D_4  \\
+F_4^7 &=  = \delta_0^7 + \delta_1^7 \hat H_4 + \delta_2^7 \hat D_4  \\
+F_4^8 &=  = \delta_0^8 + \delta_1^8 \hat H_4 + \delta_2^8 \hat D_4
+\end{align*}
+$$
+It should be obvious that the forward curve is equivalent to the set of expected spot prices. This means that the shape of the forward curve is the same as the pattern of spot prices over time that we examined in the last module. Specifcially, the forward curve will slope up for those quarters for which the spot price is rising, and will slope down for those periods for which the spot price is falling. This will be apparent when the simulated forward curve is examined below.
+
+
+It is important to keep in mind that the quarter $t$ spot price, which is given by = $P_t= \delta_0^t + \delta_1^t \hat H_t + \delta_2^t \hat D_t $, and the quarter $t$ futures price, which is given by $F_t^i = E_t(P_i) = \delta_0^i + \delta_1^i \hat H_t + \delta_2^i \hat D_t$, are both stochastic and are highly positively correlated. This can be seen if the expressions are rewritten as
+
+$$P_{t+1}= \delta_0^t + \delta_1^t (\hat H_t + \epsilon_t^H) + \delta_2^t (\hat D_t + \epsilon_t^D)  $$
+and
+
+$$F_{t+1}^i = \delta_0^i + \delta_1^i (\hat H_t + \epsilon_t^H) + \delta_2^i (\hat D_t + \epsilon_t^D)   $$
+Notice that the spot price and the futures price are subject to the same forecast shocks, $\epsilon_t^H$ and $\epsilon_t^D$. The response to the shock will not be identical because the the $\delta$ parameters have different values for the spot and futures prices. In the analysis below spot and futures prices are simulated by randomly drawing values for the two forecast error terms, $\epsilon_t^H$, and $\epsilon_t^D$
+
+## Basis
+The basis is defined as the spot price minus the futures price. In Q1 there is one spot price and seven futures prices, and so there are seven basis. In real world markets, the basis is normally reported for only the next-to-expire futures price. Let $B_t^i$ denote the basis calculated in quarter $t$ and based on a futures contract which expires in quarter $i$. Using the previous expressions we have
+
+$$B_t^i = P_{t+1} -  F_t^i = \delta_0^t - \delta_0^i + (\delta_1^t-\delta_1^i) \hat H_t + (\delta_2^t - \delta_2^i)\hat D_t   $$
+Basis is very important for hedging, which is a topic later in this course. For now it is important to understand the sign of the basis and how the basis changes over time. We can this assuming that the values for $\hat H_t$ and $hat D_t$ are fixed over time. This is equivalent to examining how the expected spot price and the expected futures price changes over time.
+
+Let's begin by retrieving the values for the three $\delta$ parameters using the "get_delta" function, which was featured in the previous module.
+```{r}
+a <- 16.21
+b <- 3.50
+m0 <- -0.22
+m1 <- 0.03
+S0 <- 2.015
+H1 <- 14.38
+S_bar <- 2.015
+v <- c(a, b, m0, m1, S0, H1, S_bar)
+source(path_work_ftn)
+del <- get_delta(v)
+del
+```
+Let's graph the values for $B_t^8$, which is defined as the quarter $t$ spot price minus the price of a futures contract which expires in Q8. 
+
+```{r}
+H5 <- 14.38
+D <- 0
+B <- del[,1]-del[8,1] + (del[,2]-del[8,2])*H5 + (del[,3]-del[8,3])*D
+
+barplot(B, names.arg = c(1,2,3,4,5,6,7,8), main="Basis for Q8 Futures Contract.",
+        xlab="Quarter: Sept-Nov = 1, Dec-Feb = 2, etc", ylab="$/bu",
+        beside=TRUE, xpd = FALSE)
+```
+
+To understand the basis diagram, first note that the Q8 futures contract is expected to remain constant over time. This can be seen from the formula, $F_t^8 = E_t(P_8) = \delta_0^8 + \delta_1^8 (\bar H_5) + \delta_2^8 \bar D $ where $\bar H_5 = 14.38$ and $\bar D = 0$ are the long term average values of these two variables. On the other hand, the spot price is changing over time due to changes in the the carrying cost. Recall from the previous module that the spot rises from Q1 through Q3 and then falls for Q4. The basis must also reflect this pattern. The basis must equal zero in Q8 due to the convergence of the spot and futures price. Consequently, the Chicago basis is positive when storage costs are greater than the convenience yield, and the spot price is rising over time. Conversely, the Chicago basis is positive when storage costs are less than the convenience yield and the spot price is falling over time.
+
+## Price Simulation
+
+Suppose at the beginning of each quarter a forecasted value for $H_5$ and $D$ was randomly drawn using the random walk formulas $\hat H_{t+1}=\hat H_t + \epsilon_t^H$ and $\hat D_{t+1}=\hat D_t + \epsilon_t^D$. In Q1 we can use the previous formulas to calculate the Q1 spot price and the futures price for each of the remaining seven periods. In Q2 when a new set of forecast values are randomly selected, we can obtained a spot price for Q2 and futures prices for the remaining six quarters. This process can be repeated until we reach Q8. The data to contruct the distributions for $\epsilon_t^H$ and $\epsilon_t^D$ come from the monthly USDA World Agricultural Supply and Demand Estimates (WASDE) reports. The details are contained in Vercammen (2021).
+
+The simulated prices are presented in the table below. Each row represents a different quarter, ranging from 1 to 8, and each column represents a different futures contract, with expiry dates ranging from 1 to 8. The prices along the diagonal (and repeated in the last column) are the spot prices and those above the diagonal are the futures prices. For example, the prices in the fourth column reveal how the price of a Q8 futures contract changes over the eight quarters. Conversely, the fourth row reveals the forward curve (consisting of the Q5, Q6, Q7 and Q8 futures prices) when measured in Q4.
+
+```{r}
+price_random <- read.csv(file="./Data/simulated_prices.csv", header=TRUE, sep=",")
+knitr::kable(price_random, "simple")
+```
+
+The corn basis measured relative to the Q8 contract can be calculated by subtracting the Q8 futures price in the second to last column from the spot prices in the last column. It is of interest to compare how the basis over time with pricing uncertainty compares with the basis in the previous graph, which was generated with no pricing uncertainty. To create this graph extract the last two columns of the price_random table.
+
+```{r}
+basis_import <- price_random[10]-price_random[9]
+basis_random <- data.matrix(basis_import, rownames.force = NA)
+all_price <- cbind(basis_random,B)
+colnames(all_price)  <- c("Stochastic Prices","Non-Stochastic Prices")
+#colnames(all_price)[2] <- “Non-Stochastic”
+#rownames(all_price) <- c("Q1","Q2","Q3","Q4", "Q5")
+all_price
+
+barplot(all_price, main="Q8 Basis With and Without Pricing Uncertainty",ylab="$/bu",
+         col=c("darkblue","red", "green", "brown"),
+          beside=TRUE, xpd = FALSE)
+```
+
+ 
+
+

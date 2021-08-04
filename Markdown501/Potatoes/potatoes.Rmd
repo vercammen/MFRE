@@ -1,0 +1,240 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+
+# Storage and Prices: Australian Potatoes
+
+## Background
+
+Potatoes are an important horticultural crop in Australia. Due to concerns over disease transmission, imports of fresh potatoes are largely banned. Exports of fresh potatoes from Australia have averaged less than three percent of production over the past three years. The majority of potatoes grown in Australia are processed (e.g., french fries). Over the past five years, Australian exports and imports of processed potatoes have averaged to 6.6 percent and 4.8 percent respectively. These trade data come from the ComTrade database.
+
+The above data suggests that the Australian potatoe market can well approximated as a closed market. In the analysis below we will assume that all of the potatoes produced in Australia are consumed domestically, either fresh or processed. We will not distinguish between fresh and processed potatoes, and we will further assumed that the monthly demand schedule is constant throughout the year. 
+
+Most Australian potatoes are grown in New Southwales, South Australia and Tazmania (see https://silo.tips/download/the-potato-industry-in-new-south-wales). Potatoes are harvested in many different months depending on the type of potato being produced (e.g., early versus mid versus late season) and the region. We will simplify by using the March harvest date for the midseason potatoes in the Riverina District as the representative harvesting time period.
+
+## Data
+
+According to FAOstat, the average level of Australian potato production for 2015 - 2019 was (in metric tonnes)
+```{r}
+ Q_year <- 1160760
+```
+The average annual value over this same time period was (in Australian dollars)
+```{r}
+ Value <- 717000000
+```
+Divide annual value by annual production to obtain an estimate of the average price per tonne:
+```{r}
+ (P <- Value/Q_year)
+```
+Divide annual production by 12 to obtain an estimate of monthly consumption (in tonnes): 
+```{r}
+ (x <- Q_year/12)
+```
+## Demand Curve
+ The inverse demand schedule can be expressed as $P = a - bx$. Invert this to obtain $x = \frac{a}{b}-\frac{1}{b}P$. The elasticitity of demand evaluated at the calculated level of monthly consumption and average price is given by $E = (dx/dP)(P/x)$. Substitute in $dx/dP = -1/b$ and then solve for $b$ to obtain $b=-\frac{1}{E}\frac{P}{x}$. Finally, solve $P = a - bx$ for $a$ and substitute in $b=-\frac{1}{E}\frac{P}{x}$ to obtain $a=\left (1-\frac{1}{E} \right )P$   
+  
+Assume that 
+```{r}
+ E <- -0.5
+```
+This gives
+```{r} 
+(b <- -1/E*P/x) 
+```
+and 
+```{r} 
+(a <- (1-1/E)*P) 
+```
+Let's double check by substituting x into the inverse demand curve: we should see monthly consumption.
+```{r} 
+a - b*x 
+```
+## Intertemporal Law-of-One-Price (LOP)
+To keep things simple, assume that the Australian potato producers can rent potato storage facilities at a cost of $m$ dollars per tonne per month. If the potatoes are stored instead of sold then then the opportunity cost of capital must also be considered. Assume that the foregone interest earnings are $r$ percent per month. This means that the total cost of storage per tonne for month $t$ is $m+rP_t$. Storage will only take place if the additional revenue from storing the potatoes, $P_{t+1}-P_t$, is greater than or equal to the total cost of storage, $m+rP_t$. 
+
+As more and more potatoes are stored in the market, $P_t$ will be driven up and $P_{t+1}$ will be driven down. Arbitrage in the cash market for selling the commodity and in the market for storage will ensure that the in equilibrium which emerges, the marginal revenue from storing will equal to the marginal cost of storing. That is, $P_{t+1}-P_t= m+rP_t$.   
+
+If arbitrage in the cash and storage markets is costless then the intertemporal LOP is similar to the spatial LOP. 
+
+**Intertemporal LOP**  
+
+1. If Storage is positive then prices in successive periods must satisfy $P_{t+1} - (1+r)P_t= m$.
+2.   If there are zero stocks in storage then $P_{t+1} - (1+r)P_t< m$.
+
+## Simlated Prices with Guess Value for P0
+You may recognize the equilibrium pricing equation, $P_{t+1} - (1+r)P_t= m$, as a linear first order difference equation with constant coefficients. The solution to this equation (see https://mjo.osborne.economics.utoronto.ca/index.php/tutorial/index/1/fod/t) is given by:
+
+$$P_t = \frac{(1+r)^t}{r}\left(rP_0 + m \right )-\frac{m}{r}$$
+If we knew the starting price, $P_0$, then we would have the full pricing solution. For now we will assume 
+```{r} 
+P0 <- 600 
+```
+We can use the above equation along with $P_0=6$ to generate a price series for the 12 months "between" harvesting periods. To keep things simple we assume that all potatoes are harvested on March 1 and so the first month is March, the second month is April, etc.
+
+We begin by assigning values to the remaining parameters of the model:
+```{r} 
+m <- 1.5
+r <- 0.002
+```
+
+It will be tedious to write the above equations 12 times and so we will use an R loop.  
+```{r}
+price_chk <- numeric(12)
+for(t in 1:12){
+price_chk[t]<- (1+r)^t/r*(r*P0+m)-m/r
+}
+price_chk
+```
+
+You should verify that the 12 simulated prices satisfy the LOP equation: $P_{t+1} - (1+r)P_t= m$. A graph of the 12 prices looks as follows:
+```{r}
+ t <- 1:12
+plot(t,price_chk, ylim=c(500,650))
+```
+The plot looks linear but you can see from the equation that it is slightly non-linear.
+
+## Solution Value for P0
+To solve for the unknown value of $P_0$ begin by substituting $P_t = \frac{(1+r)^t}{r}\left(rP_0 + m \right )-\frac{m}{r}$ into the inverse demand schedule, $P_t=a-bx_t$ and then solve for $x_t$. This gives
+$$x_t = \frac{ar+m}{br}-\frac{rP_0+m}{br}(1+t)^t$$
+Let $S_0=S_{in}+H$ denote the size of the beginning stockpile, which consists of stocks brought in, $S_{in}$ plus the March 1 harvest, $H$. Let $S_{out}$ denote the level of stocks which are carried over to the next year. That is, $S_{out}$ is the same as $S_{in}$ if the problem was to be solved again, one year later. Assume initially that $S_{in}=S_{out}=0$ and $H= 200$. In this case,
+```{r}
+S_in <- 0
+S_out <- 0
+H <- Q_year
+(S_0 <- S_in + H)
+```
+
+Market clearing requires $\sum_{t=1}^{N}x_t = S_0-S_{out}$ where for the current problem $N=12$ since there are 12 months. After substituting in the previous expression for $x_t$ this market clearing condition can be rewritten as
+$$\frac{(ar+m)N}{br}- \frac{rP_0+m}{br}Z=S_0-S_{out}$$
+where $Z=\sum_{t=1}^{N}(1+r)^t$. Solve this equation for $P_0$ to get
+$$P_0=\frac{(ar+m)N}{Zr}-\frac{m}{r}-\frac{b}{Z}(S_0-S_{out}) $$
+The $Z$ variable is a standard finite sum of a geometric sequence (see https://mathworld.wolfram.com/GeometricSeries.html). It can be shown that
+$$Z=\frac{1+r}{r}\left((1+r)^N-1 \right) $$
+To derive the solution value for $P_0$ note that
+```{r}
+N <- 12
+(Z <- (1+r)/r*((1+r)^N-1))
+```
+It now follows that 
+```{r}
+(P0_star <- (a*r+m)*N/(Z*r) - m/r - b/Z*(S_0-S_out))
+```
+
+## Graph of Price and Stocks over Time
+It is useful to observe how potatoe stocks gradually deplete over the 12 months. After harvest is complete, stocks evolve according to $S_{t+1}=S_t-x_t$. Recall that $x_t=\frac{a}{b}-\frac{1}{b}P_t$. Thus, $S_t-S_{t+1}=\frac{a}{b}-\frac{1}{b}P_t$. We can now use an R loop to observe price and stocks over the 12 month period.
+```{r}
+t2 <- 1:12
+stocks <- numeric(12)
+price <- numeric(12)
+price[1] <- (1+r)^1/r*(r*P0_star+m)-m/r
+stocks[1] <- S_0 - a/b +1/b*price[1]
+for(t in 2:12){
+price[t]<- (1+r)^t/r*(r*P0_star+m)-m/r
+stocks[t]<- stocks[t-1]-a/b +1/b*price[t]
+}
+price
+stocks
+```
+Graph the price and stocks data points.
+```{r}
+plot(t2,price, ylim=c(500,650))
+plot(t2, stocks)
+
+```
+
+## Two Identical Successive Years
+Suppose harvest at the beginning of a second year was identical to the first year harvest. Moreover, there were no stocks carried into or out of the second year. This means that the set of prices in year 2 will be identical to the set of prices in year 1.
+
+To program this in R we create a matrix with the first set of prices in the first column and the second set of prices in the second column. We then convert to a dataframe and use the Stack function to create a single set of values
+```{r}
+price_2 <- cbind(price, price)
+price_2 <-as.data.frame(price_2)
+price_stk <- stack(price_2)
+price_stk
+```
+
+Graph the new (double) set of prices
+```{r}
+t <- 1:24
+plot(t,price_stk$values, ylim=c(500,650))
+```
+
+## Stockout and the Intertemporal LOP
+It should be obvious that potato merchants have no incentive to store from year 1 to year 2 because doing so will result in a lower selling price and positive storage costs. When zero storage from one year to the next is optimal we call this a market *stockout*. 
+
+It should be obvious that if beginning stocks for year 1 are less than the year 2 harvest then the market will stockout. In this case prices in year 1 will uniformly be above prices in year 2, in which case merchants have an even stronger negative incentive to carry stocks from year 1 to year 2.
+
+When the market stocks out, prices jump down with the arrival of the new harvest, and then gradually rise back up. If there are repeated stockouts (e.g., 5 - 6 years) then the pricing pattern looks like a "saw tooth" (see https://en.wikipedia.org/wiki/Sawtooth_wave).
+
+It is important to keep in mind that when the market stocks out the intertemporal LOP continues to hold when transitioning from year 1 to year 2. Recall the second component of the LOP, which states: If there are zero stocks in storage then $P_{t+1} - (1+r)P_t< m$. This equation allows for the outcome where the price one day after the new harvest is lower than the price one day before the new harvest.
+
+## Positive Carry Over
+The more interesting case is when year 1 beginning stocks are large relative to the year 2 harvest. In this case the month 12 price of year 1 might be below the month 1 price of year 2. If the price difference is large enough then merchants will have an incentive to carry over potatoes from year 1 to year 2.
+
+For example, suppose beginning potato stocks for year 1 equal 1.2 million tonnes. This value is about 3.4 percent higher than the year 2 harvest, which is assumed to equal the long term average of 1,160,760 tonnes. If the pricing model specified above is re-run with $S_0 = 1,200,000$ and not carryout stocks (i.e., $S_{out}=0$) the following set of (approximate) equilibrium monthly prices emerge.
+
+559	561	564	566	569	572	574	577	580	582	585	588
+
+In year 2, the 12 monthly (approximate) prices are:
+603	605	608	611	614	616	619	622	625	627	630	633
+
+It should be clear that the year 1 month 12 price of \$588/tonne is well below the year 2 month 1 price of \$603/tonne. The intertemporal LOP no longer holds. Some stock from year 1 should be carried over to year 2.
+
+As stock is shifted from year 1 to year 2, the year 1, month 12 price will increase and the year 2, month 1 price will decrease. Stocks will continue to shift until the intertemporal LOP holds when transitioning from year 1 to year 2.
+
+## Equilibrium Level of Carry Over Stocks
+What remains to be determined is the actual amount which is carried over from year 1 to year 2.  Let $P_{12}^1$ denote the month 12 price in year 1 and let $P_1^2$ denote the month 1 price in year 2. If carry over from year 1 to year 2 is positive then according to the LOP equation, we must have $P_1^2$ = (1+r)P_{12}^1 + m$.
+
+We can substitute the previous equations into this formula and solve for $S_out$, which is the amount of stock carried over from year 1 to year 2. The steps involved are somewhat complex, and so we will jump to the final solution. Assuming that $S_0$ are beginning stocks for year 1 and $H_2$ is the level of harvest for year 2, we have:
+
+$$S_{out}^* = \frac{\left(\frac{(ar+m)N}{br}\right) \left(1-(1+r)^{12} \right)+\left((1+r)^{12} S_0+H_2 \right )}{(1+r)^{12}+1} $$
+
+Suppose $H_2$ is equal to 1,160,760 tonnes, which is the 2015 - 2019 average level of potato production in Australia. Further suppose that $S_0$ is equal to 1.2 million tonnes. We can use the previous formula to identify that amount of potatoes that will be carried over from year 1 to year 2 (presumably in a processed form). The formula will be build using three separate components so that it is easier to follow.
+
+```{r}
+H2 <- Q_year
+S0 <- 1200000
+S_out_A <- (a*r+m)*N/(b*r)*(1-(1+r)^12)
+S_out_B <- (1+r)^12*S0 - H2
+S_out_C <- (1+r)^12 + 1
+(S_out <- (S_out_A+S_out_B)/S_out_C)
+```
+
+You might expect the above formula to return a value of zero if year 1 beginning stocks are low relative to the size of the year 2 harvest. What you will see instead is a negative value for $S_{out}$. More sophisticated programming is required if want the restriction that stocks can't be negative to be imposed on the model. You must keep an eye on the value of $S_{out}$. If it is negative then zero carry over stocks are optimal and the market should be viewed as stocked out.
+
+## Price Path with Positive Carry Over Stocks
+Lets continue with the previous examply by solving the model for 24 months of potato prices. We will first solve the 12 month model from the perspective of year 1 with beginning stocks equal to 1.2 million tonnes and $S_{out}^*=4,450.52$ tonnes of potatoes carried over from year 1 to year 2. We will then solve the model for year 2, assuming a normal harvest and $S_{out}^*=4,450.52$ tonnes of potatoes added to the year 2 stockpile. 
+
+For year 1 we have:
+```{r}
+(P0_star_yr1 <- (a*r+m)*N/(Z*r) - m/r - b/Z*(S0-S_out))
+stocks_yr1 <- numeric(12)
+price_yr1 <- numeric(12)
+price_yr1[1] <- (1+r)^1/r*(r*P0_star_yr1+m)-m/r
+stocks_yr1[1] <- S0 - a/b +1/b*price_yr1[1]
+for(t in 2:12){
+price_yr1[t]<- (1+r)^t/r*(r*P0_star_yr1+m)-m/r
+stocks_yr1[t]<- stocks_yr1[t-1]-a/b +1/b*price_yr1[t]
+}
+price_yr1
+stocks_yr1
+
+```
+And for year 2 we have:
+```{r}
+(P0_star_yr2 <- (a*r+m)*N/(Z*r) - m/r - b/Z*(S_0+S_out))
+stocks_yr2 <- numeric(12)
+price_yr2 <- numeric(12)
+price_yr2[1] <- (1+r)^1/r*(r*P0_star_yr2+m)-m/r
+stocks_yr2[1] <- S_0 +S_out - a/b +1/b*price_yr2[1]
+for(t in 2:12){
+price_yr2[t]<- (1+r)^t/r*(r*P0_star_yr2+m)-m/r
+stocks_yr2[t]<- stocks_yr2[t-1]-a/b +1/b*price_yr2[t]
+}
+price_yr2
+stocks_yr2
+
+```
+The most important result from this last simulation is that the price continues to rise over all 24 months, despite the fact that new harvest arrives in month 13. It seems counterintuitive that the price rises when new supply becomes available. However, if you think about this for awhile there can be no other outcome. A merchant is willing to carry inventory from year 1 to year 2 only if price increase is sufficient to satisfy her storage costs. The LOP tells us that as long as storage is positive, the price must rise according to $P_{t+1}=(1+r)P_t+m$.
