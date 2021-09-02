@@ -1,0 +1,33 @@
+# Optional R Exercise
+
+# Load packages. This code assumes you have installed {pacman}
+pacman::p_load(here, rjson, dplyr, ggplot2, gridExtra)
+
+# Load data from the case study
+load(here("Data", "palm_data_optional_exercise.RData"))
+
+# Optional R Exercise 
+data <- data %>% mutate(adjust = mean(spread) - mean(cornShip), 
+                        cornShip_adjust = cornShip + adjust)
+
+# Plots
+plot_Spread <- ggplot(data, aes(x = date, y = spread)) +  
+  geom_line() +
+  labs(title = "Rotterdam - Malaysian Price Spread", y= "US$/tonne", x = "Date") + 
+  theme(plot.title = element_text(size=10)) + 
+  geom_hline(yintercept = mean(data$spread), color="blue")
+
+plot_Corn <- ggplot(data, aes(x = date)) + 
+  geom_line(aes(y = cornShip), color = "blue") + 
+  geom_line(aes(y = cornShip_adjust), color = "red") + 
+  labs(title = "U.S. to Japan Corn Rate", y = "US$/tonne", x = "Date") + 
+  theme(plot.title = element_text(size=10)) +
+  geom_hline(yintercept = mean(data$cornShip), color="blue")
+
+grid.arrange(plot_Spread, plot_Corn, ncol = 2)
+
+
+
+
+
+

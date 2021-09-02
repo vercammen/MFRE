@@ -1,3 +1,10 @@
+# The UN Comtrade is a repository of official interntaional trade and relevant analytical tables. Read more about it in this link
+  # https://comtrade.un.org/data/Doc/api/ex/r
+  # R Documentation: https://comtrade.un.org/data/Doc/api/ex/r
+
+
+# The get.Comtrade() function extracts data from UN Comtrade
+
 get.Comtrade <- function(url="http://comtrade.un.org/api/get?"
                          ,maxrec=50000
                          ,type="C"

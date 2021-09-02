@@ -1,0 +1,397 @@
+---
+title: "Module 1A: Palm Oil Case Study"
+output:
+  html_document: default
+  word_document: default
+---
+
+# Learning Outcomes
+
+* Describe key features of the global market for palm oil.
+* Query the UN ComTrade database both manually and with an R function to identify important trading patterns in palm oil.
+* Estimate domestic consumption of palm oil by subtracting exports from imports.
+* Compare palm oil prices and price spreads for a major importing country and a major exporting country.
+* Isolate exchange rate impacts on the domestic price of palm oil.
+* Determine if palm oil prices and transportation cost conform to the spatial law-of-one price.
+
+# Overview
+Palm oil is a low cost and highly versatile vegetable oil. It is found in up to half of all supermarket products, including various food items (e.g., bread, crackers, margarine, ice cream), shampoos and detergents. In many cases you will not see the word "palm oil" on the ingredient list because the processed version of the palm oil will have a different name. Palm oil is much higher in saturated fat than canola oil. According to [FoodStruct](https://foodstruct.com/compare/canola-vs-palm-oil) a 100 gram serving of palm oil has nearly 50 grams of saturated fat versus about 7 grams for canola oil. For this reason palm oil is generally considered to be one of the least healthy in the class of vegetable oils.
+
+The annual production of palm oil is a bit less than 75 million tonnes. Contrast this to the annual production of about 166 million tonnes of sugar, 60 million tonnes of soybean oil and 10 million tonnes of coffee. The production of palm oil is highly controversial because expanded palm oil plantations have destroyed large swaths of tropical rain forest habitat, and labour conditions are often substandard. In recent years certification schemes have addressed these problems somewhat.
+
+Canadian imports of palm oil have surged in recent years, rising from about 5,000 tonnes 20 years ago to over 100,000 tonnes currently. This surge in imports is happening at the same time that Canadian exports of canola oil have surged, rising from about 2.5 million tonnes in 2011 to 3.4 million currently. Obviously many Canadian food and industrial manufacturers prefer relatively inexpensive palm oil over relatively expensive canolo oil. Earlier this year the Canadian dairy scrambled to defend itself widely-circulated rumours that palm oil ingredients were being fed to dairy cattle, and this was causing butter to remain hard at room temperature ([link](https://www.cbc.ca/news/canada/calgary/buttergate-goes-viral-putting-palm-oil-fat-supplements-in-spotlight-1.5927194)).
+
+Palm oil is increasingly used to produce biodiesel, despite the fact that the emissions associated with producing the palm oil are typically much higher than the emissions from the fossil fuels which were offset. I expect you have learned a lot about the controversy of biofuels in other classes, and you will hear more about this in some of your other MFRE classes.
+
+# Exercise 1
+Read this [link](https://greenpalm.org/about-palm-oil/what-is-palm-oil/what-is-palm-oil-used-for) and then answer the following TRUE/FALSE questions.
+
+1. Australia has an ideal climate for growing palm trees.
+
+2. Palm oil has two harvesting periods, each lasting about six weeks.
+
+3. About 50% of all supermarket products contain palm oil.
+
+4. Palm oil is the base for dozens of different food ingredients such as stearic acid.
+
+5. Indonesia and Malaysia together account for about one third of global palm oil production.
+
+6. Expanding palm tree plantations is causing large losses in global biodiversity.
+
+7. 90 percent of the world's palm oil producers belong to the Roundtable on Sustainable Palm Oil
+
+# Global Trade in Palm Oil
+
+Palm oil is a good example of a globally traded commodity. There are only a small number of countries which produce a sizable amount of palm oil, and most non-producing countries import palm oil. Palm oil trades as unrefined crude palm oil and two major types of refined palm oil. Much of this module focuses on the global trade in crude palm oil (CPO).
+
+# Focus on Rotterdam
+
+Rotterdam is a major port city in the Netherlands because a large volume of EU imports come through Rotterdam. Prior to 2004 Rotterdam was the world's busiest port. The [Wikipedia](https://en.wikipedia.org/wiki/Rotterdam) entry for Rotterdam indicates that the petrochemical industry is especially important in Rotterdam. We see from [Index Mundi](https://www.indexmundi.com/agriculture/?commodity=palm-oil&graph=imports) that the EU-27 is the world's third largest importer of palm oil behind India and China. Much of these imports come through Rotterdam. 
+
+One must be careful when interpreting EU and Netherlands trade statistics because some imported products (e.g., from China) clear customs in the Netherlands before being shipped to other EU countries whereas other products transit through Rotterdam without clearing customs. You can Google "Rotterdam Effect" and read more about this, especially in the context of Brexit.
+ 
+# Formal Analysis of Global Palm Oil Market
+
+In what follows we will analyze the global market for palm oil in a number of different dimensions.
+
+* Query the United Nations Comtrade database to identify the market share of four major palm oil producing countries in the Netherlands market.
+* Use UN Comtrade to subtract Netherlands exports of crude and refined palm oil from Nethlands imports of crude and refined palm oil in order to isolate Netherlands consumption of crude and refined palm oil.
+* Compare the price of palm oil in Rotterdam and Malaysia, with and without an exchange rate conversion.
+* Calculate the U.S. dollar price spread for crude palm oil in Rotterdam and Malaysia, and then use regression to determine the extent that changes in transportation cost are associated with changes in the price spread (this regression analysis is a test of the spatial law-of-one-price).
+
+# Types of Palm Oil
+
+We will mostly focus on crude palm oil (CPO). Palm olein is a liquid refined form of palm oil used in cooking and baking. Stearin is a hard refined form of palm oil for food applications. To use the ComTrade database we need to know the [harmonized system (HS)]((https://unstats.un.org/unsd/tradekb/Knowledgebase/Harmonized-Commodity-Description-and-Coding-Systems-HS)) commodity code. The four-digit HS code for palm oil is 1511: "Palm oil and its fractions, whether or not refined, but not chemically modified." We will use the following pair of six digit codes:
+
+* 151110: "Crude palm oil"
+* 151190: "Palm oil or fractions simply refined"
+
+# UN ComTrade Database
+
+Read about the UN ComTrade database [here](https://unstats.un.org/unsd/tradekb/knowledgebase/50075/what-is-un-comtrade):  
+
+Answer the following TRUE/FALSE questions.
+
+1. The data within the UN ComTrade database is collected via UN surveys.
+2. The UN ComTrade database contains over 40 billion records.
+
+To use the database you need to know the country and commodity codes. The country code is in column A of a [UN Country Code Excel File](https://unstats.un.org/unsd/tradekb/Knowledgebase/50377/Comtrade-Country-Code-and-Name). The commodity code can be looked up 
+[here](https://comtrade.un.org/db/mr/rfCommoditiesList.aspx)
+
+# Manual Query of UN ComTrade
+
+Take a guess: which country exports more crude palm oil (CPO) to Canada: Malaysia or the USA? To determine if you answered correctly access the [UN ComTrade](https://comtrade.un.org/data/) database and manually generate data for 2019 and 2020. Include Canadian imports from the world as a whole to serve as a benchmark. Can you provide an explanation for this outcome?
+
+# Using R to Query UN ComTrade
+
+The UN has written a **`get.ComTrade()`** function in R to enable users to extract data using R. The queries are limited in size unless you have premium access. You can view the function in the section titled "A user-defined function to extract data from the UN Comtrade API" by clicking [here](https://comtrade.un.org/data/Doc/api/ex/r). This is a complex function and you are not responsible for knowing how it works.
+
+This function has been saved to "ComTrade_Function.R" in your Palm Oil case study folder. Ensure that you first open the **`Palm Oil.RProj`** file first before running any of the scripts for the **`here()`** function to work. 
+
+You will need the following country codes:
+
+* Netherlands 528 (reporter)
+* Indonesia 360 (partner)
+* Malaysia 458 (partner)
+* Columbia 170 (partner)
+* Guatemala 320 (partner)
+* World 0 (partner)
+
+In addition, to 
+
+* 151110: "Crude palm oil"
+* 151190: "Palm oil or fractions simply refined"
+
+We will work with
+
+* 3826: "Biodiesel"
+
+# Parameters for get.ComTrade function
+
+The **`get.ComTrade()`** function takes a large number of parameters. You can look [here](https://unstats.un.org/unsd/tradekb/Knowledgebase/50039/UN-Comtrade-Reference-Tables) for reference tables. If you do not supply a particular parameter value then R will use the default value. The parameters we will use are as follows:
+
+* r ==> country code for reporting country (i.e., r="528" for Netherlands)
+* p ==> country codes for partner countries (e.g., p="360" for Indonesia )
+* ps ==> year (e.g., ps="2020" for the year 2020)
+* rg ==> type (e.g., rg=1 for imports)
+* cc ==> commodity (e.g., cc="151110" for crude palm oil)
+
+The default setting is to retrieve the data in JSON format. You can retrieve the data in CSV format using fmt="csv" in the list of parameters. However, the function works better with the default JSON option, and so that is why it is being used here.
+
+Before retrieving the data using **`get.ComTrade()`** note that depending on your network connection and VPN status you may receive a connection error when calling this function in R. Sometimes restarting R or reconnecting to the VPN solves the problem. If you continue to have problems then you can load the same data from the Data folder (Krisha ran the query and saved the data), and then carry on with the rest of the data analysis. To load this data use the following line of code (this assumes the **`here`** function has already been loaded): 
+
+```{r eval=FALSE}
+load(here("Data","comtradedata.RData"))
+```
+
+For the case of imports of crude palm oil into the Netherlands in the year 2020 from Indonesia, Malaysia, Columbia and Guatemala, the **`get.ComTrade()`**  function looks as follows:
+
+```{r f_getcomtrade, eval = F}
+get.Comtrade(r="528", p="0,170,320,360, 458", ps="2020", 
+                    rg=1, cc="151110")
+```
+
+# Running the code
+
+We first load the packages we will use in this case study.
+
+```{r packages}
+# This code assumes you have installed {pacman}
+pacman::p_load(here, rjson, dplyr, ggplot2, gridExtra)
+```
+
+
+
+After we retrieve the data, we want it the form of a standard R data frame. The following code gives the desired results:
+
+```{r}
+source(here("Code", "ComTrade_Function.R"))
+A <- get.Comtrade(r="528", p="0, 170, 320, 360, 458", ps="2020", 
+                    rg=1, cc="151110")
+
+dfA <- as.data.frame(A$data)
+```
+
+If you print this data frame to the screen you will see it is long and rather messy. Let's eliminate the columns which are not of interest, and give shorter and more descriptive titles to the remaining columns and report trade in tonnes rather than kilograms. Finally, we will sort the data from lowest to highest imports.
+
+```{r}
+A_final <- dfA %>%
+  mutate(Weight.A = as.numeric(dfA$TradeQuantity)/1000,
+         Unit.A = "tonnes") %>%
+  select(rtTitle, ptTitle, cmdCode, yr, rgDesc, Unit.A, Weight.A) %>%
+  rename(Imp.A = rtTitle,
+         Exp.A = ptTitle,
+         Comm.A = cmdCode, 
+         Year.A = yr,
+         Type.A = rgDesc) %>%
+  arrange(Weight.A)
+
+A_final
+```
+
+```{r turnoffscipen, echo = F}
+options(scipen = 999999)
+```
+
+# Exercise 2
+
+You can check the accuracy of the UN Comtrade database through mirroring. Use a manual query of [UN ComTrade](https://comtrade.un.org/data/) to first calculate the imports of crude and refined palm oil (HS 1511) into Canada from Malaysia, and then calculate the exports of crude palm oil from Malaysia to Canada. The two values should be the same, or at least close, right? Are they? Which data do you trust more, and why? Find an answer to this question, and read about the use of data mirroring (e.g., use Canadian imports of HS 1511 from Malaysia as a proxy for Malaysian exports of HS 1511 to Canada) [here](https://wits.worldbank.org/wits/wits/witshelp/content/data_retrieval/T/Intro/B2.Imports_Exports_and_Mirror.htm#:~:text=For%20a%20given%20country%2C%20imports,the%20exporter%20and%20the%20importer).
+
+# Import Shares
+
+It is common to calculate and report import shares rather than reporting imports in absolute levels. It should be clear that Indonesia and Malaysia have the largest shares in the Netherlands market, but how large is their combined share? This value is important for a number of reasons including the setting of import tariffs and the concern over rain forest destruction by EU environmental groups.
+
+Let's create a new column in the **`A_final`** data frame called **`share`** which shows the import shares of the four exporting countries. To create the **`share`** column we will divide each value in the **`Weight.A`** column by the total world imports at the bottom right of the **`A_final`** data frame (e.g., `r round(A_final$Weight.A[5], 0)`) The code is as follows: 
+
+```{r turnonscipen, echo = F}
+options(scipen = 0)
+```
+
+```{r}
+A_final <- A_final %>% 
+  mutate(share = Weight.A / Weight.A[n()])
+
+A_final
+```
+
+The revised **`A_final`** table shows that Malaysia supplies almost one third of Netherland's imports, and Malaysia and Indonesia combined supply almost one half of Netherland's imports. There are likely very few other commodities which have such a concentrated import share in the EU market.  
+
+# Netherlands Processing
+
+The Netherlands is a small country and certainly does not need large volumes of palm oil for its own domestic consumption. Rather, palm oil shipped from Malaysia and Indonesia to European countries such as Germany and Switzerland will by imported through the Netherlands. This means we should expect relatively large volumes of crude palm oil exports from the Netherlands. Germany is a large country and so we might expect particularly large volumes of crude palm oil exported from the Netherlands to Germany.
+
+The Netherlands is a large-scale processor of petrochemicals and so it is reasonable to assume that the Netherlands is also a large-scale processor of crude palm oil into refined palm olein (liquid) and palm stearin (solid). The UN ComTrade database combines both of these into one HS category called "Palm oil or fractions simply refined" (151190). We also expect significant refining of crude palm oil into biodiesel, which is HS code 3826. 
+
+# Netherlands Trade by Commodity Type
+
+The **`get.Comtrade()`** function below queries two separate tables. The first is 2020 Netherlands' imports of crude palm oil (151110), refined palm oil (151190) and biodiesel (3826) for the world as a whole. The second is the same except it is for Netherlands' exports. Later we will use these values  to isolate Netherlands' domestic consumption of palm oil.
+
+# Code for Imports and Exports
+
+```{r}
+B <- get.Comtrade(r="528", p="0", ps="2020", 
+                  rg="1,2", cc="151110, 151190, 3826")
+dfB <- as.data.frame(B$data)
+
+dfBsum <- dfB %>%
+  mutate(Weight.B = as.numeric(TradeQuantity)/1000,
+         Unit.B = "tonnes") %>%
+  select(rtTitle, ptTitle, cmdCode, yr, rgDesc, Unit.B, Weight.B) %>%
+  rename(Imp.B = rtTitle,
+         Exp.B = ptTitle,
+         Comm.B = cmdCode, 
+         Year.B = yr,
+         Type.B = rgDesc)
+dfBsum
+```
+ 
+In R you can select the ith row and jth column of a data frame X using X[i,c(j)] or X[i,c("col_name")]. This means that if you wanted to know what was in the second row and third column of the **`dfBsum`** data frame (i.e., the commodity code or **`Comm.B`**) you would use one of the following:
+
+```{r}
+dfBsum[2,c(3)]
+dfBsum[2,c("Comm.B")]
+```
+
+It is approximately true that the production of refined palm oil and biodiesel from crude palm oil preserves the original weight. It is also true that the Netherlands does not produce any crude palm oil. This means that the difference between total imports and total exports of the three products is approximately equal to the weight of the three commodities which were consumed in the Netherlands. Let's do this calculation.
+ 
+```{r}
+import_tot <- dfBsum[1,c("Weight.B")] + dfBsum[3,c("Weight.B")] + dfBsum[5,c("Weight.B")]
+export_tot <- dfBsum[2,c("Weight.B")] + dfBsum[4,c("Weight.B")] + dfBsum[6,c("Weight.B")]
+import_tot
+export_tot
+domestic <- import_tot - export_tot
+domestic
+```
+
+Does this estimate of approximately 585,000 tonnes of Netherlands' consumption of crude and refined palm oil sound reasonable? According to some old data (1980-1997 average) -- Table 2 of [Chen et al. 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3271960/) -- the average per capita human consumption of palm oil in a developed country is about 8 kg per year. The population of the Netherlands was about 15 million in 1990. Multiplying 8 kg per capita by 15 million gives us an estimate of total Netherlands' consumption of palm oil equal to 120,000 tonnes. Keep in mind that the population of the Netherlands is currently somewhat higher (about 17 million) but the current per capital consumption of palm oil is likely somewhat lower due to an increasingly health-conscious consumer. Thus, an estimate of 120,000 tonnes of current Netherlands consumption of palm oil is likely to be reasonably close. The residual palm oil consumed in the Netherlands (585,000 - 120,000 tonnes) is likely in the form of biodiesel and other industrial applications. 
+
+# The Law of One Price
+
+For the remainder of this module we will focus on palm oil prices. The spatial law-of-one-price (LOP) tells us that for a homogenous good such as crude palm oil, in the long run:
+
+1. If two regions are trading with each other then the price difference must equal the transportation cost. 
+
+2. If two regions are not trading then the price difference must be less than the transportation cost. 
+
+If the price difference is greater than the transportation cost then arbitrage will take place and prices will be driven together until the LOP holds. Specifically, the excess demand in the low price region will drive up the price and the excess supply in the high price region will drive down the price.
+
+# Local Versus U.S. Dollar Prices
+
+Like many commodities, crude palm oil (CPO) trades in U.S. dollars in international markets. If you are a trader who buys and sells only in U.S. dollars, then the price of CPO in the local currency (e.g. Malaysian Ringgit (RM) for the case of Malaysia) and the corresponding exchange rate is not important from a trading perspective. If instead you operated in the local market, or simultaneously in the local and international markets, then you must consider the effect of the exchange rate on the local price.
+
+To see how this works, monthly average CPO prices were collected FOB Malaysia (expressed in RM) and FOB Rotterdam (expressed in US$). The monthly prices running from January, 2012 to June, 2021 were aggregated from daily prices, found [here](https://bepi.mpob.gov.my/admin2/price_local_daily_view_cpo_msia.php?more=Y&jenis=1Y&tahun=2019) for the Malaysian prices and [here](https://www.investing.com/commodities/crude-palm-oil-cif-rotterdam-futures-historical-data) for the Rotterdam prices. The average monthly Ringgit-US dollar exchange rate was obtained from the [U.S. Federal Reserve](https://fred.stlouisfed.org/series/DEXMAUS).
+
+These three data series together with a fourth data series titled **`cornShip`** (this latter variable is used below) are in a csv file titled "palm_data.csv". The code below reads in the data and converts the data columns into R format. The csv file has dates in Excel month format. The conversion from Excel dates to R dates is not always successful. To avoid complications, the (first) date column is replaced with a sequence of monthly R dates which correspond to January, 2012 to June, 2021.
+
+The first six months of the sample, which runs from January to June of 2012 is displayed.  
+
+```{r}
+graphics.off() # close all plots
+data <- read.csv(here("Data", "palm_data.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
+data$date <- seq(as.Date("2012/1/1"), by = "month", length.out = 114)
+head(data)
+```
+
+The following code generates side-by-side graphs of the two price series. To run this code you need to have the ggplot2 and gridExtra packages installed.
+
+```{r}
+plot_rotterdam <- ggplot(data, aes(x = date, y = rotterdam)) +  
+  geom_line() + 
+  labs(title = "Rotterdam Price", y= "CPO: US$/tonne", x = "Date") + 
+  theme(plot.title = element_text(size=10))
+
+plot_malaysia <- ggplot(data, aes(x = date, y = malaysia)) +  
+  geom_line() + 
+  labs(title = "Malaysian Price", y = "CPO: RM/tonne", x = "Date") + 
+  theme(plot.title = element_text(size=10))
+
+grid.arrange(plot_rotterdam, plot_malaysia, ncol = 2) 
+```
+
+# Isolating the Exchange Rate Impacts
+
+The pair of graphs reveal that the Rotterdam price of CPO in US dollars and the Malaysian price of CPU in Ringgits move closely together but they are far from being perfectly positively correlated. Suppose the cost of transporting CPO from Malaysia to Rotterdam is zero, and the cost of instantly arbitraging the two markets is also zero. In that case we should expect $P_R^{US} = P_M^{RM}/E$ where $P_R^{US}$ is the Rotterdam price expressed in U.S. dollars, $P_M^{RM}$ is the Malaysian price expressed in Malaysian Ringgits and $E$ is the exchange rate, expressed as the number of Ringgits required to purchase one U.S. dollar.
+
+If we rearrange this expression as $\frac{P_M^{RM}}{P_R^{US}} = E$ we see that in this hypothetical world, the price ratio will be equal to the exchange rate. The following code generates graphs of the ratio of the monthly average prices and the monthly average exchange rate.
+
+```{r}
+data <- mutate(data, priceRatio = malaysia/rotterdam)
+
+plot_PriceRatio <- ggplot(data, aes(x = date, y = priceRatio)) +  
+  geom_line() + 
+  labs(title ="Malay-Rotterdam Price Ratio", y= "Ratio", x = "Date")+ theme(plot.title = element_text(size=10))
+
+plot_Exchange <- ggplot(data, aes(x = date, y = exchange)) +  
+  geom_line() + 
+  labs(title = "Malay-U.S. Exchange", y= "RM per One US$", x = "Date") + 
+  theme(plot.title = element_text(size=10))
+
+grid.arrange(plot_PriceRatio, plot_Exchange, ncol = 2) 
+```
+
+The left graph shows that the RM price of CPO in Malaysia strengthened relative to the U.S. dollar price of CPO in Rotterdam over the years 2013 to 2017. This strengthening occurred because as the right graph shows over this time period the Ringgit weakened against the U.S. dollar. In other words, Malaysian exporters are being paid U.S. dollars for their CPO shipments and when these U.S. dollars are converted back to Ringgits the amount received is higher. 
+
+The two plots are not identical, which means that $\frac{P_M^{RM}}{P_R^{US}} = E$ fails to hold exactly. This failure occurs for three reasons: (1) transportation costs are positive; (2) transportation costs are changing over time; and (3) arbitrage is relatively slow and so what we are observing is the short run and not the long run. 
+
+# Analysis of Price Spread  
+
+We know from the first part of this module that Malaysia is constantly shipping CPO to Rotterdam. The spatial LOP tells us that in the long run and when all prices are expressed in U.S. dollars, then the Rotterdam price should equal the Malaysian price plus the cost of transporting the CPO between these two regions. In other words, $P_R^{US}-P_M^{US}=\text{Spread} = \text{Transport Cost}$.
+
+The following code calculates the price spread by dividing the Malaysian price by the exchange rate and then subtracting the resulting value from the Rotterdam price. The calculated spread is then plotted.
+
+
+```{r}
+data <- mutate(data, spread = rotterdam - (malaysia/exchange))
+
+plot_Spread <- ggplot(data, aes(x = date, y = spread)) +  
+  geom_line() + 
+  labs(title = "Rotterdam - Malaysian Price Spread", y= "US$/tonne", x = "Date") + 
+  theme(plot.title = element_text(size=10)) + 
+  geom_hline(yintercept = mean(data$spread), color="blue")
+
+plot_Spread
+```
+
+This graph makes it clear that the price spread (after accounting for the exchange rate) is quite variable. One possibility is that the transportation cost is relatively stable, and it is a lack of arbitrage in the short run which is causing the considerable variation in the price spread. A second possibility is that arbitrage is effective but it is highly variable transportation costs which are responsible for the variable price spreads. The actual variation is likely due to a combination of these two effects. The average price spread of about US$65/tonne (given by the horizontal schedule) is our estimate of the long run average transportation cost.
+
+You may be wondering about the large spike in the price spread for 2020-2021. This spike is certainly due to a large spike in ocean freight rates that was the result of supply chain constraints associated with the COVID-19 pandemic. You can read more about this [here](https://unctad.org/news/shipping-during-covid-19-why-container-freight-rates-have-surged).
+
+# Analysis of Transportation Cost
+
+Begin by reading (or at least skimming) the [report](https://www.agflow.com/commodity-trading-101/a-guide-to-chemical-tanker-types-for-palm-and-edible-oils/) on ocean transport of crude palm oil. Use [Sea-distances.org](https://sea-distances.org/) to determine that the shortest route from Malaysia to Rotterdam is approximately 8000 nautical miles through the Suez Canal. This compares to approximately 9500 nautical miles from the U.S. Gulf Coast to Japan through the Panama Canal. There is no data on monthly shipping costs for CPO from Malaysia to Rotterdam. As an alternative monthly shipping costs for corn from the U.S. Gulf Coast to Japan will be used as a proxy. The data comes from Figure 17 in a [USDA](https://www.ams.usda.gov/services/transportation-analysis/gtr-datasets) report.
+
+The corn freight rates titled **`cornShip`** are in the last column of the previously-imported "palm_data.csv" and thus also the **`data`** data frame. The following code generates a pair of graphs: the previous price spread graph on the left and the corn freight rate graph on the right. 
+
+```{r}
+plot_Corn <- ggplot(data, aes(x = date, y = cornShip)) +  
+  geom_line() +ggtitle("U.S. to Japan Corn Rate")+labs(y= "US$/tonne")+ theme(plot.title = element_text(size=10))+geom_hline(yintercept = mean(data$cornShip), color="blue")
+ 
+grid.arrange(plot_Spread, plot_Corn, ncol = 2)
+```
+
+The horizontal schedule in the left graph can be interpreted as the long run average cost of shipping cPO from Malaysia to Rotterdam. Notice that this average cost is significantly higher than the average cost of shipping corn, as shown by the height of the horizontal schedule in the right graph. This makes it clear that despite a similar voyage distances, the cost of shipping corn is significantly less than the cost of shipping crude palm oil. This is not surprising given the specialized (heated) tanks which are required for the shipment of crude palm oil. 
+
+# Regression of Spread on Corn Transport Cost
+
+The previous pair of graphs reveal a weak correlation between the monthly cost of shipping corn from the U.S. to Japan, and the Malaysia - Rotterdam price spread. We can be more specific by regressing the CPO price spread on the corn shipping costs. The following code generates the regression results.
+
+```{r}
+lmCorn <- lm(data$spread~data$cornShip, data = data)
+summary(lmCorn)
+```
+
+The regression results show that the corn transportation cost is positive and highly statistically significant. This outcome supports the spatial LOP hypothesis that a higher transportation cost must lead to a higher price spread in the long run. However, the $R^2$ of `r round(summary(lmCorn)$r.squared, 3)` is quite low. Indeed, variation in the cost of shipping corn only explains about `r paste0(round(summary(lmCorn)$r.squared, 2) * 100, "%")` percent of the variation in the price spread. We have controlled for exchange rate movements and a sensible measure of the cost of shipping but yet about `r paste0(100 - round(summary(lmCorn)$r.squared, 2) * 100, "%")` percent of the variation in the price spread remains unexplained.
+
+This is a good lesson because it should remind us that concepts which are applicable in the long run may not be particularly helpful in the short run. If you were a trader whose job was to purchase raw palm oil in Malaysia, transport it to Rotterdam and then resell it in the European market, you will clearly want to hedge the price risk and not rely on the long-run spatial LOP concept!
+
+# Cause of Ocean Freight Rate Variability
+
+Read the first few pages of [this](https://unctad.org/system/files/official-document/cimem7_rmt2015_ch3_en.pdf) UNCTAD -- especially Figure 3.1. How would you summarize the main causes for ocean freight rate variability? How important are monthly changes in the price of crude oil as a determinant of monthly changes in ocean freight rates? Why do developing nations pay substantially more for ocean freight rates than developed countries?
+
+Do you remember from ECON 101 how the burden of a tax is shared by consumers and producers? Can you apply this line of thinking to how import and export prices are impacted with a surge in the cost of ocean freight rates? 
+
+# Key Take-Aways and Exam Prep
+
+* Palm oil a classic globally traded commodity because it is produced by a small number of countries and imported by a large number of countries.
+* Palm oil is in high demand because it is very versatile (used in about half of all supermarket products) and it can be produced at a relatively low cost.
+* Palm oil is one of the least healthy vegetable oils because it is relatively high in saturated fat.
+* Palm oil production is highly controversial because of large scale destruction of rain forests and substandard labour standards.
+* Canadian imports of palm oil have surged in recent years, despite rising exports of canola oil.
+* Indonesia and Malaysia are the largest producers of palm oil, and Columbia and Guatemala are medium sized producers.
+* The Netherlands imports a large volume of crude palm oil through its port in Rotterdam but it also exports a sizable volume of crude palm oil.
+* The Netherlands processes a large volume of crude palm oil into olein (liquid) and stearn (solid), and into biodiesel.
+* Crude palm oil (CPO) is priced in US dollars in international markets, and in the Malaysian market it is priced in Malaysian Ringgts (RM).
+* The US dollar price of CPO in Rotterdam and the Malaysian price in RM are only moderately positively correlated, as revealed by graphical analysis.
+* In a world with no transportation cost and perfect and costless arbitrage, the ratio of the RM price of CPO in Malaysia and the US price of CPO in Rotterdam should equal the US-RM exchange rate.
+* In recent years the RM has weakened against the US dollar and so the price ratio has strengthened.
+* The spatial LOP tells us that if two nations are trading then in the long run the Rotterdam - Malaysian price difference (i.e., the spread) will equal the cost of transporting the CPO from Malaysia to Rotterdam (all measured in the US dollars).
+* Graphical analysis reveals that the average Rotterdam-Malaysian price spread for CPO has a long run average value of about US$65/tonne but it is highly variable.
+* The average cost of transporting a tonne of corn a similar distance is much lower than US$65/tonne, which is to be expected CPO requires refrigerated ocean freighters.
+* Regression analysis confirms that the cost of transporting corn helps to explain the Rotterdam - Malaysian price spread, presumably because the ocean cost of transporting corn is strongly positively correlated with the ocean cost of transporting CPO.
+* However, only about 10 percent of the variation in the Rotterdam - Malaysian price spread for CPO can be explained by variation in the ocean cost of transporting corn.
+
+
+# Optional R Exercise
+
+Calculate the mean value of **`data$spread`** and the mean value of **`data$cornShip`**. Subtract the latter from the former and call the resulting value **adjust**. Create a new column in the **`data`** data frame by adding **`adjust`** to each value in the **`data$cornShip`** column. Now plot on the SAME graph this new value along with **`data$spread`**. Doing this will allow you to have a much better visualization of the extent that the price spread and the cost of shipping corn move together over time. See Krisha if you need some help!
+
