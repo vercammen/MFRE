@@ -1,0 +1,384 @@
+---
+title: "Module 1B: Canada - U.S. Softwood Lumber Case Study"
+output:
+  html_document: default
+  word_document: default
+---
+
+## Learning Outcomes
+
+* Introduction to the spatial pricing equilibrium model. 
+* Model usage: "what if" analysis for prices and trade (e.g., supply or demand shock, policy change).
+* Case study application: Canada - U.S. softwood lumber market.
+* Softwood lumber market overview.
+* Practice using R's optimization function.
+* Calibrating the pricing model to the softwood lumber market.
+* Optimizing the calibrated model to examine how a change in U.S. tariff affects prices and trade.
+
+## Background
+In the palm oil case study you were introduced to the spatial law-of-one-price (LOP). Recall that in the long run if two regions are trading then their price difference must be equal to the transportation cost between those two regions. If they are not trading then the price difference must be less than the transportation cost. We are interested in how the spatial pattern of prices and trade are affected by supply or demand shocks, or a policy change. In other words, we are interested in spatial "what if" analysis. For example, how do we expect trade patterns and the vector of regional commodity prices to change if a major exporter experiences a significant crop loss due to disease? Or how will trade and prices be impacted if a major importer raises the import tariff as part of a trade war (think China and the U.S.)? Finally, how will trade and prices be impacted if the world finally gets serious about climate change and imposes large-scale domestic carbon taxes or border adjustment carbon taxes, both of which will affect the cost of transporting goods between exporting and importing regions?
+
+What we require is an optimization model which generates the spatial LOP as an outcome. This type of model is especially important when there are a comparatively large number of importing and exporting regions, many of which do not trade with each other. The model should account for domestic supply and demand within each region, and also the full set of transportation costs between regions. The model should lend itself to calibration to a particular sector, and it should accommodate policy variables such as an import tariff or a carbon tax.
+
+The model we want is a spatial pricing equilibrium model. If you are interested in the details of this type of model, there is a very good set of lecture slides [here](https://supernet.isenberg.umass.edu/courses/SCH-MGMT825-Spring14/VI_Lecture4_Nagurney.pdf) (you are not responsible to know the contents of this detailed slide deck.) In this module you will be introduced to the pricing model by considering the simple case of two trading countries. After working through this model you will have a good understanding of the optimization procedure, and we can then formally analyze the spatial LOP in a multi-region model. This is done in Module 1C using global trade in tomatoes as a case study. 
+
+To make the learning process more interesting and relevant, we will calibrate the pricing model to the Canada-U.S. softwood lumber market. This market is of particular importance to the province of British Columbia because forestry and the production of softwood lumber is a very important industry. This market also has high policy relevance due to an on-going trade dispute in softwood lumber between Canada and the U.S. After the model is built we will examine how either an increase in transportation costs (perhaps the result of a carbon tax) or an increase in the U.S. import tariff on Canadian lumber impacts lumber prices in the two countries and the level of trade. 
+
+## Recent Pricing Dynamics
+Lumber was in the news in early to mid 2021. Check out weekly lumber prices for the past year [here](https://www.nrcan.gc.ca/our-natural-resources/domestic-and-international-markets/current-lumber-pulp-panel-prices/13309) and then read this [CTV](https://www.ctvnews.ca/business/lumber-prices-have-plunged-but-experts-don-t-expect-them-to-go-back-to-pre-pandemic-levels-1.5529452) news report. Now answer the following questions.
+
+1. Approximately when in 2020 did North American lumber prices began to surge upward?
+2. According to the report, what is the main reason for this surge in lumber prices?
+3. By approximately what percent did lumber prices fall from their peak last summer to current prices?
+4. What is the long term pricing outlook for North American lumber prices?
+
+## Longer Term Pricing Trends
+Check out the 25 year pricing history of North American softwood lumber on [Trading.Com](https://tradingeconomics.com/commodity/lumber). If your future boss asks you to describe in 2 - 3 sentences historical pricing trends for North American softwood lumber, how would you respond? 
+
+## British Columbia Softwood Production
+We are interested in British Columbia's share of Canadian softwood lumber production. Let's work with 5 years of monthly data, from June 2016 to June 2021. Go to the [Stats Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1610001701) website. Choose British Columbia from the dropdown, and select the start of your date range to June, 2016. Now hit "Apply" to generate the data. Click the "Download" options button and select the second one "Download as Displayed (excluding accompanying symbols). This will open up the csv file. We are interested in row 14, which is total production of softwood lumber. Rename the worksheet tab to "British Columbia".
+
+Repeat the above exercise but this time choose Canada instead of British Columbia. Spanning the two csv files, create a new row which consists of monthly production in British Columbia divided by monthly production in Canada. This, of course, is British Columbia's monthly share of Canadian softwood lumber production. You can graph British Columbia monthly production for June, 2016 - June, 2021 by highlighting the values in row 14 and clicking on the line graph menu button in the Excel toolbar. Using a similar procedure, you can graph the British Columbia share of Canadian softwood lumber production. Answer the following questions.
+
+1. Is there an obvious trend in British Columbia softwood production? To better understand this trend, [read](https://www.proremodeler.com/meet-beetle-ravaging-canadian-forests-driving-us-lumber-prices) about the connection between the Mountain pine beetle and U.S. lumber prices.
+
+2. Is there an obvious trend in the British Columbia share of Canadian production? If yes, is the reason for this trend likely related to the mountain pine beetle?
+
+## Canada - U.S. Trade
+Read the following [fact sheet](https://bclumbertrade.com/facts) to learn about importance of trade with the U.S., China and other countries for the British Columbia forest sector. Read the [Wikipedia](https://en.wikipedia.org/wiki/Canada%E2%80%93United_States_softwood_lumber_dispute) to learn about the on-going trade dispute between Canada and the U.S. The bottom line is that the U.S. depends on Canadian softwood lumber but despite this reliance the U.S. has enacted a series of countervailing duties on Canadian softwood lumber imports. For example, in 2017 President Trump imposed a new round of company-specific tariffs, some as high as 24 percent. You can read about May, 2021 proposed increases in these tariffs [here](https://canada.constructconnect.com/joc/news/economic/2021/05/u-s-moves-to-double-tariffs-on-canadian-softwood-lumber-imports).
+
+Answer the following questions. 
+
+1. Approximately what percent of British Columbia softwood lumber production is exported to the U.S.?
+2. How has shipments of British Columbian softwood lumber to China changed over the past decade?
+3. The British Columbian government collects stumpage fees from the forestry industry. What is a stumpage fee?
+
+## Spatial Equilibrium Pricing Model
+The spatial equilibrium pricing model is based on the first theorem of welfare economics, which indicates that competitive pricing achieves maximum social welfare. If we are able to measure social welfare in the pricing model, then maximizing welfare will necessarily give us the competitive pricing outcome. The spatial LOP is consistent with the competitive pricing outcome, which means that maximizing welfare will give us a set of prices which satisfy the spatial LOP. Economic theory predicts that commodity prices will conform to the spatial LOP in the long run. Consequently, we can use the model for predicting changes in long run pricing and trade after the market supply or demand is shocked, or a policy variable is changed.
+
+In the model to follow we will not distinguish between transportation costs and tariff costs. We will keep things simple by assuming that both types are unit costs rather than percentage costs. From a pricing and trading perspective, a wedge between the Canadian price and the U.S. price has the same impact regardless of whether it is created by a transportation cost or a tariff cost. Thus, there is no need to separately analyze transportation costs and tariff costs.
+
+## Net Welfare
+Net welfare (NW) is equal to consumer surplus (CS) plus producer surplus (PS):
+
+$$NW = CS+ PS $$
+We can measure NW as:
+$$	NW = \text{Area under all Demand Curves} – \text{Area Under all Supply Curves} – \text{Transportation Costs}$$
+Open the following diagram by clicking [here]( http://blogs.ubc.ca/jvercammen/files/2021/07/Trade-Diagram.pdf). The components of net welfare (NW) are as follows:
+
+|                   | Exporter  | Importer      |
+|-------------------|-----------|---------------|
+| Area under demand | a + b + c | g + h + i + j |
+| Area under supply | c + f     | j             |
+Transportation costs: $C_{EI}*T_{EI}$
+
+If you are curious as to why the area under the two demand curves minus the area under the two supply curves minus transportation cost is equivalent to CS + PS, take a closer look at the diagram. For the exporter, $CS = a$ and $PS=b+d+e$. For the importer, $CS=g+i$ and $PS=h$. Add these four expressions together to get a single expression for net welfare. From the above table, add the areas under the two demand schedules, subtract the areas under the two supply schedules, and finally subtract area $d+e+f$ because in the diagram this is a measure of the transportation costs. By comparing the resulting expression to the one you obtained above you should be able to see that the two measures of net welfare are equal.
+
+## Construct Demand and Supply Schedules from Elasticity Estimates and Observed Q and P
+Let $P=a-bQ^D$ denote inverse demand and $P=\alpha+\beta Q^S$ denote inverse supply. In a trade model $Q^D$ and $Q^S$ typically have different values. Suppose we can observe current quantities and prices, and we have estimates of the elasticity of demand and supply. We can use these values to obtain calculated values for the four parameters: $a$, $b$, $\alpha$ and $\beta$. This is referred to as model calibration.
+
+Begin by solving the inverse demand and supply equations to get $a=P+bQ^D$ and $\alpha=P-\beta Q^S$.
+
+Next note that $E^d=\frac{dQ^D}{dP}\frac{P}{Q^D}$ where $\frac{dQ^D}{dP}=-\frac{1}{b}$. Solve this to get $b=-\frac{1}{E^d}\frac{P}{Q^D}$. 
+
+Similarly, $E^s=\frac{dQ^S}{dP}\frac{P}{Q^S}$ where $\frac{dQ^S}{dP} =\frac{1}{\beta}$. Solve this to get $\beta = \frac{1}{E^s}\frac{P}{Q^S}$. 
+
+If we have estimates of $E^d$ and $E^s$, and observed values for $Q^D$, $Q^S$ and $P$ then we can use $b=-\frac{1}{E^d}\frac{P}{Q^D}$ and $\beta = \frac{1}{E^s}\frac{P}{Q^S}$ to obtain calculated values for $b$ and $\beta$. 
+
+Finally, we can substitute these calculated values for for $b$ and $\beta$ together with the observed values for $Q^D$, $Q^S$ and $P$ into the $a=P+bQ^D$ and $\alpha=P-\beta Q^S$ expressions to obtain calculated values for $a$ and $\alpha$. 
+
+## Measuring Area under Demand and Supply Schedules
+The area under the demand schedule can be expressed as $(a-0.5bQ^D)Q^D$. To see why this is the case, the top triangle can be expressed as $(a-P)Q^D$ and the bottom rectangle can be expressed as $PQ$. Substitute $a-bQ^D$ for $P$ and add the two components together to obtain the total area under the demand schedule equal to $(a-0.5bQ^D)Q^D$. If the supply schedule intersects the vertical axis then the area under the supply schedule can be expressed as $(\alpha+0.5\beta Q^S)Q^S$. To see why this is the case, the area under supply can be expressed as $PQ^S-0.5(P-\alpha)Q^S$. Substitute $\alpha+\beta Q^S$ for $P$ and the previous expression will reduce to $(a-0.5bQ^D)Q^D$. Note that if the supply schedule intersect the horizontal axis rather than the vertical axis then the area under the supply schedule can be expressed as $0.5(\alpha+\beta Q^S)(Q^S+\alpha/\beta)$.
+
+## Market Clearing
+Let $T_{ij}$ denote shipments from region $i\in\{Exporter,Importer\}$ to region $j\in\{Exporter,Importer\}$. 
+
+$T_{EE}$ and $T_{II}$ represent exporter and importer self-shipments, respectively. $T_{IE}$ is generally equal to 0.
+
+Supply side market clearing requires: $Q_{Exporter}^S =T_{EE}+T_{EI}$ and  $Q_{Importer}^S=T_{IE}+T_{II}$.
+
+Demand side market clearing requires: $Q_{Exporter}^D=T_{EE}+T_{IE}$ and  $Q_{Importer}^D=T_{EI}+T_{II}$.
+
+## Optimization Problem
+The goal is to choose values for $T_{EE}$, $T_{EI}$, $T_{IE}$, and $T_{II}$ which maximize net welfare (NW) subject to the market clearing conditions. The solution gives us the spatial LOP outcome.
+
+## Practice using R’s Optimization Tool
+The practice problem is to choose inputs x and y to maximize the quadratic profit function:
+ $\pi=ax^2+by^2+cxy+dx+ey+f$.
+ 
+To convert this function to matrix format let $x_1=x$, $x_2=y$, $a_{11}=a$, $a_{22}=b$, $a_{12}=c$, $a_{21}=0$, $b_1=d$, $b_2=e$ and $cons=f$. Rewrite the problem as
+$$π=a_{11} x_1^2+a_{12} x_1 x_2+a_{21} x_2 x_1+a_{22} x_2^2+b_1 x_1+b_2 x_2+cons $$
+The function can now be rewritten as $\pi=X'AX+B'X+cons$ where:
+
+where:  
+ 
+$$
+X = 
+\begin{bmatrix}
+x_1 \\
+x_2 
+\end{bmatrix}
+$$
+$$
+A = 
+\begin{bmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{bmatrix}
+$$
+
+
+$$ 
+B = 
+\begin{bmatrix}
+b_1 \\
+b_2
+\end{bmatrix}
+$$
+
+
+## R Code for Practice Problem
+Begin by assigning values to the elements of the A matrix and B vector
+```{r}
+a11 <- -0.5
+a12 <- 0.4
+a21 <- 0
+a22 <- -0.75
+b1 <- 2
+b2 <- 3
+cons <- 0
+```
+The optimization tool in R is set up to minimize. Thus, we enter the objective function with a negative sign because minimizing a negative value will maximize the function itself.
+
+Construct the function named “quadfunc”. It accepts a vector 
+$$
+X = 
+\begin{bmatrix}
+x_1 \\
+x_2 
+\end{bmatrix} 
+$$
+as its argument. The function is initially constructed without using matrices.
+
+```{r}
+quadfunc <-function(x) { 
+  y <- -1*(a11*x[1]*x[1] + a12*x[1]*x[2] + a21*x[2]*x[1] + a22*x[2]*x[2] + b1*x[1] + b2*x[2] + cons)
+  return(y)
+}
+```
+Test the quadfunc function by calling it without optimizing it. Assume $x_1 = x_2 = 2$.
+```{r}
+quadfunc(c(2,2)) 
+```
+Now call R’s optim() function. Use $x_1 = x_2 = 2$ as the initial (guess) values for the two variables which R will optimally choose. Set the lower and upper limits to negative and positive infinity (i.e., no restrictions).
+```{r}
+optim( c(2,2), quadfunc, lower=-Inf, upper=Inf)
+```
+The first bit of output gives the optimal values for $x_1$ and $x_2$. The second bit shows the value of the optimized function.
+
+If you wanted to save the optimal values of $x_1$ and $x_2$ for use in additional programming then use:
+```{r}
+optim_x <- optim( c(2,2), quadfunc, lower=-Inf, upper=Inf)$par
+```
+This same problem can be solved using a matrix format:
+```{r}
+A <- matrix(c(a11,a12,a21,a22), nrow=2, ncol=2)
+B <- matrix(c(b1,b2), nrow=2, ncol=1)
+quadfunc2 <-function(x) { 
+  y2 <- -t(x) %*% A %*% x-t(B) %*% x+cons
+  return(y2)
+}
+```
+We can verify that the function evaluates to the same value as before.
+```{r}
+quadfunc2(c(2,2))
+```
+## Data
+
+The softwood lumber case study data come from a 2014 [paper](https://www.researchgate.net/publication/320880691_What's_next_in_the_US-Canada_softwood_lumber_dispute_An_economic_analysis_of_restrictive_trade_policy_measures/link/5a00c349aca2725286dfb2b9/download) by by Johnston and Parajulib.
+
+The data can be aggregated to arrive at the following values:
+
+CANADA                   |    
+------------------------ | ------------- 
+Price ($/m^3)            | 169       
+Production (10^3 m^3)    | 58151 
+Consumption (10^3 m^3)   | 19711
+Export to U.S. (10^3 m^3)| 28277
+Expot to ROW (10^3 m^3)  | 10163
+
+U.S.                     |    
+------------------------ | ------------- 
+Price ($/m^3)            | 181       
+Production (10^3 m^3)    | 71415 
+Consumption (10^3 m^3)   | 100181
+Import from Can (10^3 m^3)| 28277
+Import from ROW (10^3 m^3)  | 489
+
+We will work with Canadian supply after netting out exports to the rest of the world (ROW) and U.S. imports after netting out imports from the ROW. This is equivalent to assuming the ROW exports and imports do not respond to prices in Canada and the U.S.. This assumption limits the generality of our results but for teaching purposes it is acceptable. 
+
+The domestic price, supply and demand variables are defined as follows:
+
+```{r}
+P_can <- 169
+P_US <- 181
+(Q_can_S <- 58151 - 10163) 
+Q_can_D <- 19711
+Q_US_S <- 71415
+(Q_US_D <- 100181 - 489)
+```
+ 
+The demand and supply elasticities (measured at the above prices and quantities) are the same for Canada and the U.S.  
+```{r} 
+E_D <- -0.17 
+E_S <- 0.15 
+``` 
+## Construcing the Demand and Supply Schedules
+
+The inverse demand and supply schedules for Canada can be expressed as
+
+$P^{can} = a_{can} - b_{can} Q_{can}^D$ 
+and 
+$P^{can} = \alpha_{can} + \beta_{can} Q_{can}^S$. 
+
+The schedules for the U.S. can be expressed as 
+$P^{US} = a_{US} - b_{US} Q_{US}^D$ 
+and 
+$P^{US} = \alpha_{US} + \beta_{US} Q_{US}^S$. 
+
+Recall the method for constructing demand and supply equations from the elasticty assumptions and the point estimates of quantity and price. Applying those methods here gives: 
+
+Solution:
+```{r} 
+(b_can <- -1/E_D*P_can/Q_can_D) 
+(a_can <- P_can + b_can*Q_can_D ) 
+(beta_can <- 1/E_S*P_can/Q_can_S) 
+(alpha_can <- P_can - beta_can*Q_can_S )
+(b_US <- -1/E_D*P_US/Q_US_D) 
+(a_US <- P_US + b_US*Q_US_D ) 
+(beta_US <- 1/E_S*P_US/Q_US_S) 
+(alpha_US <- P_US - beta_US*Q_US_S )
+
+```
+Check (should evaluate to zero)
+```{r} 
+P_can - (a_can-b_can*Q_can_D) 
+P_US - (a_US-b_US*Q_US_D) 
+```
+## Estimating Transportation Cost
+We will keep things simple by assuming a per unit transportation and tariff rather than an ad valorem (i.e., percentage). Let $C$ denote the combined transportation cost plus tariff. 
+
+We will assume that the prices we observed are long run equilibrium prices, in which case we can use the price difference as our estimate of the transportation cost. Using the prices from the table above we can calculate: $C = P_{US}-P_{Can}=$ `r C <-P_US - P_can ` `r C`.
+
+## Market Clearing Conditions
+
+Let $T_{ij}$ denote shipments from country $i$ to country $j$. 
+
+Thus, $T_{cc}$ denotes shipments from Canada to Canada (at zero cost) and $T_{ss}$ denotes shipments from the U.S. to the U.S. (at zero cost). Finally,
+$T_{cs}$ denotes shipments from Canada to the U.S. at cost $C$ per unit.
+
+Market clearing for Canada requires 
+$Q_{can}^S = T_{cc}+T_{cu}$ 
+and 
+$Q_{can}^D=T_{cc} + T_{uc}$. 
+
+A similar pair of equations holds for the U.S.
+
+## Net Welfare
+We previously saw that net welfare is the sum of the areas under the two demand curves minus the area under the two supply curves minus total transportation costs.
+
+The welfare function depends on the demand and supply quantities. However, we can substitute $T_{cc}+T_{cu}$ for $Q_{can}^S$, substitute $T_{cc} + T_{us}$ for $Q_{can}^D$, etc. 
+
+For this case study the supply elasticity is less than 1, which means that the supply schedule intersects the horizontal axis rather than the vertical axis. We must therefore use the alternative expression for calculating the area under the supply schedules. 
+
+An expression for net welfare as a function of $T_{cc}$, $T_{cu}$, $T_{uc}$ and $T_{uu}$ can be expressed as follows:
+
+$$
+\begin{aligned}
+  NAW & = \left (a_{can}-0.5*b_{can}[T_{cc}+T_{uc}] \right )[T_{cc}+T_{uc}] \\
+   & + \left (a_{US}-0.5*b_{US}[T_{cu}+T_{uu}] \right )[T_{cu}+T_{uu}] \\
+   & -0.5 \left (\alpha_{can}+\beta_{can}[T_{cc}+T_{cu}] \right )\left ( [T_{cc}+T_{cu}] +\frac{\alpha_{can}}{\beta_{can}}\right )\\
+   & -0.5 \left (\alpha_{US}+\beta_{US}[T_{uc}+T_{uu}] \right )\left ( [T_{uc}+T_{uu}] +\frac{\alpha_{US}}{\beta_{US}}\right )\\
+   & -(T_{cu}+T_{uc})C
+\end{aligned}
+$$
+
+## Setting up the Optimization Problem
+
+We use R's optim() function in R to choose non-negative values for $T_{cc}$, $T_{cu}$, $T_{uc}$ and $T_{uu}$ which maximize net welfare (NW). 
+
+Use $T_{cc}=0.5*Q_{can}^S$, $T_{cu}=0.5*Q_{can}^S$, $T_{uc}=0$ and $T_{uu}=Q_{US}^S$ as starting values in the optimization routine. 
+
+Arrange the T values in a vector with $T_{cc}$ first, $T_{cu}$ second, $T_{uc}$ third and $T_{uu}$ fourth. This means that $T[1]$ corresponds to $T_{cc}$, $T[2]$ to $T_{cu}$, etc.
+```{r}
+welfare <- function(T) {
+  D_can <- (a_can - 0.5*b_can*(T[1]+T[3]))*(T[1]+T[3])
+  D_US <- (a_US - 0.5*b_US*(T[2]+T[4]))*(T[2]+T[4])
+  S_can <- 0.5*(alpha_can+beta_can*(T[1]+T[2]))*(T[1]+T[2]+alpha_can/beta_can)
+  S_US <- 0.5*(alpha_US+beta_US*(T[3]+T[4]))*(T[3]+T[4]+alpha_US/beta_US)
+  Sig_C <- C*(T[2]+T[3])
+  NAW_minus <- -(D_can+D_US-S_can-S_US-Sig_C)
+}
+test <- welfare(c(0.5*Q_can_S,0.5*Q_can_S,0,Q_US_S))
+test
+```
+## Optimal Solution
+Recall that R's optim() function is designed to minimize, and so in order to maximize NW we must minimize the negative of NW. It is important to restrict the choice variables to non-negative values.
+
+We expect the solution to be identical to the original values for supply, demand and price as shown in the table above. This is because the original values satisfy the LOP by assumption.
+```{r}
+solution <- optim(par=c(0.5*Q_can_S,0.5*Q_can_S,0,Q_US_S), fn=welfare, lower=c(0,0,0,0), method="L-BFGS-B" )$par
+(ship_can_can <- solution[1])
+(ship_can_us <- solution[2])
+(ship_us_can <- solution[3])
+(ship_us_us <- solution[4])
+```
+We can recover the equilibrium prices using the equations: $P_{Can}=a_{Can}-b_{Can}(T_{cc}+T_{uu})$ and $P_{US}=a_{US}-b_{US}(T_{uu}+T_{cu})$.
+
+```{r}
+(P_can <-a_can-b_can*(ship_can_can+ship_us_can))
+(P_US <-a_US-b_US*(ship_us_us+ship_can_us))
+```
+As expected, the difference between the Canadian price and the U.S. price is equal to the $C=12$ transporation cost. 
+
+## Using the model for Policy Analysis
+The purpose of constructing the spatial equilibrium pricing model is to use it for "what if" analysis. Suppose the combined transportation and tariff as measured by $C$ increases from 12 to 40 as a result of a carbon tax or an increase in the U.S. tariff on imported Canadian lumber. 
+
+Let's use the previous optimization method to determine how the Canadian and U.S. price is impacted by this change. 
+
+Is there a significant impact on trade between the two countries? Briefly explain.
+
+Solution:
+```{r}
+C <- 40
+welfare2 <- function(T) {
+  D_can2 <- (a_can - 0.5*b_can*(T[1]+T[3]))*(T[1]+T[3])
+  D_US2 <- (a_US - 0.5*b_US*(T[2]+T[4]))*(T[2]+T[4])
+  S_can2 <- 0.5*(alpha_can+beta_can*(T[1]+T[2]))*(T[1]+T[2]+alpha_can/beta_can)
+  S_US2 <- 0.5*(alpha_US+beta_US*(T[3]+T[4]))*(T[3]+T[4]+alpha_US/beta_US)
+  Sig_C2 <- C*(T[2]+T[3])
+  NAW_minus2 <- -(D_can2+D_US2-S_can2-S_US2-Sig_C2)
+}
+solution2 <- optim(par=c(0.5*Q_can_S,0.5*Q_can_S,0,Q_US_S), fn=welfare, lower=c(0,0,0,0), method="L-BFGS-B" )$par
+(ship_can_can2 <- solution2[1])
+(ship_can_us2 <- solution2[2])
+(ship_us_can2 <- solution2[3])
+(ship_us_us2 <- solution2[4])
+```
+We can once again recover the prices from the model solution:
+
+```{r}
+(P_can <-a_can-b_can*(ship_can_can2+ship_us_can2))
+(P_US <-a_US-b_US*(ship_us_us2+ship_can_us2))
+```
+## Analysis of "What if" Impacts
+By comparing the "what if" results to the base case results we observe the following impact of raising transportation/tariff costs from 12 to 40:
+
+* Canadian exports to the U.S. decreased from 28,277 to 27,036.
+* The Canadian price decreased from \$169 to \$149.12 and the U.S. price increased from \$181 to \$189.12.
+* It is clear that the Canadian producer was hit much harder than the U.S. consumer as a result of the higher transportation/tariff cost. We won't explain this result but it is clearly related to differences in Canadian and U.S. supply and demand elasticities.
+
+You should check that the following results also hold. Canadian production should have decreased and Canadian consumption should have increased due to the lower Canadian price. Conversely, U.S. production should have increased and U.S. consumption should have decreased due to the higher price.
+
+## Conclusions
+The spatial pricing model was the work horse trade model 30 - 40 years ago. It is not use much any more because the more sophisticated gravity model which allows for product differentiation has many advantages. You will learn about the gravity model in FRE 502.

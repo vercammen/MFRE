@@ -1,0 +1,98 @@
+# This is the code only for the Module 1C (Tomatoes) case study
+
+rm(list = ls())  # clear objects from memory
+
+# specify intercept and slopes of supply and demand schedules for five countries
+a1 <- 1.746  # Mexico
+a2 <- 0.443  # The U.S.
+a3 <- 1.026  # Canada
+a4 <- 0.852  # The EU
+a5 <- 0.561  # Latin America
+alpha1 <- -0.506
+alpha2 <- -0.256
+alpha3 <- -0.426
+alpha4 <- -1.067  # base case value = -1.067; What-if value = -0.5
+alpha5 <- -0.661
+b1 <- 1.156
+b2 <- 0.022
+b3 <- 1.162
+b4 <- 0.044
+b5 <- 0.072
+beta1 <- 0.292
+beta2 <- 0.042
+beta3 <- 1.180
+beta4 <- 0.086
+beta5 <- 0.118
+
+# create parameter vectors and matrices
+Bvec <- c(b1, b2, b3, b4, b5)
+B <-diag(Bvec)
+betavec <- c(beta1, beta2, beta3, beta4, beta5) 
+beta <-diag(betavec)
+A <- c(a1, a2, a3, a4, a5)
+alpha <- c(alpha1, alpha2, alpha3, alpha4, alpha5)
+
+# create transportation cost matrix with scaling factor
+cscale <- 1
+C <- cscale*matrix(c(0, 0.01170, 0.01933, 0.03111, 0.03238, 0.01170, 0, 0.00844, 0.02140, 0.02841, 0.01933, 0.00844, 0, 0.02129, 0.03289, 0.03111, 0.02140, 0.02129, 0, 0.02747, 0.03238, 0.02841, 0.03289, 0.02747, 0), nrow=5, ncol=5)
+
+# create welfare function with 15x1 vector of shipment variables as inputs
+# this is done to accommodate the optim() functions which uses vectors and not matrices
+welfare <- function(Xsh) {
+  X = matrix(Xsh, 5, 5) # Reshape 15x1 vector into 5 x 5 matrix.
+  Qs <- rowSums(X)
+  Qd <- colSums(X)
+  unit <- rep(1,5)
+  cons <- c(alpha1*alpha1/beta1, alpha2*alpha2/beta2, alpha3*alpha3/beta3, alpha4*alpha4/beta4, alpha5*alpha5/beta5)
+  net_surplus <- -(t(A) %*% Qd - 0.5*t(Qd) %*% B %*% Qd - (t(alpha) %*% Qs + 0.5*t(Qs) %*% beta %*% Qs  + 0.5*t(cons) %*% unit ) - sum(C*X))
+}
+
+# use the starting values from chapter 2 of the textbook.
+start <- c(1.357, 0,  0, 0,  0, 0,  10.331, 0,  0, 0,  0, 0,  0.521, 0,  0, 0,  0, 0,  14.478, 0,  0, 0,  0, 0,  5.322)
+
+# test the welfare function by supplying a 25x1 vector of shipment values
+#test <- welfare(start)
+#test
+ 
+# use the optim() function to choose optimal values for shipment matrix
+solution <- optim( par=start, fn=welfare, lower=matrix(0,25,1), method="L-BFGS-B" )$par
+
+# convert 25x1 solution matrix into standard 5x5 results matrix
+trade <-matrix(solution, 5, 5)
+trade
+
+# recover equilibrium quantity consumed in each country by summing columns of trade matrix
+Qd_e <- colSums(trade)
+
+# generate prices by substituting consumed quantities into the inverse demand functions
+(price_e <- 5000*(A - Bvec*Qd_e))
+
+# use expand grid function to create all combinations of 5 regions
+label <- matrix(c("Mexico","U.S.","Canada","EU","L. America"),ncol=1,nrow=5)
+expand_label <- expand.grid(label,label)
+
+# use expand grid function to create all pricing combinations, and then bind to labels and name columns
+expand_price <- expand.grid(t(price_e),t(price_e))
+price_pairs <- cbind(expand_label,expand_price)
+colnames(price_pairs) <- c("Region A", "Region B", "Price A", "Price B")
+
+# calculate price difference for country pairs and bind to main matrix
+diff <- price_pairs[,"Price B"]-price_pairs[,"Price A"]
+price_diff <- cbind(price_pairs,diff)
+
+# unscale transportation costs and convert matrix to a vector
+Cij <- as.vector(5000*C)
+
+# convert trade matrix to a vector
+Tij <-  as.vector(trade)
+
+# bind transportation cost vector and trade vector to main matrix ==> final result
+results <- cbind(price_diff,Cij,Tij)
+results
+
+# write results matrix to .Rdata file ==> for "what if" analysis
+# saveRDS(results, file="./SavedRDS/results_base.RDS")
+
+# Load saved .Rdata files
+# results_base <- readRDS("./SavedRDS/results_base.RDS")
+ 

@@ -1,0 +1,296 @@
+---
+title: "Module 1C: Global Tomato Trade Case Study"
+output:
+  html_document: default
+  word_document: default
+---
+
+## Learning Outcomes
+
+*  Describe the global market for fresh and processed tomatoes.
+*  Analyze the pattern of import tariffs for fresh tomatoes (class exercise).
+*  Use matrix methods to construct the spatial equilibrium pricing model for the case of global trade in tomatoes with five regions.
+*  Solve the model and display the results in a way which can be easily interpreted. 
+* Conduct detailed "what if" analysis and use economic logic to interpet the results.
+
+## Rationale for this Module
+The previous model of the Canada-U.S. softwood lumber market had only two trading countries and was therefore useful for describing the setup and operation of the spatial equilibrium pricing model. Because there was only two countries, the trading and pricing outcome could have been solved directly as follows:
+
+1. Subtract the Canadian demand schedule from the Canadian supply schedule to obtain a Canadian export supply schedule.
+
+2. Subtract the U.S. supply schedule from the U.S. demand schedule to obtain a U.S. import demand schedule.
+
+3. Set Canadian export supply equal to U.S. import demand along with the constraint that the U.S. price must equal the Canadian price plus the sum of transportation and tariff costs.
+
+4. Solve the set of equations to obtain the traded quantity and the price in each country.
+
+In this module we use the spatial equilibrium pricing model to examine the global trade in tomatoes where there are five trading regions. In the spatial pricing equilibriium several of the regions do not trade with each other. This means that solving for the trade and pricing equilibrium in the way described above no longer works. Specifically, the above procedure does not allow for zero-trade corner solutions. It is here where the spatial pricing model has real value because it is well suited for scenarios with a larger number of trading partners and no-trade corner solutions.
+
+The outcome that there are many no-trade corner solutions is a weak point of the spatial equilibrium pricing model. This is because such an outcome does not match the reality of much more active trading between countries (e.g., Canada imports tomatoes from three or four countries rater than just one or two). Moreover, there is never a bilateral trade flow across countries in the spatial pricing model whereas such an outcome is quite common in the real world. A related problem is that in some cases a small change in supply or demand in one region, or a small change in a transportation cost parameter can result in large change in the trade and pricing pattern. For example, in the base model which is presented below Canada imports from Latin America, and after a small change in EU supply Canada imports from Mexico only.
+
+In FRE 502 you will learn that the gravity trade model does a relatively good job of generating realistic trade pattern outcomes. Nevertheless, it is still worthwhile to use the spatial equilibrium model of trade because it allows for precise "what if" analysis, such as a supply disruption in just one region, or an increase in the tariff rate between just one pair of trading partners. This type of precise "what if" analysis is not possible with the gravity model. More generally, the spatial equilibrium pricing model continues to be the best way to formally analyze the spatial law-of-one-price (LOP).
+
+## Overview of Global Trade in Tomatoes
+The [OEC-fresh](https://oec.world/en/profile/hs92/tomatoes-fresh-or-chilled) and [OEC-processed](https://oec.world/en/profile/hs92/processed-tomatoes) websites contain a lot of interesting information about the global trade in chilled and processed tomatoes. For example, 2019 global trade was about \$9 billion for fresh tomatoes and \$4.5 billion for processed tomatoes. This compares to about \$7.5 billion for apples, \$11 billion for bananas and \$13 billion for avocados. For chilled tomatoes the top exporter in 2019 was Mexico with a market share of about 26.5 percent, and the top importer was the U.S. For processed tomatoes, the top exporter was Italy and the top importer was Germany. Other large exporters of chilled tomatoes are the Netherlands, Spain, Morocco and Canada. Other larger importers of chilled tomatoes are Germany, Russia, France and the U.K. 
+
+In 2018 the mean cross-country import tariff rate was 31.4 percent for fresh tomatoes, with some countries charging as high as 70 percent (Romania) and a number of countries having a zero tariff (e.g., UAE, Hong Kong, Kuwait). For processed tomatoes the mean cross-country 2018 tariff rate was 26.5 percent, with some countries charging as high as 135 percent (Turkey) and a number of countries having a zero tariff (e.g., Switzerland). You will learn more about import tariffs for tomatoes in a subsequent class exercise. 
+
+## Historic Pricing
+The chart below from [Tomato News](https://www.tomatonews.com/en/prices_44.html) shows a time series of regional tomato prices from July, 2009 to July, 2021. The general pricing pattern is similar to that of other agricultural commodities. The price was relatively high after the commodity price boom during the 2008 and 2011-2012 period, was relatively low from 2015 to early 2020, and then surged upward along with other commodities, beginning in the middle of 2020. Similar to palm oil, there is only moderately strong correlation between the price of tomatoes in Italy, the U.S. and China. The reasons for the lack of strong pricing arbitrage and therefore only weak adherence to the spatial LOP are similar to the palm oil situation. Namely, long distance transport of tomatoes in relatively specialized refrigerated ocean freighters prevents a rapid shipment in response to a profitable price difference.
+
+[prices](https://www.tomatonews.com/en/prices_44.html)
+![](http://blogs.ubc.ca/jvercammen/files/2021/09/TomatoPrices.jpg)
+
+## Global Transport of Tomatoes
+
+Use [this link](https://www.ajot.com/premium/ajot-transporting-perishables-ocean-or-air) to read on your own about the competition between air cargo and ocean freighters for the long distance transport of chilled tomatoes.
+
+## Canadian Preferential Trade Deals
+Read [this](https://www.tomatonews.com/en/ceta-an-opportunity-for-eu-exporters_2_170.html) report about how the 2017 free-trade agreement between Canada and the EU (i.e., the CETA) is expected to open up opportunities for EU processed tomato exporters. The North American Free Trade Agreement (NAFTA) means that Canada imports processed tomatoes from the U.S. duty free. Prior to CETA EU exporters paid the Canadian import duty and for this reason were not able to compete with U.S. exporters in the Canadian market. With the ratification of CETA in 2017, Italian tomato exporters are hoping to make inroads into the Canadian market. Canada supplies only about one quarter of its processed tomato consumption, and so the Canadian market is relatively lucrative.
+
+## World Trade Organization (WTO) Tariffs
+Exporting countries which do not have a free trade or preferential trade agreement with the importing country but are part of the WTO agreement on tariffs must pay the Most Favored Nation (MFN) import tariff. These tariffs come in two forms. The most common form is the ad valorem (AV) tariff, which is set as a percentage of the import value of the product. The unit tariff, which is also referred to as the specific tariff, is a fixed amount per unit of product which is imported. Many countries have a compound tariff, which is a combined AV tariff and unit tariff. One popular type of compound tariff is one for which the unit tariff applies provided that the amount collected exceeds the AV tariff. For example check out the schedule of [Canadian Tariffs](http://www.sice.oas.org/TPD/AND_CAN/Final_Texts_CAN_PER_e/TariffSchedule-CanPeruFTA-en.pdf). If you scroll down to 0704.90.10 (Broccoli for processing) you will see that the tariff is 2.12 cents/kg but not less than 6 percent.
+
+## Class Exercise
+Open the Excel file titled "Tomatoes Tariffs and Import Data.xlsx" -- it is in the Data folder. The data consists of AV and unit tariffs, import volumes and import values for chilled tomatoes for 55 countries. It is possible to divided import value by import volume to obtain a unit price. If you do this you will see wide variation in the calculated unit price across countries. You should not trust calculated unit prices for the purpose of spatial price analysis.
+
+The data can be sorted by AV Duty and you can also create a histogram of the AV duties. It is not possible to sort the data or create a histogram using the data on the unit tariffs. You might consider creating a scatter plot of AV duties and import quantities, or possibly calculate a correlation between this pair of variables.
+
+What do you find interesting, unusual or unexpected about these import tariffs for chilled tomatoes? Why do you think Canada has a relatively high tariff whereas Australia has a zero tariff? Do you think the level of the tariff depends on the region or the level of economic development? For example, do the tariffs tend to be higher or lower for developed countries versus developing countries?
+
+## Construction of the Spatial Equilibrium Pricing Model
+The rest of this module is devoted to constructing the spatial equilibrium pricing model for tomatoes, and then using the model results to conduct extended "what if" analysis.
+
+## Calibrated Regional Supply and Demand Schedules 
+The global market for tomatoes is broken into five regions: 
+
+* Mexico, 
+* The U.S., 
+* Canada, 
+* The European Union (EU), and 
+* Latin America. 
+
+In Chapter 2 of my 2011 textbook I use elasticity and price and quantity estimates from a published study to construct linear supply and demand schedules for each of the five regions. In my textbook I used Excel to maximize the net welfare function. Excel is not very good at working with large models and so I was forced to scale the intercept and slope parameters of the various supply and demand schedules so that the parameter estimates did not involve very large or very small values.
+
+As with the case of lumber, let $a_i$ and $\alpha_i$ denote the intercept parameters, and $b_i$ and $\beta_i$ denote the absolute slope parameters of the regional demand and supply schedules, respectively. The specific values are:
+
+```{r}
+a1 <- 1.746  # Mexico
+a2 <- 0.443  # The U.S.
+a3 <- 1.026  # Canada
+a4 <- 0.852  # The EU
+a5 <- 0.561  # Latin America
+alpha1 <- -0.506
+alpha2 <- -0.256
+alpha3 <- -0.426
+alpha4 <- -1.067  # base case value = -1.067
+alpha5 <- -0.661
+b1 <- 1.156
+b2 <- 0.022
+b3 <- 1.162
+b4 <- 0.044
+b5 <- 0.072
+beta1 <- 0.292
+beta2 <- 0.042
+beta3 <- 1.180
+beta4 <- 0.086
+beta5 <- 0.118
+
+```
+In this module we will work exclusively with vectors and matrices. The set of intercept parameters must be a column vector and the set of slope parameters must be along the principal diagonal of a 5x5 matrix. This diagonal matrix can be created by first entering the slope parameters into a vector and then using R's diagonalize function.
+
+```{r}
+A <- c(a1, a2, a3, a4, a5)
+alpha <- c(alpha1, alpha2, alpha3, alpha4, alpha5)
+Bvec <- c(b1, b2, b3, b4, b5)
+B <-diag(Bvec)
+betavec <- c(beta1, beta2, beta3, beta4, beta5) 
+beta <-diag(betavec)
+```
+
+## Scaled Transportation Costs
+
+The published study which was used to construct the regional supply and demand schedules did not provide estimates of the transportation costs between each region. To generate transportation cost estimates, the ocean freight shipping distance between each region was calculated, and this distance was multiplied by a scalar to generate a per-tonne transportation cost for each pair of trading regions. The scaling factor was adjusted so that the set of transportation cost estimates was the best fit when compared to the observed regional price differences in the base case.
+
+The transportation cost estimates form a symmetric matrix where the value in the ith row and jth column, i.e., $C_{ij}$, represent the cost of transporting one tonne of tomatoes from region $i$ to region $j$. The matrix is symmetric because the cost of shipping from $i$ to $j$ is the same as shipping from $j$ to $i$ since the distance is the same. Keep in mind the following ordering of the countries:
+
+* Row 1/Column 1 = Mexico
+* Row 2/Coumn 2 = The U.S.
+* Row 3/Column 3 = Canada
+* Row4/Column 4 = The EU
+* Row5/Column 5 = Latin America
+
+
+```{r}
+C <- matrix(c(0, 0.01170, 0.01933, 0.03111, 0.03238, 0.01170, 0, 0.00844, 0.02140, 0.02841, 0.01933, 0.00844, 0, 0.02129, 0.03289, 0.03111, 0.02140, 0.02129, 0, 0.02747, 0.03238, 0.02841, 0.03289, 0.02747, 0), nrow=5, ncol=5)
+
+C
+```
+## Net Welfare Function
+
+Recall from Module 1B that net welfare can be expressed as the sum of the area under the demand schedule minus the sum of the area under the supply schedule for all trading regions, minus the sum of the cost of transporting the commodity across all regions. In this particular case with $\hat T_{ij}$ representing product shipments from region $i$ to region $j$ the relevant expression is:
+
+$$NW = \sum _{i=1}^5 \left (a_i-0.5b_i Q_i^D \right )Q_i^D - \sum_{i=1}^50.5 \left (\alpha_i + \beta_i Q_i^S \right)\left (Q_i^S + \alpha_i/\beta_i \right)-\sum_{j=1}^5\sum_{i=1}^5 C_{ij}\hat T_{ij}$$
+The above expression uses the specialized formula because the supply schedules intersect the horizontal axis rather than the vertical axis. To express this function in matrix format define the following matrices:
+
+* $Q^D$ is a 5x1 quantity demanded vector with elements $Q_1^D, Q_2^D,...,Q_5^D$ 
+* $Q^S$ is a 5x1 quantity supplied vector will elements $Q_1^S, Q_2^S,...,Q_5^S$
+* $K$ is a 5x1 vector with elements $\alpha_1^2/\beta_1$,  $\alpha_2^2/\beta_2$,...,$\alpha_5^2/\beta_5$
+* $u$ is a 5x1 vector containing 1s
+* $\hat T$ is a 5x5 shipment matrix whose $i^{th}$, $j^{th}$ element is a measure of shipments (including self shipments) from region $i$ to region $j$.
+
+The expression for net welfare can now be rewritten as
+
+$$NW = A'Q^D - 0.5(Q^D)'BQ^D - (\alpha' Q^S +0.5(Q^S)'\beta Q^S + 0.5K'u) -sum(C\hat T)$$
+
+In this expression, the "sum" function in the last term implies that each element of the $C$ matrix is multiplied by each corresponding element of the $\hat T$ matrix and all of these products summed.
+
+## Market Clearing Conditions
+The $i^{th}$ row of the shipment matrix, $\hat T$, shows how much region $i$ shipped to all regions, including itself. The sum of these shipments must equal the supply of that region. This means that the sum of the $i^{th}$ row of $\hat T$ can be substituted for $Q_i^S$ in the above function. Similarly, the $j^{th}$ column of the shipment matrix, $\hat T$, shows how much region $j$ received from all regions, including itself. The sum of these shipments must equal the demand of that region. This means that the sum of the $j^{th}$ column of $\hat T$ can be substituted for $Q_j^D$ in the above function. These substitutions ensures that the only variables in the net welfare function are those contained in the $\hat T$ shipment matrix.
+
+## Reshaping the Shipment Matrix
+
+Recall from Module 1B that R's optimization function accepts a vector of starting values for the choice variables but it does not accept a matrix. In this case we need to let $T$ be a 25x1 shipment matrix which contains the 25 elements of the $\hat T$ matrix. The welfare function must accept $T$ but then convert $T$ to $\hat T$ before calculating a value for the objective function. This same procedure was used in Module 1B.
+
+## Constructing the Net Wlfare Function in R
+
+Base on the above discussion, the following code creates the net welfare function.
+
+
+```{r}
+welfare <- function(T) {
+  That = matrix(T, 5, 5) # Reshape 25x1 vector into 5 x 5 matrix.
+  Qs <- rowSums(That)
+  Qd <- colSums(That)
+  u <- rep(1,5)
+  K <- c(alpha1*alpha1/beta1, alpha2*alpha2/beta2, alpha3*alpha3/beta3, alpha4*alpha4/beta4, alpha5*alpha5/beta5)
+  W <- -(t(A) %*% Qd - 0.5*t(Qd) %*% B %*% Qd - (t(alpha) %*% Qs + 0.5*t(Qs) %*% beta %*% Qs  + 0.5*t(K) %*% u ) - sum(C*That))
+}
+```
+We can check that the welfare function is working by assigning starting (guess) values to the $T$ matrix and then calling the welfare function. The starting values as shown below are the same as those using in Chapter 2 of my 2011 textbook.
+
+
+```{r}
+start <- c(1.357, 0,  0, 0,  0, 0,  10.331, 0,  0, 0,  0, 0,  0.521, 0,  0, 0,  0, 0,  14.478, 0,  0, 0,  0, 0,  5.322)
+start
+test <-welfare(start)
+test
+```
+Keep in mind that the welfare function was entered with a negative sign because minimizing the negative of a function is the same as maximizing that function.
+
+## Maximizing Net Welfare
+We are now ready to set up R's optimization function. To restrict all 25 values in the 25x1 $T$ shipment matrix to non-negative values we should use $\text{lower=matrix(0,25,1)}$. We will also use $\text{method="L-BFGS-B"}$ because this method is recommended when including lower or upper limits on the choice variables. Finally, we will use $\text{"\$par"}$ at the end of the optim() function to tell R to return only the optimized values in the $T$ shipment matrix.
+
+```{r}
+ solution <- optim( par=start, fn=welfare, lower=matrix(0,25,1), method="L-BFGS-B" )$par
+
+```
+
+## Analyzing the Trade Results
+To see the results we should convert the 25x1 solution vector into a standard 5x5 shipment matrix. To better interpret the results we should add row and column labels which correspond to the various regions.
+
+```{r}
+trade <-matrix(solution, 5, 5)
+colnames(trade) <- c("Mexico","The U.S.","Canada","The EU","L. America")
+rownames(trade) <- c("Mexico","The U.S.","Canada","The EU","L. America")
+trade
+```
+ 
+Reading the rows from left to right we see that Mexico exports to the U.S. only. As well, the U.S., Canada and the E.U. do not export, and Latin American exports to the U.S., Canada and the E.U. Reading the columns from top to bottom we see that Mexico does not import, the U.S. imports from both Mexico and Latin America, Canada and the EU both import from Latin America, and Latin America does not import.  
+
+## Analyzing the Price Results
+To calculate the equilibrium prices we need the sum of the columns of the *trade* matrix to obtain total consumption for each of the five regions. We can then plug those consumption values into the respective inverse demand functions to recover the regional prices. The vector of inverse demand functions should be multiplied by 5000 to unscale the scaled intercept and slope parameters of this set of functions.
+
+```{r}
+Qd_e <- colSums(trade)
+price_e <- 5000*(A - Bvec*Qd_e)
+price_e
+```
+
+The results reveal the expected results that tomato prices are relatively high in the three importing countries (The U.S., Canada and the EU) and are relatively low in the two exporting countries (Mexico and Latin America). 
+
+# Confirming the Spatial LOP
+To confirm the spatial LOP in the set of regional prices it is useful to construct a matrix of price differences and compare these differences to the transportation costs. The spatial LOP tells us that for regions which trade the price difference will equal the transportation cost, and for regions which do not trade the price difference will be less than the transportation cost.
+
+To create a side-by-side comparison we use R's *expand.grid* function. We use this function first on a vector of region names, and then on the vector of equilibrium prices. We complete the process by binding both expansions together and assigning column names as follows:
+
+```{r}
+label <- matrix(c("Mexico","U.S.","Canada","EU","L. America"),ncol=1,nrow=5)
+expand_label <- expand.grid(label,label)
+expand_price <- expand.grid(t(price_e),t(price_e))
+price_pairs <- cbind(expand_label,expand_price)
+colnames(price_pairs) <- c("Region A", "Region B", "Price A", "Price B")
+price_pairs
+```
+
+The next step is to create a new vector which is the difference between the *Price B* and *Price A* columns in the *price_pairs* matrix. This new vector can then be inserted at the end of the *price_pairs* matrix.
+
+```{r}
+diff <- price_pairs[,"Price B"]-price_pairs[,"Price A"]
+price_diff <- cbind(price_pairs,diff) 
+```
+
+The last step is to unscale the 5x5 transportation cost matrix and then convert it into a 25x1 vector. Similarly, the 5x5 trade matrix that came from the optimization problem can be converted into a 25x1 vector.
+
+```{r}
+Cij <- as.vector(5000*C)
+Tij <-  as.vector(trade)
+
+results <- cbind(price_diff,Cij,Tij)
+results
+```
+
+The second last row of the above table shows the price difference between each pair of trading regions. The last column shows the transportation cost between those regions. You should confirm that the spatial LOP is satisfied by determining if the price difference is equal to the transportation costs when shipments are positive (this includes self shipments) and is less than the transportation costs when there are zero shipments. Don't expect the results to hold exactly -- a difference of say 50 cents a tonne or less is due to the lack of high level precision by R's optimization function.
+
+## "What If" Analysis
+In Chapter 2 of my 2011 textbook I conduct two types of "what if" analysis. I first assume a large-scale supply reduction in the EU (e.g., widespread tomato disease), which significantly raises this region's import demand. I then assume an increase in the cost of shipping tomatoes for all trading partners. The "what if" analysis is the most important and most interesting part of this module. Please read pages 30 to 35 for full details about the "what if" results and interpretations. 
+
+## EU Supply "What if" Analysis
+Here we will repeat the EU supply reduction "what if" analysis. However, let's assume the supply reduction happens gradually rather than abruptly. Specifically, the base case value of the intercept term of the EU supply function is -1.067. Let's assume initially this intercept value increases to -1.0. After this it increases to -0.9, then -0.8, and finally to -0.7. After each upward shift of the EU supply schedule we will examine the results to determine how the shift affected the pattern of trade and the set of regional prices.
+
+The various results matrices have been stored as .RDS files in the "/Code/SavedRDS" folder. The first one which corresponds to an EU supply intercept with value -1.0 can be loaded as follows:
+
+```{r}
+results_1.0 <- readRDS("./SavedRDS/results_1.0.RDS")
+results_1.0
+```
+
+A comparison of these results to the base case results which were presented above we can see the follow changes. Latin American has increased its exports to the EU from 0.690 scaled units to 1.235 scaled units. As well, Latin America no longer exports to the U.S. Because of this loss of imports, the U.S. now imports 0.981 scaled units from Mexico as compared to 0.958 in the base case. Canada continues to import from Latin America but the import price has risen from \$938.66/tonne in the base case to \$972.66 after the shift. It is easy to see that prices in all regions have increased due to the reduction in EU production of tomatoes.
+
+Now consider an addition upward shift in the EU supply schedule from -1.0 to -0.9.
+
+```{r}
+results_0.9 <- readRDS("./SavedRDS/results_0.9.RDS")
+results_0.9
+```
+
+With this additional reduction in EU supply, EU imports from Latin American have increased from 1.235 scaled units in the previous case to 1.810 scaled units in the current case. These additional imports are such that Latin America no longer exports to Canada. Instead, Mexico is now exporting to both the U.S. and to Canada. Not surprisingly, Mexican imports to the U.S. are now lower than the previous case. The supply reduction has raised prices in all countries. For example, the Canadian price has risen from \$972.66 in the previous case to \$993.80 in the current case.
+
+Now consider an addition upward shift in the EU supply schedule from -0.9 to -0.8.
+
+```{r}
+results_0.8 <- readRDS("./SavedRDS/results_0.8.RDS")
+results_0.8
+```
+
+With this additional reduction in EU supply there is no change in the trade pattern from the previous case. Latin American exports to the EU continue to increase, and Mexican exports to the U.S. and Canada are both lower as compared to the previous case. The Canadian price is now \$1028.53/tonne, which is up from \$993.80 in the previous case.
+
+Finally, consider an addition upward shift in the EU supply schedule from -0.8 to -0.7.
+
+```{r}
+results_0.7 <- readRDS("./SavedRDS/results_0.7.RDS")
+results_0.7
+```
+
+The most important change in this case is that Mexico stops exporting to both the U.S. and Canada, and instead joins Latin America in exporting to the EU. With this change the U.S. begins to export to Canada. Once again, prices are higher in all countries. In Canada, the price with this scenario is \$1071.09, up from \$1028.53/tonne in the previous case.
+
+These results clearly demonstate that a supply reduction in one region has global implications for the pattern of trade and the full set of regional prices. You should confirm that the spatial LOP continues to hold in each scenario. 
+
+There are other interesting scenarios which could be analyzed in a similar way. For example, what might happen if there is a significant reduction in demand for tomatoes by the U.S.? In this case it is likely that Latin America would stop exporting to the U.S. and would instead export more to Canada and the E.U. What about Mexico? It might also stop exporting to the U.S. and instead export to Canada and possibly the EU. Without the spatial pricing model our predictions are rather loose because with multiple changing corner solutions our logic is not very precise.  
+
+## Increase in Global Transportation Costs
+Read about an increase in transportation cost "what if" scenario in Chapter 2 of my 2011 textbook. You can analyze the results yourself using the "tomatoes_code_only.R" file, which is in the Code folder of the zipped file you downloaded from Canvas. Find the variable *cscale* on line 36 and set its value above 1 to simulate an increase in global shipping costs. In the textbook chapter *cscale* is set equal to 2. Now run the program and compare the results matrix to the previous base case results. Be sure to examine how export and import prices are pushed in opposite directions as a result of the increase in transportation costs. Also notice the reduction in trade between countries because of the higher trade costs.
+
+## Conclusions
+The spatial pricing model should be viewed as tool for guiding your thinking about basic supply and demand in commodity trading and pricing. Even though the pricing model under estimates the number of trading partners and is subject to abrupt changes in trade patterns, it still provides us with important intuition regarding how globalized trade operates at a basic level. The real power of the spatial equilibrium pricing model is its ability to conduct "what if" analysis. Similar types of "what if" analysis can be conducted with large computerized general equilibrium (CGE) models but with these models it is often to difficult to understand why the changes occurred. In the current analysis the intuition of the changing trade and pricing patterns with the gradual reduction in EU supply should be fairly obvious because it reflects our basic understanding of supply and demand.
+

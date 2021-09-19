@@ -1,0 +1,160 @@
+---
+title: "Demonstration of R's Optimization Function"
+output:
+  word_document: default
+  html_document: default
+---
+## Details
+FRE 501
+September 17, 2021
+
+
+## Learning Outcomes
+
+* Use R's optim() function to maximize an expression without using matrices. 
+* Use R's optim() function to maximize an expression using matrices. 
+ 
+## Objectives
+
+Demonstrate the use of R's optim() function to help students better understand how the optimization procedure works in Module 1B (softwood lumber) and Module 1C (tomatoes).
+
+## Optimization without Matrices
+Consider the simple quadratic function with two variables:
+$$W = z_1 + z_2 - 0.5z_1^2 - 0.5z_2^2 - 2z_1z_2 $$
+We can maximize Z by solving the pair of first order conditions: 
+$$dW/dz_1 =1-z_1-2z_2=0$$ 
+and 
+$$dW/dz_2 =1-z_2-2z_1=0$$
+This system of equations can be solved to give $z_1^*=z_2^*=1/3$ as the optimizing values of $z_1$ and $z_2$.
+
+If we want R to choose the values of $z_1$ and $z_2$ which maximize $W$ then we need to put $z_1$ and $z_2$ into a R vector. The vector $z$ has two elements, which in R language is $z[1]$ and $z[2]$. We can rewrite the above objective function as 
+$$W = z[1] + z[2] - 0.5(z[1])^2 - 0.5(z[2])^2 - 2z[1]z[2] $$
+To write the R code the first step is to create an R function which contains this objective function.
+
+```{r}
+objective1 <-function(z) { 
+  W <- -1*(z[1] + z[2] - 0.5*z[1]*z[1] - 0.5*z[2]*z[2] - 2*z[1]*z[2])
+  return(W)
+}
+```
+
+In the above function we multiplied the objective function by -1 because R's optimization function is designed to minimize. We trick R into maximizing by telling it to minimize the negative of the objective function.
+
+To maximize $W$ in the $objective1$ function we need to supply starting (guess) values for $z_1$ and $z_2$. Let's guess $c(1,1)$ as the pair of starting values.
+
+It is often useful to put upper and lower limits on the range of values for $z_1$ and $z_2$. The most common limit is to restrict these variables to non-negative values only. If we don't want any restrictions then we set negative infinity as the lower limit and positive infinity as the upper limit. For this example we will tell R to choose only non-negative values for $z_1$ and $z_2$.
+
+Coding R's optimization function is very straight forward for simple problems. We feed into the function three things: (1) the name of the function to be minimized; (2) the vector of starting values; and (3) the upper and lower limits for the choice variables. In this example we will use
+$$optim( c(1,1), objective1, lower=0, upper=Inf) $$
+Coding this function in R gives:
+
+```{r}
+optim( c(1,1), objective1, lower=0, upper=Inf)
+```
+
+In the above results the top row, $\text{[1] 0.3333333 0.3333333}$, gives the optimal values for $z_1$ and $z_2$. These match the optimal values derived manually at the beginning of this section. The next row, $\text{[1] -0.3333333}$, gives the value of the optimized objective function. We need to multiply this value by -1 to get the actual value because of the way we tricked R into maximizing rather than minimizing.
+
+## Optimization with Matrices - Previous Problem
+Consider again the objective function
+$$W = z_1 + z_2 - 0.5z_1^2 - 0.5z_2^2 - 2z_1z_2 $$
+I will let you verify that this function can be written in matrix notation as 
+$$W=B'z - z'Az$$ where 
+$$
+z = 
+\begin{bmatrix}
+z_1 \\
+z_2 
+\end{bmatrix}
+$$
+$$
+A = 
+\begin{bmatrix}
+1 & 0.5 \\
+0.5 & 1
+\end{bmatrix}
+$$
+
+
+$$ 
+B = 
+\begin{bmatrix}
+1 \\
+1
+\end{bmatrix}
+$$
+To construct the objective function in R we need to use R's method of multiplying matrices. Specifically, we use $t(x)$ if we want to transpose the matrix $x$, and use $\text{%*%}$ if we want to multiply two matrices together.
+
+We first need to create the $A$ and $B$ matrices in R:
+
+```{r}
+A <- matrix(c(1,0.5,0.5,1), nrow=2, ncol=2)
+B <- matrix(c(1,1), nrow=2, ncol=1)
+```
+
+The R function that we previously specified can be coded as
+
+```{r}
+objective2 <-function(z) { 
+  W <- -1*(t(B)%*%z - t(z)%*%A%*%z)
+  return(W)
+}
+```
+
+Using R's optimization function is the same as before:
+
+
+```{r}
+optim( c(1,1), objective2, lower=0, upper=Inf)
+```
+
+As expected we get the same results as above.
+
+## Optimization with Matrices - More Complex Problem
+
+In Module 1C we will need to maximize a welfare function where the set of choice variables are in a matrix rather than a vector. Unfortunately, R's optim() function only works with vectors. This means we must convert a matrix into a long vector before we can use the optim() function.The example below will demonstate this technique.
+
+Let 
+$$ 
+X = 
+\begin{bmatrix}
+x_{11} \\
+x_{12} \\
+x_{21} \\
+x_{22}
+\end{bmatrix}
+$$
+and
+
+
+$$
+\hat X = 
+\begin{bmatrix}
+x_{11} & x_{12} \\
+x_{21} & x_{22}
+\end{bmatrix}
+$$
+
+Our objective function is 
+$$Z=B'\hat X B - B'\hat X \hat XB$$
+Note that $B$ is the same as that used above. We want to maximize $Z$ using starting values $x_{11}=x_{12}=x_{21}=x_{21}=1$.
+
+The objective function in R can be written as
+
+```{r}
+objective3 <-function(X) { 
+  Xhat = matrix(X, 2, 2) # Reshape 4x1 vector into 2x2 matrix.
+  Z <- -1*(t(B)%*%Xhat%*%B - t(B)%*%Xhat%*%Xhat%*%B)
+  return(Z)
+}
+```
+
+The $Xhat = matrix(X, 2, 2)$ line of code in the above function is very important. The function accepts as input a 4 x 1 column vector of values and the line in question converts this vector into a 2 x 2 matrix. This is done because the optim() function can only work with the 4 x 1 column vector but the expression for $Z$ within the $objective3$ function is designed to work with a 2 x 2 matrix.
+
+We can now use R's optim() function in the usual way. Specifically, we will feed into the function the $objective3$ function to be minimized, a vector of starting values, $c(1,1,1,1)$, and the non-negative restrictions on the choice variables.
+
+
+```{r}
+optim( c(1,1,1,1), objective3, lower=0, upper=Inf)
+```
+
+We can see from the R output that the optimizing values are $x_{11}=x_{12}=x_{21}=x_{21}=0.25$ and the value of the objective function (after reversing the sign) is 0.5.
