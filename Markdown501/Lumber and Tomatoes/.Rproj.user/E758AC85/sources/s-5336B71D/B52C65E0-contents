@@ -1,0 +1,4 @@
+library(janitor)
+results_0.6 <- readRDS(here("Code", "SavedRDS", "results_0.6.RDS"))
+results_0.6 <- clean_names(results_0.6)
+saveRDS(results_0.6, file = here("Code", "SavedRDS", "results_0.6.RDS"))

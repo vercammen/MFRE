@@ -1,0 +1,26 @@
+---
+title: "Module 1C: Global Tomato Trade Case Study"
+output:
+  word_document: default
+  html_document: default
+---
+
+## Learning Outcomes
+
+*  Describe the global market for fresh and processed tomatoes.
+.
+
+## Rationale for this Module
+
+In Modules 1A through 1C we focused on the spatial LOP in the context of international trade. In this module we will drill down to the micro level and instead focus on the spatial LOP within a region knowing the roads the primary form of commodity transportation. In a developed country such as Canada where most roads are high quality, road length and road quality are not particularly important when trying to understanding regional price differences. For example, in the grain producing region of Western Canada, grain is transported by semi-truck for hundreds of kilometers to competing inland grain terminals which are owned by the "ABCD" grain multinationals. The additional cost for transporting the grain an additional 100 km is small in comparison to the value of the product.
+
+The situation is very different in developing countries such as those in Africa. Cities and villages are connected by roads which are often relatively poor in quality. As well, agricultural commodities are often transported in small vehicles rather then cost efficient semi-trucks. This means that the cost of moving the commodity from a surplus region to a deficit region can be sizeable relative to the value of the commodity. In other words, transportation costs are often a dominant feature in the intraregional spatial pricing of commodities.
+
+This module is divided into two parts. In Part A we will review a 2014 [World Bank](https://openknowledge.worldbank.org/handle/10986/19340) paper which reports the results of an econometric analysis of intraregional, spatially-separated commodity prices in Central and Eastern Africa.Separate results are reported for the dominant commodities, which include maize, rice and sorghum. The authors stress that it is the combination of transportation costs and transaction costs which explain the intraregional pricing differences. Transportation costs depend on road length and road quality. There is no data on transaction costs and so these costs are viewed as a fixed cost per transaction. That is, the price difference is modeled as a fixed transaction-cost component plus a variable distance-related component. The authors estimate separate regression equations for within country trade and across country trade in order to identify the transaction cost which is associated with moving the commodity across national borders.
+
+In Part B of this module we focus on the spatial distribution of fertilizer prices in Sub-Saharan Africa. A 2020 study by [Cedrez et al](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0227764) made available their full data set, which includes fertilizer prices by longitude and latitude. The focus of Part B is to use R's mapping functions in order to create a visualization of the spatial distribution of fertilizer prices. Of particular interest is the extent that fertilizer prices are significantly higher for inland locations versus more coastal locations. This is particularly relevent for fertilizer, which tends to be imported or manufactured in coastal cities rather than being manufactured inland.
+
+```{r}
+A <- c(1, 2)
+
+```

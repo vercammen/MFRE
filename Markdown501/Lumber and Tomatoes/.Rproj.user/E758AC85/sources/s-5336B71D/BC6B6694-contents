@@ -11,7 +11,7 @@ output:
 *  Analyze the pattern of import tariffs for fresh tomatoes (class exercise).
 *  Use matrix methods to construct the spatial equilibrium pricing model for the case of global trade in tomatoes with five regions.
 *  Solve the model and display the results in a way which can be easily interpreted. 
-* Conduct detailed "what if" analysis and use economic logic to interpret the results.
+* Conduct detailed "what if" analysis and use economic logic to interpet the results.
 
 ## Rationale for this Module
 The previous model of the Canada-U.S. softwood lumber market had only two trading countries and was therefore useful for describing the setup and operation of the spatial equilibrium pricing model. Because there was only two countries, the trading and pricing outcome could have been solved directly as follows:
@@ -24,9 +24,9 @@ The previous model of the Canada-U.S. softwood lumber market had only two tradin
 
 4. Solve the set of equations to obtain the traded quantity and the price in each country.
 
-In this module we use the spatial equilibrium pricing model to examine the global trade in tomatoes where there are five trading regions. In the spatial pricing equilibrium several of the regions do not trade with each other. This means that solving for the trade and pricing equilibrium in the way described above no longer works. Specifically, the above procedure does not allow for zero-trade corner solutions. It is here where the spatial pricing model has real value because it is well suited for scenarios with a larger number of trading partners and no-trade corner solutions.
+In this module we use the spatial equilibrium pricing model to examine the global trade in tomatoes where there are five trading regions. In the spatial pricing equilibriium several of the regions do not trade with each other. This means that solving for the trade and pricing equilibrium in the way described above no longer works. Specifically, the above procedure does not allow for zero-trade corner solutions. It is here where the spatial pricing model has real value because it is well suited for scenarios with a larger number of trading partners and no-trade corner solutions.
 
-The outcome that there are many no-trade corner solutions is a weak point of the spatial equilibrium pricing model. This is because such an outcome does not match the reality of much more active trading between countries (e.g., Canada imports tomatoes from three or four countries rather than just one or two). Moreover, there is never a bilateral trade flow across countries in the spatial pricing model whereas such an outcome is quite common in the real world. A related problem is that in some cases a small change in supply or demand in one region, or a small change in a transportation cost parameter can result in large change in the trade and pricing pattern. For example, in the base model which is presented below Canada imports from Latin America, and after a small change in EU supply Canada imports from Mexico only.
+The outcome that there are many no-trade corner solutions is a weak point of the spatial equilibrium pricing model. This is because such an outcome does not match the reality of much more active trading between countries (e.g., Canada imports tomatoes from three or four countries rater than just one or two). Moreover, there is never a bilateral trade flow across countries in the spatial pricing model whereas such an outcome is quite common in the real world. A related problem is that in some cases a small change in supply or demand in one region, or a small change in a transportation cost parameter can result in large change in the trade and pricing pattern. For example, in the base model which is presented below Canada imports from Latin America, and after a small change in EU supply Canada imports from Mexico only.
 
 In FRE 502 you will learn that the gravity trade model does a relatively good job of generating realistic trade pattern outcomes. Nevertheless, it is still worthwhile to use the spatial equilibrium model of trade because it allows for precise "what if" analysis, such as a supply disruption in just one region, or an increase in the tariff rate between just one pair of trading partners. This type of precise "what if" analysis is not possible with the gravity model. More generally, the spatial equilibrium pricing model continues to be the best way to formally analyze the spatial law-of-one-price (LOP).
 
@@ -152,7 +152,7 @@ The $i^{th}$ row of the shipment matrix, $\hat T$, shows how much region $i$ shi
 
 Recall from Module 1B that R's optimization function accepts a vector of starting values for the choice variables but it does not accept a matrix. In this case we need to let $T$ be a 25x1 shipment matrix which contains the 25 elements of the $\hat T$ matrix. The welfare function must accept $T$ but then convert $T$ to $\hat T$ before calculating a value for the objective function. This same procedure was used in Module 1B.
 
-## Constructing the Net Welfare Function in R
+## Constructing the Net Wlfare Function in R
 
 Base on the above discussion, the following code creates the net welfare function.
 
@@ -288,7 +288,7 @@ results_0.7
 
 The most important change in this case is that Mexico stops exporting to both the U.S. and Canada, and instead joins Latin America in exporting to the EU. With this change the U.S. begins to export to Canada. Once again, prices are higher in all countries. In Canada, the price with this scenario is \$1071.09, up from \$1028.53/tonne in the previous case.
 
-These results clearly demonstrate that a supply reduction in one region has global implications for the pattern of trade and the full set of regional prices. You should confirm that the spatial LOP continues to hold in each scenario. 
+These results clearly demonstate that a supply reduction in one region has global implications for the pattern of trade and the full set of regional prices. You should confirm that the spatial LOP continues to hold in each scenario. 
 
 There are other interesting scenarios which could be analyzed in a similar way. For example, what might happen if there is a significant reduction in demand for tomatoes by the U.S.? In this case it is likely that Latin America would stop exporting to the U.S. and would instead export more to Canada and the E.U. What about Mexico? It might also stop exporting to the U.S. and instead export to Canada and possibly the EU. Without the spatial pricing model our predictions are rather loose because with multiple changing corner solutions our logic is not very precise.  
 
