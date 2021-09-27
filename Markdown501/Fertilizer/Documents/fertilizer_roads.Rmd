@@ -1,8 +1,8 @@
 ---
-title: "Module 1C: Pricing Integration and Fertilizer Case Study"
+title: "Module 1D: Pricing Integration and Fertilizer Case Study"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ## Learning Outcomes
@@ -244,15 +244,14 @@ The analysis begins with the usual clearing of the objects from R's memory and c
 ```{r}
 rm(list = ls())
 graphics.off() 
-setwd("C:/Users/Jim/Dropbox/Git/MFRE/Markdown501/Fertilizer")
 ```
+
 The next step is to retrieve the various packages which will be used for the mapping exercise:
 
 ```{r}
-library(ggplot2)
-library(mapdata)
-library(dplyr)
+pacman::p_load(here, ggplot2, mapdata, dplyr)
 ```
+
 ## Creating the Map Data Frames
 To achieve a desired scale of the pricing maps it is useful to create separate maps for the southern countries and the northern countries from the previous list. The two lists are created as follows:
 
@@ -326,7 +325,7 @@ north_plot
 To ensure that the map does not become over crowded with pricing information, ony a subset of the fertilizer pricing data from 2018 is plotted. The data is in the csv file titled *fertilizer_price.csv*. The file is opened in the usual way:
 
 ```{r}
-myData <- read.csv(file = "./Data/fertilizer_price.csv")
+myData <- read.csv(here("Data", "fertilizer_price.csv"))
 head(myData)
 ```
 
@@ -363,8 +362,8 @@ north_plot2
 ## Analysis of Mapped Prices
 The main purpose of this second half of Module 1D was to learn how to create spatial price maps. For this reason only brief comments will be provided about the pricing outcomes.
 
-The previous map of the southern countries reveals that Kenya and Malawi have the lowest prices, and Uganda and Mozambique have the highest prices. Unfortunately, due to crowding of the markers it is not possible to determine if the prices in Rwanda and Burundi are above or below average. Uganda is a land-locked country and so higher prices are expected. Mozamgique has a major port in the city of Maputo and so the fact that this country has relatively high prices is unexpected.
+The previous map of the southern countries reveals that Kenya and Malawi have the lowest prices, and Uganda and Mozambique have the highest prices. Unfortunately, due to crowding of the markers it is not possible to determine if the prices in Rwanda and Burundi are above or below average. Uganda is a land-locked country and so higher prices are expected. Mozambique has a major port in the city of Maputo and so the fact that this country has relatively high prices is unexpected.
 
-The previous map of the northern countries reveals a similar situation. In this case Nigeria and Ghana have relatively low prices, and Burkina Fasa and Senegal have relatively high prices. Burkina Fasa is land locked and so high prices are expected. In contrast, the relatively high prices in Senegal are not expected because the port of Dakar is the third largest in western Africa.
+The previous map of the northern countries reveals a similar situation. In this case Nigeria and Ghana have relatively low prices, and Burkina Faso and Senegal have relatively high prices. Burkina Faso is land locked and so high prices are expected. In contrast, the relatively high prices in Senegal are not expected because the port of Dakar is the third largest in western Africa.
 
-Overall the proposition that land locked countries in Sub-Sarahan Africa have higher fertilizer prices has some empirical support in the pair of maps but the evidence is not very strong.
+Overall the proposition that land locked countries in Sub-Saharan Africa have higher fertilizer prices has some empirical support in the pair of maps but the evidence is not very strong.

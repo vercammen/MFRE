@@ -1,16 +1,12 @@
 # create a map of fertilizer prices in Africa, broken down into the northwest and southeast region
 
-
 # https://stackoverflow.com/questions/27328372/r-create-a-spatial-bubble-plot-that-overlays-a-basemap-of-the-us-and-other-spati
 
 rm(list = ls())
 graphics.off() # close all plots
 
-setwd("C:/Users/Jim/Dropbox/Git/MFRE/Markdown501/Fertilizer")
-
-library(ggplot2)
-library(mapdata)
-library(dplyr)
+# load packages
+pacman::p_load(here, ggplot2, mapdata, dplyr)
 
 # Create two lists for the northwest and southeast set of countries.
 
@@ -56,7 +52,7 @@ south_plot
 north_plot
 
 # Read in the price data from the csv file
-myData <- read.csv(file = "./Data/fertilizer_price.csv")
+myData <- read.csv(here("Data", "fertilizer_price.csv"))
 
 # Sort the price data into the south and north country categories
 southData <- myData[(myData$south == 1), ]
@@ -75,3 +71,4 @@ north_plot2 <- ggplot() +
  
 south_plot2
 north_plot2
+
