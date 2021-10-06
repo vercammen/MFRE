@@ -1,12 +1,12 @@
 # the usual preparation
 rm(list = ls()) 
 graphics.off()
-#setwd("C:/Users/vercamme/Dropbox/Git/MFRE/Markdown501/Potatoes")
-setwd("C:/Users/Jim/Dropbox/Git/MFRE/Markdown501/Potatoes")
-library(ggplot2)
+
+# load packages
+pacman::p_load(here, dplyr, ggplot2, lubridate)
 
 # read in monthly potato prices for Delhi.
-data_delhi <- read.csv("./Data/potato_delhi.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
+data_delhi <- read.csv(here("Data", "potato_delhi.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
 data_delhi
 
 # eliminate the month column for the purpose of summary statistics.
@@ -14,8 +14,15 @@ data_delhi2 <- data_delhi[,-1]
 data_delhi2
 
 # calculate the mean annual price the storage cost as a fraction of this mean price.
+  # creates new vector called mean_annual_price which takes the column means of data_delhi
+  # sapply() function takes a df or vector, performns a function, and preserves the length of the original df 
+  # the parentheses around the code just means we want R to print the output and store the result to mean_annual_price. If we didn't have the parentheses, then we'd have to run "mean_annual_price" to see the resulting vector
 (mean_annual_price <-sapply(data_delhi2, mean))
-(storage_share <-200/sapply(data_delhi2, mean))
+
+# another option: dplyr function to calculate column mean
+data_delhi %>% summarise_if(is.numeric, mean) 
+
+(storage_share <-200/mean_annual_price)
 
 # calculate the minimum and maximum of the annual price.
 (min_annual_price <- sapply(data_delhi2, min))
@@ -37,8 +44,8 @@ plot(index_before,type = "o",col = "red", xlab = "Month", ylab = "Potato Price I
 lines(index_after, type = "o", col = "blue")
 
 # read in the U.S. potato cpi data and create a column called "period" to store the month and year.
-data <- read.csv("./Data/potato_cpi_data.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
-data$period <- seq(as.Date("1991/12/1"), by = "month", length.out = 357)
+data <- read.csv(here("Data", "potato_cpi_data.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
+data$period <- as.Date(data$observation, format = "%m/%d/%Y")
 head(data)
  
 # Plot the potato cpi series

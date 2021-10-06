@@ -1,0 +1,2 @@
+"0","plot(index_before,type = ""o"",col = ""red"", xlab = ""Month"", ylab = ""Potato Price Index"", "
+"0","     main = ""Average Bangladesh Monthly Potato Price Index"")"

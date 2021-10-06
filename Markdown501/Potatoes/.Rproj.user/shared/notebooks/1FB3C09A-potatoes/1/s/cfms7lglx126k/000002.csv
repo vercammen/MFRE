@@ -1,0 +1,3 @@
+"0","pacman::p_load(here, dplyr, ggplot2)"
+"0","data_delhi <- read.csv(here(""Data"", ""potato_delhi.csv""), header=TRUE, sep="","", stringsAsFactors = FALSE)"
+"0","data_delhi"

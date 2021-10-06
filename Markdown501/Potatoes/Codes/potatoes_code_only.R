@@ -1,0 +1,104 @@
+# the usual preparation
+rm(list = ls()) 
+graphics.off()
+
+# load packages
+pacman::p_load(here, dplyr, ggplot2, lubridate)
+
+# read in monthly potato prices for Delhi.
+data_delhi <- read.csv(here("Data", "potato_delhi.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
+data_delhi
+
+# eliminate the month column for the purpose of summary statistics.
+data_delhi2 <- data_delhi[,-1]
+data_delhi2
+
+# calculate the mean annual price the storage cost as a fraction of this mean price.
+  # creates new vector called mean_annual_price which takes the column means of data_delhi
+  # sapply() function takes a df or vector, performns a function, and preserves the length of the original df 
+  # the parentheses around the code just means we want R to print the output and store the result to mean_annual_price. If we didn't have the parentheses, then we'd have to run "mean_annual_price" to see the resulting vector
+(mean_annual_price <-sapply(data_delhi2, mean))
+
+# another option: dplyr function to calculate column mean
+data_delhi %>% summarise_if(is.numeric, mean) 
+
+(storage_share <-200/mean_annual_price)
+
+# calculate the minimum and maximum of the annual price.
+(min_annual_price <- sapply(data_delhi2, min))
+(max_annual_price <- sapply(data_delhi2, max))
+
+# calculate the difference between the max and min price and express as a fraction of the average price.
+(gap_fraction <- (max_annual_price - min_annual_price)/mean_annual_price)
+
+# create data frame for Bangladesh potato price index (before storage investment and after storage investment)
+index_before <- c(84.39, 59.86, 58.66, 69.15, 80.37, 90.06, 101.73, 125.46, 124.19, 129.06, 142.00, 135.02)
+index_after <- c(92.44, 71.86, 68.46, 80.65, 92.26, 103.54, 106.67, 113.65, 112.98, 112.57, 123.21, 121.65)
+potato_bangl <-data.frame(index_before, index_after)
+
+
+# plot the pair of price indexes
+plot(index_before,type = "o",col = "red", xlab = "Month", ylab = "Potato Price Index", 
+     main = "Average Monthly Potato Price Index for Bangladesh")
+
+lines(index_after, type = "o", col = "blue")
+
+# read in the U.S. potato cpi data and create a column called "period" to store the month and year.
+data <- read.csv(here("Data", "potato_cpi_data.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE)
+data$period <- as.Date(data$observation, format = "%m/%d/%Y")
+head(data)
+ 
+# Plot the potato cpi series
+plot_cpi <- ggplot(data, aes(x = period, y = potato_cpi)) +  
+  geom_line() + 
+  labs(title = "Potato CPI", y= "December 1, 1991 = 100", x = "Date") + 
+  theme(plot.title = element_text(size=10))
+
+plot_cpi
+
+# Eliminate the first date column, and eliminate the first row to store first differences
+data_diff <- data[-1,-1]
+
+# Add the first difference of potato_cpi to the data_diff data frame, then eliminate the first column
+data_diff$cpi_diff <- diff(data$potato_cpi)
+data_diff <- data_diff[,-1]
+head(data_diff)
+
+# Plot the potato cpi series in first differences
+
+plot_cpi_diff <- ggplot(data_diff, aes(x = period, y = cpi_diff)) +  
+  geom_line() + 
+  labs(title = "Potato CPI", y= "CPO: US$/tonne", x = "Date") + 
+  theme(plot.title = element_text(size=10))
+
+plot_cpi_diff
+
+# create a set of monthly dummies  
+
+# first, create a df (df_month) which converts the month variable (month(data$period)) into a factor variable
+df_month <- factor(month(data$period))
+
+# creates a matrix by expanding factors to a set of dummy variables 
+# +0 at the end removes the intercept
+dummies <- model.matrix(~df_month+0)
+head(dummies)
+
+# if you look at dimnames(dummies)[[2]], it will be df_month1, df_month2, etc. 
+# month.abb = Jan, Feb, Mar, etc.
+# so we are just renaming the column names
+dimnames(dummies)[[2]] <- month.abb
+
+# eliminate the last column because December is used as reference month
+dummies <- dummies[,-12]
+
+# take the first differnce of the dummies
+dummies_diff <- diff(dummies)
+head(dummies_diff)
+
+# bind the differenced dummies to the differenced cpi data
+data_full <- cbind(data_diff,dummies_diff) 
+head(data_full)
+
+# regress cpi_diff on monthly dummies with no intercept 
+reg_cpi <- lm(cpi_diff ~ Jan + Feb + Mar + Apr + May + Jun + Jul + Aug + Sep + Oct + Nov + 0, data = data_full)
+summary(reg_cpi)

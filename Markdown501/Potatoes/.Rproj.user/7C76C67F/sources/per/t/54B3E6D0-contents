@@ -1,0 +1,20 @@
+ 
+library(dplyr)
+library(lubridate)
+
+# create a df (df_month) which converts the month variabe(month(data$period)) into a factor variable
+df_month <- factor(month(data$period))
+
+# creates a matrix by expanding factors to a set of dummy variables 
+# +0 at the end removes the intercept
+dummies <- model.matrix(~df_month+0)
+head(dummies)
+
+# if you look at dimnames(dummies)[[2]], it will be df_month1, df_month2, etc. 
+# month.abb = Jan, Feb, Mar, etc.
+# so we are just renaming the column names
+dimnames(dummies)[[2]] <- month.abb
+
+dummies <- dummies[,-12]
+dummies_diff <- diff(dummies)
+head(dummies_diff)
