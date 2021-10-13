@@ -1,0 +1,550 @@
+---
+title: "Module 2C: Pricing Seasonality and Convenience Yield (Hay and Corn) "
+output:
+  html_document: default
+  word_document: default
+---
+# Learning Outcomes
+
+By working this module you should be able to:
+
+* Describe the general trends in price, production and stocks in the U.S. hay market.
+* Construct a dummy variable model with an interaction term, and interpret the meaning of the coefficients.
+* Demonstrate that the long term average monthly prices in the U.S. hay market roughly conform to the saw-toothed theory of commodity pricing.
+* Explain how seasonal pricing patterns are impacted by a reduction in carry over stocks in the U.S. hay market.
+* Explain the concept of convenience yield and how this concept is used to enhance the intertemporal LOP.
+* Explain how convenience yield can be used to achieve a realistic seasonal pricing pattern in an eight quarter (two year) storage simulation model.
+* Conduct "what if" analysis with the simulation model to identify how price levels and pricing patters are impacted by changes in the initial level of inventory.
+
+
+# Overview of this Module
+
+In the previous module we used a simple model which predicts a saw-toothed pattern of prices over time. The theory tells us that the commodity's price rises over time while storage is positive, and then rapidly drops when the market stocks out. If this pattern repeats itself for many years then the pricing pattern looks like a tooth side of a saw (i.e., angled up and then sharp down, angled up then sharp down, etc.). In real world commodity markets we should not expect to see an exact saw-toothed pattern because harvest typically does not take place at one defined point in time, and there is regional variation in where the commodity is produced. Nevertheless, we should still expect to see a rough saw-toothed pattern in prices assuming that the market stocks out.
+
+Another important result from the previous module is that if the market does not stock out because stocks are carried from one crop year to the next then price does not drop with the arrival of the new harvest. Rather, when bridging from the old crop year to the new crop year price continues to rise according to unit cost of storage. This particular result leads to an important discrepancy between theory and observation. Specifically, real world markets for long storage commodities such as corn and wheat never fully stock out. As was just noted, the LOP tells us that if the market does not stock out then the commodity's price must continue to rise. Clearly the price of any commodity cannot rise forever. 
+
+In the U.S. corn market, and in the markets for the major grains, stocks carried across years very rarely fall below 10 percent of that year's production. Some of the carry over is term "pipeline stocks" because moving the commodity through the supply chain takes weeks and sometimes months. We are not interested in these pipeline stocks from an economics perspective because these stocks are largely viewed as exogenous. We are interested in the stocks which are carried from one year to the next in excess of pipeline stocks (i.e., strategic storage).
+  
+What we tend to observe in real world markets is that in years with relatively high stocks being carried over then we observe a relatively small (and sometimes zero) downward adjustment in price with the arrival of new harvest. In normal years with a more moderate amount of year over year carry over, we generally see a moderate downward adjustment in price with the arrival of new harvest. It is only when stocks are very low and only a small amount is being carried over across years do we see a large reduction in price with the arrival of new harvest. It is this last case that most closely resembles the saw-toothed pricing pattern which theory predicts happens only when there is a stock out.
+
+This lack of consistency between what the theoretical LOP predicts and what we observe in real markets is an important problem. Economists have "solved" this problem by developing the concept of *convenience yield*. You can think of convenience yield as an implicit negative cost of storage. A merchant who is storing the commodity receives a flow of convenience from having the stocks on hand rather than having to source the commodity in the spot market if an unexpected sales situation arises. The fewer the stocks which are available in the market, the higher the level of convenience from having personal stocks on hand. If the convenience yield is larger than the actual cost of storage then the combined *carrying cost*, which is the sum of the actual cost of storage and the convenience yield, will take on a negative value. With a negative carrying cost the LOP theory predicts that price must decrease from one period to the next. Thus, a convenience yield which varies in size according to the level of stocks in the market can explain why storage is positive across a particular time period even though the price is expected to fall over that time period (e.g., spanning the end of the old crop year and the beginning of the new crop year).
+
+We cannot observe or estimate convenience yield. For this reason we are able to treat it as a *fudge factor*. Specifically, suppose the cost of storing a commodity is \$5 per tonne per month. Also suppose that we observe price at the beginning of the month equal to \$100 per tonne and we expect price at the end of the month to be \$90 per tonne. In a standard storage model the LOP would be violated if storage costs are positive and the level of storage is positive. In the enhanced LOP theory, convenience yield for that month must be \$15 per tonne. Why? The net cost of storage which is referred to as the carrying cost is equal to \$5 - \$15 = -\$10 per tonne. The LOP indicates that when storage is positive the expected future price minus the current price must equal the net cost of storage. The LOP is not violated because the price difference, 90 - 100, is indeed equal to the net cost of storage, -10.
+
+With the revised LOP we can conclude that: (1) the monthly convenience yield must be larger than the monthly cost of storage if price is expected to decrease over the coming month; and (2) the convenience yield must be largest when the carry over stocks are the lowest because large price drops with the arrival of harvest are associated with low carry over stocks. In those cases where carry over stocks are large and the price does not fall with the arrival of a new harvest we can infer that the carrying cost is positive since the monthly convenience yield must be smaller than the monthly cost of storage. 
+
+The purpose of this module is to incorporate convenience yield into our theory of the intertemporal LOP. We use the enhanced theory to construct a pricing simulation model that allows for price decreases over time when storage is positive. The simulation model is calibrated to the U.S. corn market. This market was chosen because over the next several modules we will utilize the U.S corn market repeatedly to study the theory of commodity futures prices. When studying futures markets in these subsequent modules the concept of convenience yield is shown to play a very important role.
+
+However, before we incorporate convenience yield into our LOP model and build the simulation model we should spend some time examining the saw-toothed pricing pattern in real world commodity prices. For this examination to be effective we need a commodity which has monthly prices and an observable stock level over a large number of years. Observing both price and stocks is important because this will allow us to examine how the saw-toothed pricing pattern is different for normal stock carry over years versus low stock carry over years. The commodity chosen for this exercise is the U.S. hay market because it ticks all of the above boxes. The next section provides a brief introduction to the U.S. hay market. Following this is an econometric examination of prices in the U.S. hay market.
+
+# Saw-Toothed Pricing in the U.S. Hay Market
+
+## Industry background
+According to this 2018 [report](https://farmdocdaily.illinois.edu/2018/09/us-hay-market-over-the-last-100-years.html) hay is the third largest crop that is grown in the U.S. Between 1955 and 2005 alfalfa production exceeded the production of all other types of hay (e.g., sweet clover and brome grass). For the past 15 years this ranking between alfalfa and other types of hay has switched. Harvested acres of both alfalfa and other types of have been in a steady decline since the mid 1950s. Higher yields for both alfalfa and other types of hay have offset part of the decline in acreage but not by enough to stop an on-going decline in overall hay production.
+
+Hay is used to feed livestock, especially during the months when livestock grazing is not feasible (e.g., late fall, winter and early spring). As livestock production gradually became more industrialized, livestock was increasingly fed year round in a feedlot rather than allowed to graze during the growing season and fed hay during the non-growing season. In a feedlot environment hay is fed along with high energy feeds such as corn, barley and oats. According to the above report an important reason for the decline in hay acres is that farmers find it more profitable to grow corn and other crops. This is problematic because from an environmental perspective hay is far superior to corn and most other crops, especially on light and easily eroded land. The U.S. Conservation Reserve Program (CRP) within which farmers are paid to not grow crops on environmentally sensitive land, currently has 5.3 million enrolled acres. Of these acres about half is devoted to hay production (see [here](https://www.fsa.usda.gov/programs-and-services/conservation-programs/conservation-reserve-program/)).
+
+## Data on U.S. Hay Prices, Production and Stocks
+Price, production and stock data for hay were extracted from the USDA Feed Grains [Database](https://www.ers.usda.gov/data-products/feed-grains-database/). Price data is monthly, production data is yearly and stocks data is bi-yearly (May and December). The data which spans from May of 1950 to July of 2021 consists of alfalfa and all other types of hay. Because of the large number of years it is important to account for on-going hay price inflation. One option is to do nothing, in which case the inflationary trend will end up in the intercept of the model when estimated in first differences. The second option is to remove inflation by dividing each monthly hay price by the monthly U.S. consumer price index (CPI). For this analysis where we will use dummies to isolate seasonality, the latter approach is best. This is because the seasonal effects will increase over time due to general inflation and a straight first difference specification is not sufficient to adjust the seasonal effects for inflation.
+
+The monthly CPI used for deflating hay prices was downloaded from the U.S. Federal Reserve ([FRED](https://fred.stlouisfed.org/series/CPIAUCSL)) website. The base year for this CPI data is 1982. This means that the hay price for 1982 is the same with and without adjusting for inflation. As well, CPI adjusted hay prices for the years before (after) 1982 will be higher (lower) than the original prices. To give you a sense of the size of the CPI adjustment, the hay price is \$22 per ton in the original data and \$92.55 per ton in the CPI adjusted data. As well, the hay price is \$185 per ton in the original data and \$66.06 per ton in the CPI adjusted data.
+
+After coding the standard preliminaries we can read the data into R in the usual way.
+
+```{r}
+rm(list = ls()) 
+graphics.off()
+pacman::p_load(here, dplyr, ggplot2)
+hay_data <- read.csv(here("Data", "usda_hay.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE) 
+head(hay_data)
+```
+
+The first few rows of the imported data shows that the annual production data repeats for each of the 12 months. As well, there is a column for May stocks and another column for December stocks, both of which also repeat for each of the 12 months.
+
+There is too much data to plot monthly prices, and so prices are averaged into annual data for the purpose of graphing. The next chunk of code deletes the *month* column in the imported data and then performs the averaging for each of the columns.
+
+```{r}
+hay_data2 <- select(hay_data, -"month")
+
+mean_data <- hay_data2 %>%
+  group_by(year) %>%
+  summarise_all(list(mean))
+```
+
+We can now plot average annual price, annual production, annual May stocks and Annual December stocks.
+
+```{r}
+plot_price <- ggplot(mean_data, aes(x = year, y = price)) +  
+  geom_line() + 
+  labs(title = "Yearly Avg Hay Price", y= "$/ton") + 
+  theme(plot.title = element_text(size=10))
+plot_price
+
+plot_production <- ggplot(mean_data, aes(x = year, y = production)) +  
+  geom_line() + 
+  labs(title = "Yearly Hay Production", y= "tons ('000s)") + 
+  theme(plot.title = element_text(size=10))
+plot_production
+
+plot_stocks <- ggplot(mean_data, aes(x = year)) + 
+  geom_line(aes(y = stckMay, color = "May")) + 
+  geom_line(aes(y = stckDec, color = "Dec")) + 
+  labs(title = "May and December Corn Stocks", y = "tons ('000s)", x = "Date") +
+  theme(plot.title = element_text(size=10)) +
+  scale_color_manual(name = "Month", values = c("May" = "blue", "Dec" = "red"))
+plot_stocks
+```
+
+The first graph shows the inflated-adjusted (real) price of hay beginning in 1950. Notice that the longer term pricing pattern is similar to the longer term pricing pattern of the major crops. Specifically, the price of hay rose steadily throughout the inflationary period of the 1970s, and then began a long term decline throughout the 1980s and 1990s. For the past two decades prices have strengthened but at a relatively slow pace.
+
+The second graph shows annual production. This graph is consistent with the discussion about hay production in the previous section. Up until about the year 2000 increasing yields more than offset the declining harvested acres, and so overall production increased. After 2000 the yield increase did not keep pace and hay production dropped and continues to decline. The production graph shows large reductions in production in the late 1980s and around 2012. These sharp reductions are very likely the result of a severe drought rather than a sharp drop in hay acres. This claim can be investigated by reading about major U.S. droughts on [Wikipedia](https://en.wikipedia.org/wiki/Droughts_in_the_United_States).
+
+The third graph shows the annual May and December hay stocks. The top schedule shows December stocks, which corresponds to the beginning of the livestock feeding season. The bottom schedule shows May stocks, which corresponds to the end of the livestock feeding season. The rising December stocks up until the year 2000 reflects the rising production levels over this period of time. Conversely, the falling December stocks reflect the falling production levels after 2000. 
+
+Hay is storable but the cost of storing it for more than one season is relatively high. This is because hay must be covered for long term storage to prevent excessive deterioration from rain. It is likely for this reason that the May stocks do not follow the same trends as the December stocks. The variation in May stocks is relatively low but as will be shown below the variation is large enough to identify very different seasonal pricing patterns for a low stock carry over year versus a normal stock carry over year.
+
+The May stocks play an important role in the analysis and so it is useful to examine the summary statistics.
+
+```{r}
+summary(mean_data$stckMay) 
+```
+
+We see that the average level of stocks is about 22 million tons (keep in mind that the units of measure for the Q variables are thousands of tons). The previous production chart shows that in recent years production was about 120 million tonnes. This means that May stocks constitute about 18 percent of annual production. We can't say for sure that the full 18 percent is carried over to the next crop year but 18 percent provides a reasonable estimate. This is because by May most livestock are not longer fed hay and new hay production is near at hand.
+
+An 18 percent carry over rate is similar to the stock carry over rate for the major U.S. grains. The previous table shows that the first quartile is about 18 million tons. This means that 25 percent of the May stock observations were below 18 million tons. In the analysis below 18 million is used as the threshold for defining a "low stock" year. Even though 18 million is not much below the average of 22 million, we will see that there is a large difference in the seasonal pattern of prices for a normal year versus a low stock year.
+
+## Dummy Variables with Interaction Terms
+In our study of the U.S. potato CPI in Module 1E we used a set of 11 monthly dummies (December was omitted and serves as the reference point) for measuring seasonality in potato prices. We will do the same thing here except now we will use conditional monthly dummies in additional to the regular unconditional dummies. Specifically, we will create an indicator variable which takes on a value of one if May stocks are low (i.e., less than the first quartile, which is approximately 18 million tons) and a value of zero otherwise. We will then create a new set of 11 interaction variables, where each variable is the product of the regular monthly dummy and the indicator variable. This will become clearer with a formal specification of the enhanced model.
+
+The enhanced dummy variable model can be expressed as
+
+$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1}) + \sum_{i=1}^{11}\gamma_i (D_{i,t} - D_{i,t-1})\Phi_j +  e_{j,t}-e_{j,t-1}$$
+In a normal year $\Phi_j=0$ and the model reduces to the standard dummy variable model:
+
+$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1})  +  e_{j,t}-e_{j,t-1}$$
+
+It is important to understand that even though this equation is estimated in first difference format, we can continue to interpret $\beta_i$ as the long run average difference between the December price and the price in month $i$. Let's use the much simpler quarterly dummy variable model to ensure that this claim is true.
+
+The quarterly dummy variable model can be expressed as
+$$P_{j,t}-P_{j,t-1}=\beta_1 (D_{1,t} - D_{1,t-1}) + \beta_2 (D_{2,t} - D_{2,t-1}) + \beta_3 (D_{3,t} - D_{3,t-1})  +  e_{j,t}-e_{j,t-1}$$
+When switching from Q4 to Q1 we know $D_{1,t}$ takes on a value of 1 and the other two dummies take on a value of 0. Thus, $\beta_1$ is our estimate of the average price difference between Q1 and Q4. Formally, $\beta_1 = \bar P_1 - \bar P_4$ where the "bar" on a variable denotes a long term average.
+
+When switching from Q1 to Q2 we know $D_{1,t}$ takes on a value of -1, $D_{2,t}$ takes on a value of 1 and $D_{3,t}$ takes on a value of 0. Thus, the long term average difference between the Q1 and Q2 prices is given by $-\beta_1+\beta_2$. Formally, we have $\bar P_2-\bar P_1=-\beta_1+\beta_2$. Now substitute $\beta_1 = \bar P_1 - \bar P_4$ into this equation and solve for $\beta_2$ to get $\beta_2 = \bar P_2 - \bar P_4$. The same logic can be used to show that $\beta_3 = \bar P_3 -\bar P_4$. The proof is similar for our current model with monthly prices: $\beta_i$ is a measure of the long term average price difference between December and month $i$.
+
+When we are in a low stock year we have $\Phi_j=1$ and the dummy model becomes
+$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1}) + \sum_{i=1}^{11}\gamma_i (D_{i,t} - D_{i,t-1}) +  e_{j,t}-e_{j,t-1}$$
+This equation can be written more compactly as
+
+$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}(\beta_i+\gamma_i) (D_{i,t} - D_{i,t-1}) +  e_{j,t}-e_{j,t-1}$$
+
+This new equation tells us that $\beta_i+\gamma_i$ is a measure of the long term average difference between the month $i$ price in a low stock year and the December price in a normal year. We can therefore conclude that $\gamma_i$ is a measure of how the month $i$ seasonal price difference is impacted by the low stock year. If $\gamma_i$ is positive (negative) then the month $i$ price is higher (lower) in a low stock carry over year as compared to a normal year. One important case is when $\beta_i>0$ but $\beta_i+\gamma_i<0$. In this situation the low stock carry over has caused the month $i$ price to be lower rather than higher than the December price.
+
+If hay prices were stationary then the long term average December price, $\bar P_{12}$, would take on a constant value. In this case we could add $\bar P_{12}$ to $\beta_i$ to obtain an estimate of the long term average price in month $i$ in a normal stock carry over year. As well, we could add the value of $\bar P_{12}$ to $\beta_i+\gamma_{12}$ to obtain an estimate of the long term average price in month $i$ in a low stock carry over year. In the current analysis the prices in levels are not stationary and so the above method for estimating the long term average monthly prices is not appropriate. As an alternative we will discuss the long term average pricing results relative to the December price rather than in absolute terms.
+
+## Building the Data Set
+To further construct our data set we need to create the $\Phi_j$ low stock carry over indicator variable (*StckDum*). To do this we need to identify the first quartile of the May stock variable over the 1950 - 2021 sample period. We can then create a new column in the *mean_data* data frame within which the indicator takes on a value of one if the actual value for May stocks is below the first quartile and zero otherwise. Keep in mind that at this stage we are working with annual data rather than monthly data. The new column is added to *mean_data* as follows:
+
+```{r}
+mean_data <- mean_data %>%
+  mutate(quant_cut = quantile(mean_data$stckMay, 0.25),
+         stckDum = ifelse(stckMay<quant_cut,1,0))
+```
+
+For our econometric analysis we need to work with monthly data, which means we need to return to the imported data which is contained in the *hay_data* data frame. The imported data is in levels so we need to create a data frame with one less row so that we have a place to store the data when it is expressed in first differences. To do this let's delete the top row and *price* column of *hay_data* and call this new data frame *diff_data*.
+
+```{r}
+diff_data <- select(hay_data, c("year","month"))
+diff_data <- diff_data[-1,]
+```
+
+Lets now add the first difference of monthly prices from *hay_data* to our newly-created *diff_data* data frame.
+
+```{r}
+ diff_data <- diff_data %>% 
+  mutate(price_diff = diff(hay_data$price))
+ head(diff_data)
+```
+
+The next step is to convert the low stock indicator price series from annual format into a monthly format. For example, if 1976 is a low stock year, then in the *diff_data* data frame each of the 12 months for the 1976 entry should take on a value of 1. The easiest way to do this is to merge the annual *mean_data* data frame with the monthly *diff_data* data frame using *year* as the common variable. In the process of doing this *diff_data* has been renamed *full_data*.
+
+```{r}
+full_data <- merge(x = diff_data, y = mean_data[,c("year","stckDum")], by = "year", all.x = TRUE)
+
+# alternative function
+# full_data <- left_join(x = diff_data, y = mean_data[,c("year","stckDum")], by = "year")
+
+head(full_data)
+```
+
+The next step in the construction of the final data set is to create a set of the 11 monthly dummy variables and then add this set to the *full_data* data frame. Part of the procedure is reordering the columns to ensure they start in January rather than May.
+
+```{r}
+D <- hay_data$month
+dummies <- model.matrix(~D+0)
+
+col_order <- c("DJan","DFeb","DMar","DApr","DMay","DJun","DJul","DAug","DSep","DOct","DNov")
+dummies <- dummies[, col_order]
+
+```
+
+After we difference these dummies we can add them to our *full_data* data frame.
+
+```{r}
+dummies_diff <- diff(dummies)
+full_data <- cbind(full_data,dummies_diff)
+head(full_data, 4)
+```
+
+The final step for constructing the data set is to create interaction variables. Recall that these interaction variables are created by multiplying the set of 11 differenced dummy variables by the low stock carry over indicator variable. The interaction variables are created directly within the *full_data* data frame as follows:
+
+```{r}
+full_data <- full_data %>% 
+  mutate(IJan = DJan*stckDum,
+         IFeb = DFeb*stckDum,
+         IMar = DMar*stckDum,
+         IApr = DApr*stckDum,
+         IMay = DMay*stckDum,
+         IJun = DJun*stckDum,
+         IJul = DJul*stckDum,
+         IAug = DAug*stckDum,
+         ISep = DSep*stckDum,
+         IOct = DOct*stckDum,
+         INov = DNov*stckDum)
+
+head(full_data, 4)
+```
+
+## Estimated Model Without Interaction Variables
+We will begin our econometric analysis by estimating the simple version of the model (i.e., the one without the interaction variables). We don't want to estimate an intercept and so we add a 0 to the end of our variable list. The coefficient estimates are stored in a vector for the purpose of graphical analysis.
+
+```{r}
+regP_diff <- lm(price_diff ~ DJan + DFeb + DMar + DApr + DMay + DJun + DJul + DAug + DSep + DOct + DNov + 0, data = full_data)
+summary(regP_diff)
+matrix_coef1 <- summary(regP_diff)$coefficients
+coeff1 <- as.data.frame(matrix_coef1[,1])
+colnames(coeff1) <- "dum"
+ 
+```
+
+The regression results reveal strong pricing seasonality. Notice that all of the month dummies are statistically significant except for June and October. The $R^2$ value of 0.302 indicates that 30 percent of the monthly pricing variation is due to recurring seasonal effects. A more robust model which allowed pricing seasonality to change over time is likely to have an even higher $R^2$ value. In other words, the current model assumes that the seasonal price differences are the same in 2021 as they were in 1950, and this is a rather strong assumption.
+
+Lets graph the estimated coefficients for the 11 dummy variables. To do this we need to first create a set of X axis labels and bind them to our set of coefficient estimates. The labels are R factor variables, and R insists on ordering them alphabetically rather than they way they are listed. To prevent this from happening we use the *levels* function within the *factor* function as follows.
+
+```{r}
+label <- factor(c("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"),
+         levels = c("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"))
+
+coeff1 <- cbind(coeff1, label)
+```
+
+Now we can build the column graph.
+
+```{r}
+plot1 <- ggplot(coeff1, aes(x=label, y=dum)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  labs(title = "Seasonal Price Estimates for Hay (Restricted Model)",
+       x = "Current Month - December",
+       y = "$ per ton")
+
+plot1
+```
+
+In this graph we can interpret the height of the column for month $i$ as the long term average difference in the month $i$ price and the December price with no restrictions on stock carry over. The full set of prices roughly conform to the saw-toothed pricing pattern, which was emphasized in the previous module. Hay stocks are at a maximum in December, which is the beginning of the livestock feeding season. Between January and May the long term average monthly price of hay increases relative to the December price, presumably at a rate which reflects the monthly cost of storage. BY June the cattle feeding season is over and new hay stocks begin to arrive. For the months of June and July the price of hay drops sharply, which is consistent with the saw-toothed pricing theory. From August onward the price begins to rise once again, presumably at a rate which reflects the monthly cost of storage. 
+
+## Estimated Model with Interaction Terms
+
+Let's re-estimate the model but this time with the interaction variables included. After estimating the model we will separately graph the estimated dummy coefficients and the sum of the estimated dummy coefficients and the interaction variable coefficients so we can more effectively see how low stocks affects the seasonality in hay prices.
+
+We begin by estimating the unrestricted model and saving the estimated coefficients.
+
+```{r}
+regP_diff2 <- lm(price_diff ~ DJan + DFeb + DMar + DApr + DMay + DJun + DJul + DAug + DSep + DOct + DNov + IJan + IFeb + IMar + IApr + IMay + IJun + IJul + IAug + ISep + IOct + INov + 0, data = full_data)
+summary(regP_diff2)
+matrix_coef2 <- summary(regP_diff2)$coefficients
+coeff2 <- as.data.frame(matrix_coef2[,1])
+
+```
+
+For this unrestricted regression there are fewer statistically significant coefficients on the 11 dummies (now only February through June are significant). However, the estimated coefficients for the May through October interaction variables are highly statistically significant. Notice also that the $R^2$ value has risen from 0.302 in the restricted model to 0.343 in the current unrestricted model. A F test could be used to determine if the inclusion of the interaction terms is statistically significant as a whole. Based on the increase in the $R^2$ it is very likely the case that the interaction variables as a whole are statistically important.  
+
+We would like to have the estimated coefficients for the 11 dummies and the 11 interaction variables in separate columns rather than one long column. We can filter out the estimated dummy coefficients and the interaction variable coefficients and then add names to the columns as follows:
+
+```{r}
+coeff2_A <- coeff2 %>% slice(1:11)
+coeff2_A <- coeff2_A 
+colnames(coeff2_A) <- "dum"
+
+coeff2_B <- coeff2 %>% slice(12:22)
+colnames(coeff2_B) <- "inter"
+```
+
+Let's bind the two sets of estimates into a new data frame. Within this new data frame let's create a new column called *dum_plus_inter* which is the sum of the dummy variable and the interaction term (i.e., $\beta_i+\gamma_i$).
+
+```{r}
+coeff2 <-  cbind(coeff2_A,coeff2_B)
+
+coeff2  <- coeff2 %>% 
+  mutate(dum_plus_inter = dum + inter )   
+coeff2
+```
+
+We can now create the pair of graphs for the unrestricted model. The first graph will show the estimated coefficients for the dummy variables, which reflects seasonality in a normal year. The second graph will show the sum of the estimated coefficients for the dummy variables and the interaction variables. This latter graph reflects seasonality in a low stock year. Keep in mind that the first graph will be different from the previous graph, which shows the pricing seasonality in all years.
+
+```{r}
+plot2A <- ggplot(coeff2, aes(x=label, y=dum)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  labs(title = "Seasonal Price Estimates for Hay: Normal Stock Years",
+       x = "Current Month - December",
+       y = "$ per ton")
+
+plot2A
+```
+
+```{r}
+plot2B <- ggplot(coeff2, aes(x=label, y=dum_plus_inter)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  labs(title = "Seasonal Price Estimates for Hay: Low Stock Years",
+       x = "Current Month - December",
+       y = "$ per ton")
+
+plot2B
+```
+
+The first of these two new graphs has the same general saw-toothed properties of the previous graph. The main difference is that in this model of normal year only pricing, the long term May price relative to the long term December price is much higher than in the previous case where all years were considered. This outcome is possibly the result of a much lower December price in a normal year as compared to all years.
+
+A comparison of the second graph, which shows low stock carry over pricing seasonality, to first graph, which shows normal stock carry over pricing seasonality, provides the most important results of this analysis. For example, when the livestock feeding season is over and the new grass arrives in June, the long term average price drops to approximately equal to the long term average December price in a normal stock carry over year and well below the long term average December price in a low stock carry over year. This outcome is expected because in a normal carry over year the December price preceding the feeding season and after the feeding season are both relatively low. In contrast, in a low stock carry over year (likely the result of a drought), the December price preceding the feeding season is relatively high (because stocks are scarce) and the December price following the feeding season is relatively low (because stocks are once again plentiful)
+
+A comparison of the two graphs also shows the price is at a maximum in May for a low stock carry over year, and in April for a low stock carry over year. This means that when carry over stocks are low prices fall over a longer period of time (May to July versus June to July ). One way to interpret this result is that the saw-toothed pricing pattern is less pronounced when stocks are low because convenience yield is emerging as a more important determinant of the pricing pattern. Remember from the Introduction that convenience yield explains falling prices in the presence of positive stocks. This softening of the saw- toothed pattern when stocks are low is examined in greater detail in the second half of this module. It is recommend that you revisit the discussion in this section after working through the model of convenience yield in the second half of this module.
+ 
+# A Formal Model of Convenience Yield
+
+Imagine in the days prior to debit and credit cards your parents' decision regarding how much money to withdraw from the bank in order to pay for their purchases for the coming week. It is likely that they would take out more money than what they expected to use in case they needed to make an unexpected purchase. By withdrawing an amount larger than what they expected to use, they were willing to give up the interest earnings in order to have the convenience of cash on hand when an unexpected purchase is optimal. The more inconvenient it is to obtain the additional cash, the greater the convenience yield they received from having the extra cash on hand.
+
+The situation is similar for merchants and processors. They will want to keep more inventory on hand than what they expect to use. The implicit benefit that merchants and processors receive from having inventory on hand rather than having to buy it in the spot market is called *convenience yield*. Convenience yield, which is equivalent to a negative cost of storage, is larger when stocks are scarce and smaller when stocks are plentiful. This makes sense because when stocks are scare it is more costly to search and find stocks in the spot market when an unexpected order comes along.
+
+## Combining Convenience Yield and Storage Costs
+Our goal is to create an integrated model of storage costs and convenience yield. In the previous module the marginal physical cost of a unit of the stored commodity was assumed to be constant at level $m$, and the capital cost of storage was assumed to equal $rP_t$ where $r$ is the rate of interest and $P_t$ is the commodity's price. The rate of interest is currently very low and so we will simplify by assuming $r=0$. However, the assumption that the unit cost of storage does not depend on aggregate stocks in the market is not very realistic. We expect a higher unit cost storage with higher stocks because congestion from the excess stocks will require high-cost storage options to be utilized.
+
+With these additional assumptions, the marginal cost of storage in period $t$ can be expressed as $k_t =k_0 +k_1S_t$ where $S_t$ is a measure of aggregate stocks in the market. The marginal convenience yield can be expressed as $c_t =c_0 - c_1S_t$. The negative slope of this function shows that marginal convenience yield is lower when stocks are larger. The net cost of storage is given by $k_t-c_t$. We subtract $c_t$ because it is a benefit, which is equivalent to a negative cost. We call this net cost of storage the commodity's *carrying cost*
+
+Similar to the previous module, the intertemporal LOP tells us that when storage is positive then the price increase must equal the carrying cost. A merchant is indifferent between selling the commodity immediately and receiving price $P_t$, or storing the commodity for one period and then selling it for a net price of $P_{t+1}-(c_t-k_t)$. Indifference implies $P_t = P_{t+1}-(c_t-k_t)$. We can rearrange this to obtain a revised LOP expression:
+
+$$P_{t+1}-P_t = c_t - k_t $$
+It is important to recognize that a negative value for $c_t-k_t$, which emerges when convenience yield is larger than the cost of storage, results in price decreasing rather than increasing over time. This possibility is central to the modeling of commodity prices because it allows for positive stock carry over and a gradual downward price adjustment from one crop year to the next rather than the classic saw-tooth outcome.
+
+Let $m_0=k_0-c_0$ and $m_1 = k_1+c_1$. If we substitute this pair of expressions together with $k_t =k_0 +k_1S_t$ and $c_t =c_0 - c_1S_t$ into the previous pricing equation we obtain the final LOP expression:
+
+$$P_{t+1}-P_t = m_0+m_1S_t $$
+
+## Pricing Dynamics
+
+The goal is to generate a pricing pattern which allows for stock carry over and a gradual price reduction when transitioning from one crop year to the next. The model that we will use consists of two crop years, each with four quarters. A crop year begins with harvest and so Q1 corresponds to the September to November quarter. As is typical for most U.S. and Canadian crops, price falls in both the summer quarter when pre-harvest stocks are at their lowest, and in the fall quarter as harvest gradually replenishes the stock pile. 
+
+If the price falls in Q4 then $m_0+m_1S_R<0$. We know that $m_1>0$ because storage costs are always higher and the convenience yield is always lower when stocks are higher. It must therefore be the case that $m_0<0$. In Q1 when stocks are largest and convenience yield is smallest, we see that $m_0+m_1S_t$ takes on its largest value, and thus the price increases are the largest. As stocks diminish as we progress from Q1 to Q2 to Q3 the value of $m_0+m_1S_t$ remains positive but it is getting smaller and smaller. Thus, the price increases are weakening. By the time we hit Q4 the convenience yield is larger than the storage costs, which means that $m_0+m_1S_t<0$ and the price decreases instead of increases.
+
+The above LOP price equation is one of three key equations which governing how prices change over time. The general stock adjustment equation is $S_{t+1}-S_t = H_t - x_t$ where $H_t$ is the level of new production (i.e., harvest) in period $t$ and $x_t$ is the level of consumption in period $t$. For the case of quarterly data, the full stock adjustment equation can be written as
+$$
+\begin{align*}
+S_1 &= S_0 + H_1 - x_1  \\
+S_2 &= S_1 - X_2 \\
+S_3 &= S_2 - X_3 \\
+S_4 &= S_3 - X_4 \\
+S_5 &= S_4 + H_5 - X_5 \\
+S_6 &= S_5 - X_6 \\
+S_7 &= S_6 - X_7 \\
+S_8 &= S_7 - X_8 = \bar S + D
+\end{align*}
+$$
+In the above equation $S_0$ represents starting stocks, $\bar S$ represents the level of stocks which are typically carried over from year to year (i.e., long-run carry over) and $D$ is a measure of the short run demand for year 2 stocks to be carried into year 3 net of $\bar S$. These three variables, $S_0$, $\bar S$ and $D$, together with the two harvest variables, $H_1$ and $H_5$, are exogenous in the model. An exogenous variable means that we must attach values to these variables from outside the model rather than calculating equilibrium values from within the model. 
+
+The final equation for simulating prices over the eight quarters is the inverse demand for the commodity by the processor. We will use the standard linear demand schedule, $P_t = a - bX_t$. The model has seven LOP equations, eight stock adjustment equations and eight demand equations for a total of 23 equations. There are also 23 variables to be solved for: eight quarterly prices ($P_t$), eight quarterly consumption levels ($X_t$) and seven ending stocks ($S_t$). There are only seven stock variables because as you can see FROM above the value of $S_8$ is determined by $\bar S+D$. After assigning values to the model parameters and the exogenous variables we can solve this system of equations and then recover the equilibrium prices, which we are interested in analyzing.
+
+## Data
+We will simulate eight quarterly corn prices, which means two full years beginning with Q1 in the fall of year 1 and ending with Q8 in the summer of year 2. Data from the USDA Feed Grains Database reveals that average corn harvested acres, yield per harvested acre and beginning stocks for the most recent five crop years (2015/16 - 2019/20) was 82.91 million acres, 173.4 bushels per acre and 2.015 billion bushels, respectively. Multiplying the five year average acreage and yield gives the five year average production of 14.38 billion bushels. If these estimates are used as the long term average it follows that $H_1 = 14:38$ for the base case. Similarly, if the five year average level of stocks is viewed as normal pipeline stocks it follows that $S_0 = \bar S = 2:015$ for the base case.
+
+The two parameters from the demand equation are set to $a = 16.21$ and $b = 3.5$. These parameters ensure that the average price across all eight quarters is \$3.628/bu, which is very close to the \$3.648/bu average farm gate price for 2016 - 2020. Moreover, the demand elasticity, which is calculated with the simulated \$3.628/bu average quarterly price and the simulated 3.595 billion bushel average quarterly consumption, is equal to -0.288. This simulated elasticity is reasonably close to the -0.2 corn demand elasticity estimate which was reported in the literature.
+
+Data on storage costs and convenience yields are not available and so it is not possible to directly estimate values for $m_0$ and $m_1$. The chosen values, $m_0 = -0.22$ and $m_1 = 0.03$, are those which achieve a reasonably close match between the seasonal pattern of the simulated prices and real-world prices. More is said about this below.
+
+Let's formally assign these values to the model parameters and exogenous variables. The full set of values is placed in a vector titled *v*.
+```{r}
+a <- 16.21
+b <- 3.50
+m0 <- -0.22
+m1 <- 0.03
+S0 <- 2.015
+H1 <- 14.38
+S_bar <- 2.015
+v <- c(a, b, m0, m1, S0, H1, S_bar)
+```
+
+## Simulation
+We could program R to solve the systems of 23 equations and 23 variables and then recover the eight equilibrium quarterly prices. However, to tie in better with the next module it is useful to specify the equilibrium prices as linear functions of $H_5$ and $D$. These two variables are chosen because it is natural to view $H_5$ (i.e., year 2 harvest) as a random variable in Q1 through Q4, and to view $D$ (i.e., long term net demand for stocks) as a random variable in all eight quarters. The USDA provides a forecast for both of these variables and the properties of these forecasts will be used when using the model to generate random prices.
+
+The desired equation is
+
+$$P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D  $$
+In this equation the $~$ (tilde) on the $H_5$ and $D$ variables indicate that they are random as described above.
+
+There are eight values for each of $\delta_0$, $\delta_1$ and $\delta_2$, which means that we need 24 $\delta$ values to generate the set of eight quarterly prices. The complex set of equations which are required to obtain the 24 $\delta$ values are contained in a R function titled "get_delta" (this function is stored in file titled "price_function.R"). We can call this function into our program and feed into it the parameter vector *v*. The function will return the 24 delta values, which are stored in a matrix titled "del".
+
+```{r}
+source(here("Code", "price_function.R"))
+del <- get_delta(v)
+del
+```
+
+The next step is to use these 24 $\delta$ values together with $P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D$ to generate the eight quarterly prices. The following function does the necessary calculations:
+
+```{r}
+get_price <- function(H5,D) {
+   Price <- del[,1] + del[,2]*H5 + del[,3]*D 
+}  
+```
+
+If we assume $H_5 = H_1 = 14.38$ and $D=0$, which implies that year 2 harvest and long term net demand are both normal, then the prices which are generated will equal the base case prices. We first assign these values to $H_5$ and $D$ and then call the above pricing function:
+
+```{r}
+H5 <- 14.38
+D <- 0
+P <- get_price(H5,D)
+P
+```
+
+## Comparing Simulated and Real-World Corn Prices
+It is of interest to compare the simulated quarterly prices of corn with the real world long term average (1980 - 2019) quarterly prices of corn (taken from Vercammen 2021). A plot of these long term quarterly average prices can be generated using the following code.
+
+```{r}
+historic <- c(2.866, 2.993, 3.123, 3.105, 2.866, 2.993, 3.123, 3.105)
+barplot(historic,names.arg = c(1,2,3,4,5,6,7,8), main="Average Quarterly Corn Price: 1980-2019.",
+        xlab="Quarter: Sept-Nov = 1, Dec-Feb = 2, etc", ylab="$/bu",
+        beside=TRUE, ylim=c(2, 4), xpd = FALSE)
+```
+
+Notice that pricing pattern for the long term averages looks similar to what we observed for U.S. hay prices. Prices are lowest in the harvest quarters (Q1 and Q5) and rise during the winter and spring quarters (Q2, Q3, Q6, Q8). In the summer quarter (Q4 and Q8) the price begins to decline. Theory suggests that it is the particularly high convenience yield in Q4 which is responsible for the price drop before the arrival of harvest.
+
+To compare the simulated and real-world prices it is useful to consider Q1 through Q4 only since the pattern in year 2 is quite similar to the pattern in year 1. The following code creates the *all_price* matrix by binding together the two individual price series.
+
+
+```{r}
+historic_4 <- historic[1:4]
+simulated <- P[1:4]
+all_price <- cbind(historic_4,simulated)
+rownames(all_price) <- c("Q1","Q2","Q3","Q4")
+all_price
+
+
+```
+
+We can now plot the pair of prices series using:
+
+```{r}
+barplot(all_price, main="Quarterly Corn Price: Historic vs Simulated",ylab="$/bu",
+         col=c("darkblue","red", "green", "brown"),
+        legend = rownames(all_price), args.legend = list(x = "topleft", cex = .7), beside=TRUE, ylim=c(2, 4), xpd = FALSE)
+
+```
+
+Notice that the simulated prices are higher because the model has been calibrated to the average corn prices in the 2016 - 2020 period, whereas the long term average prices utilize the much longer 1980 - 2019 period. Despite the different levels of pricing the seasonal pattern is quite similar for the two pricing outcomes. This suggests that that despite its simplicity the calibrated pricing model is well suited to analyzing seasonal prices in the U.S. corn market.
+
+## Verifying the LOP
+It is a good idea to verify that the model is working as intended. First, we should check that the LOP equation, $P_{t+1}-P_t=m_0+m_1S_t$, holds for all eight quarters. Second, we should check that consumption of the inventory across all eight quarters is equal to $S_0+H_1+H_5-S_8$. In other words, all stocks are fully accounted for. Both of these checks are conducted in the Appendix
+
+## What If Analysis
+Now that we have the model built we can do "what if" analysis. An obvious "what if" is how does the set of 8 prices respond to a change in the size of the year 2 harvest (e.g., a smaller value for $H5$ due to fewer planted acres)? For example, suppose $H_5=13$, which is below the level of year 1 harvest, $H_1=14.38$. Generating a new set of eight quarterly prices requires using the pricing function, "get_price", with the revised value for $H_5$.
+
+```{r}
+H5 <- 13
+D <- 0
+P_rev <- get_price(H5,D)
+P_rev
+```
+
+To graph this revised set of prices together with the base set of prices we first combine the two price series into a single matrix and then generate a side-by-side bar chart similar to what what shown in the previous section.
+```{r}
+all_price2 <- cbind(P,P_rev)
+
+barplot(all_price2, main="Low H5 Prices versus Base Prices",ylab="$/bu", sub="Left Plot is Base Prices, Right Plot is Low H5 Prices", names.arg=c(1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8),
+         col=c("darkblue","red", "green", "brown"),
+         beside=TRUE, ylim=c(3, 5), xpd = FALSE)
+```
+
+The chart shows that the lower year 2 harvest raises all eight prices by roughly the same amount. This is an important pricing property of storable commodities. A supply or demand shock in the current year will impact prices in future years by roughly the same amount. This is because merchants are continually shifting the level of stocks being carried through time in order to maximize the average selling price of the commodity.
+
+When prices adjust in response to a supply or demand shock such as the one implied by the previous chart the impact on the eight prices is similar but not identical. This is because the shock will typically change the level of stocks, which in turn affects storage costs and convenient yield. The pricing impacts are calculated as follows:
+
+```{r}
+impacts <- P_rev - P
+impacts
+```
+
+We see that the reduction in the year 2 harvest increased the Q1 price by \$0.581/bu and raised the Q4 price by \$0.611/bu. This outcome emerges because with the smaller year 2 harvest, more is stored in year 1 and this raises the marginal cost of storage. We know that price must rise at a rate equal to the marginal cost of storage. Thus the price increase in Q4 is larger than the price increase in Q1. The rate of pricing increase is very small but it is nevertheless important to consider because thinking through these what if scenarios helps us to improve our economic intuition regarding pricing dynamics.
+
+There are other what if scenarios that can be examined, and  most have predictable outcomes. For example, increasing the intercept value of the quarterly inverse demand schedule will raise the full set of prices. Similarly, raising the demand for stocks that leave year 2 or reducing the amount of stocks which enter year 1 will also raise the full set of prices because there is less corn available for consumption in years one and two. 
+
+What happens to the set of prices if the cost of storage increases. In particular suppose that *m* increases from its base case value of -0.22 t0 -0.15. To make this change we need to update the various $\delta_i$ values which are used inside the pricing function. Specifically, after we change the value of $m0$, or any other parameter except of $H5$ and $D$, we need to call the *get_delta(v)* function to generate the revised values for the various $\delta_i$ parameters. The following code will accomplish this task.
+
+```{r}
+m0 <- -0.15 # base value = -0.22
+v <- c(a, b, m0, m1, S0, H1, S_bar)
+H5 <- 14.38 # base value = 14.38
+D <- 0
+del <- get_delta(v)
+P_rev2 <- get_price(H5,D)
+P_rev2
+```
+
+Using the same procedure as before, we can bind the new results and the base case results together, and then plot the pair of price series.
+
+```{r}
+all_price3 <- cbind(P,P_rev2)
+
+barplot(all_price3, main="High Storage Cost Prices vs. Base Prices",ylab="$/bu", sub="Left is base; right is high strg cost Prices", names.arg=c(1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8),
+         col=c("darkblue","red", "green", "brown"),
+         beside=TRUE, ylim=c(3, 5), xpd = FALSE)
+```
+
+A comparison of the two plots reveals how the higher cost of storage has impacted both the level of prices and seasonal nature of prices. It is clear that the year 1 prices are higher (especially in Q1 and Q2) and the year 2 prices are lower (especially in Q7 and q8). This outcome is expected because with the higher cost there will be lower storage both within each year and across the two years. These two impacts combined mean that the consumption of corn will be much higher in Q1 and Q2, and this forces the Q1 and Q2 prices down. Similarly, due to the lower volume of storage, less will be available for consumption in Q7 and Q8. This reduced supply will result in relatively high prices in Q7 and Q8.
+
+## Conclusion
+This module should be viewed as a bridge between our study of pricing fundamentals in Module 1 and our study of commodity futures in Module 2. We now have a model that generates prices with fairly realistic seasonal patterns. In the next module (2C) we assume that forward looking traders understand the seasonality in spot prices and as a result the set of futures prices at a particular point in time (i.e., the forward curve) will reflect this seasonality. We will define basis as the spot price minus the futures price. If the spot market is located in Chicago where futures contracts are settled, then the basis will also reflect the seasonality in spot prices. If the spot market is located outside of Chicago then me must also account for transportation costs. The properties of the basis is important when we turn our attention to hedging because the profitability and risk sharing properties of the hedge are strongly connected to the seasonality in the basis. 
+
+Another module will focus on the connection between convenience yield and slope of the forward curve: contango (forward slope) and backwardation (negative slop). The slope of the forward curve is important for institutional traders who rely on "roll yield" in their long-only positions to generate profits. As you can see, there is no shortage of interesting and important topics which we will be examining in the next few modules.
+
+
+## Appendix
+The purpose of this Appendix is to demonstrate the LOP and the stock adjustment equation hold for the base case set of eight simulated prices. The verification begins by substituting the equilibrium price into the inverse demand schedule to obtain the quarterly consumption, $X_t$, Then substitute quarterly consumption into the stock adjustment equation to derive the quarterly stock levels, $S_t$. Finally, substitute the derived values of $S_t$ and the equilibrium prices into the LOP equation, $P_{t+1}-P_t-(m_0 + m_1 S_t)$, to verify that the equation holds.
+
+```{r}
+m0 <- -0.22 # base value = -0.22
+v <- c(a, b, m0, m1, S0, H1, S_bar)
+H5 <- 14.38 # base value = 14.38
+D <- 0
+del <- get_delta(v)
+P_chck <- get_price(H5,D)
+
+
+X <- a/b - 1/b*P_chck
+S <- rep(0, times = 8)
+S[1] <- S0 + H1 - X[1]
+S[2] <- S[1] - X[2]
+S[3] <- S[2] - X[3]
+S[4] <- S[3] - X[4]
+S[5] <- S[4] + H5 - X[5]
+S[6] <- S[5] - X[6]
+S[7] <- S[6] - X[7]
+S[8] <- S[7] - X[8]
+S
+
+lop <- rep(0, times = 8)
+for(i in 1:7)
+{
+  lop[i+1] <- P[i+1]-P[i]-(m0+m1*S[i])
+}
+lop
+```
+
+The outcome that all LOP check values are zero confirms that all eight quarterly prices are consistent with the intertemporal LOP.
