@@ -116,114 +116,125 @@ An 18 percent carry over rate is similar to the stock carry over rate for the ma
 ## Dummy Variables with Interaction Terms
 In our study of the U.S. potato CPI in Module 1E we used a set of 11 monthly dummies (December was omitted and serves as the reference point) for measuring seasonality in potato prices. We will do the same thing here except now we will use conditional monthly dummies in additional to the regular unconditional dummies. Specifically, we will create an indicator variable which takes on a value of one if May stocks are low (i.e., less than the first quartile, which is approximately 18 million tons) and a value of zero otherwise. We will then create a new set of 11 interaction variables, where each variable is the product of the regular monthly dummy and the indicator variable. This will become clearer with a formal specification of the enhanced model.
 
-The enhanced dummy variable model can be expressed as
+The enhanced dummy variable model can be written in levels as
+ 
+$$P_{j,t}= \beta_0+\sum_{i=1}^{11}\beta_i D_{i,t} + \gamma_0\Phi_{j,t}+\sum_{i=1}^{11}\gamma_i D_{i,t}\Phi_{j,t}  +  e_{j,t}$$
+In this equation the variable $\Phi_{j,t}$ is an indicator variable which takes on a value of 1 if year $j$ stocks are low and a value of 0 otherwise.
 
-$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1}) + \sum_{i=1}^{11}\gamma_i (D_{i,t} - D_{i,t-1})\Phi_j +  e_{j,t}-e_{j,t-1}$$
-In a normal year $\Phi_j=0$ and the model reduces to the standard dummy variable model:
+The Appendix provides a detailed discussion about how to interpret the estimated coefficients of a dummy variable model with interaction terms. By way of a summary, $\beta_0$ is the long run average price in December of a normal year, and $\beta_0+\gamma_0$ is the long average price in December of a low-stock year. Similarly, $\beta_0+\beta_i$ is the long run average price in month $i$ of a normal year, and $\beta_0+\gamma_0+\beta_i+\gamma_i$ is the long average price in month $i$ of a low stock year.
 
-$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1})  +  e_{j,t}-e_{j,t-1}$$
+Let $\bar P_i^N$ and $\bar P_i^L$ denote the long average price in month $i$ in a normal stock year and a low stock year, respectively. Using the expressions from above it can be shown that 
+$$\beta_i=\bar P_i^N-\bar P_{12}^N $$
+and
+$$\gamma_i = (\bar P_i^L-\bar P_{12}^L)-(\bar P_i^N -\bar P_{12}^N)  $$
+or
 
-It is important to understand that even though this equation is estimated in first difference format, we can continue to interpret $\beta_i$ as the long run average difference between the December price and the price in month $i$. Let's use the much simpler quarterly dummy variable model to ensure that this claim is true.
+$$\gamma_i = (\bar P_i^L-\bar P_i^N)-(\bar P_{12}^L -\bar P_{12}^N)  $$
+These equations tell us that $\beta_i$ is the difference in the long run average price in month $i$ and December, both in a normal year. Similarly, $\gamma_i$ can be interpreted as the as the difference in the low versus normal stocks price gap where the gap is defined as the long run average price difference between month $i$ and December. Using the last equation, $\gamma_i$ can also be interpreted as the month $i$ to month $12$ difference in the price gap where the gap is the long run average price difference for low versus normal stocks.  
 
-The quarterly dummy variable model can be expressed as
-$$P_{j,t}-P_{j,t-1}=\beta_1 (D_{1,t} - D_{1,t-1}) + \beta_2 (D_{2,t} - D_{2,t-1}) + \beta_3 (D_{3,t} - D_{3,t-1})  +  e_{j,t}-e_{j,t-1}$$
-When switching from Q4 to Q1 we know $D_{1,t}$ takes on a value of 1 and the other two dummies take on a value of 0. Thus, $\beta_1$ is our estimate of the average price difference between Q1 and Q4. Formally, $\beta_1 = \bar P_1 - \bar P_4$ where the "bar" on a variable denotes a long term average.
+The previous plot reveals a high degree of non-stationarity in the price of hay. It is therefore necessary to estimate the model in first differences as follows:
 
-When switching from Q1 to Q2 we know $D_{1,t}$ takes on a value of -1, $D_{2,t}$ takes on a value of 1 and $D_{3,t}$ takes on a value of 0. Thus, the long term average difference between the Q1 and Q2 prices is given by $-\beta_1+\beta_2$. Formally, we have $\bar P_2-\bar P_1=-\beta_1+\beta_2$. Now substitute $\beta_1 = \bar P_1 - \bar P_4$ into this equation and solve for $\beta_2$ to get $\beta_2 = \bar P_2 - \bar P_4$. The same logic can be used to show that $\beta_3 = \bar P_3 -\bar P_4$. The proof is similar for our current model with monthly prices: $\beta_i$ is a measure of the long term average price difference between December and month $i$.
+$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1}) + \gamma_0(\Phi_{j,t} - \Phi_{j,t-1})+ \sum_{i=1}^{11}\gamma_i (D_{i,t}\Phi_{j,t} - D_{i,t-1}\Phi_{j,t-1}) +  e_{j,t}-e_{j,t-1}$$
 
-When we are in a low stock year we have $\Phi_j=1$ and the dummy model becomes
-$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1}) + \sum_{i=1}^{11}\gamma_i (D_{i,t} - D_{i,t-1}) +  e_{j,t}-e_{j,t-1}$$
-This equation can be written more compactly as
-
-$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}(\beta_i+\gamma_i) (D_{i,t} - D_{i,t-1}) +  e_{j,t}-e_{j,t-1}$$
-
-This new equation tells us that $\beta_i+\gamma_i$ is a measure of the long term average difference between the month $i$ price in a low stock year and the December price in a normal year. We can therefore conclude that $\gamma_i$ is a measure of how the month $i$ seasonal price difference is impacted by the low stock year. If $\gamma_i$ is positive (negative) then the month $i$ price is higher (lower) in a low stock carry over year as compared to a normal year. One important case is when $\beta_i>0$ but $\beta_i+\gamma_i<0$. In this situation the low stock carry over has caused the month $i$ price to be lower rather than higher than the December price.
-
-If hay prices were stationary then the long term average December price, $\bar P_{12}$, would take on a constant value. In this case we could add $\bar P_{12}$ to $\beta_i$ to obtain an estimate of the long term average price in month $i$ in a normal stock carry over year. As well, we could add the value of $\bar P_{12}$ to $\beta_i+\gamma_{12}$ to obtain an estimate of the long term average price in month $i$ in a low stock carry over year. In the current analysis the prices in levels are not stationary and so the above method for estimating the long term average monthly prices is not appropriate. As an alternative we will discuss the long term average pricing results relative to the December price rather than in absolute terms.
+It is important to understand that even though this equation is estimated in first difference format, the interpretation of the estimated coefficients remain the same as the case where the model was estimated in levels. See the Appendix for a more detailed discussion about estimating the model in first differences.
 
 ## Building the Data Set
-To further construct our data set we need to create the $\Phi_j$ low stock carry over indicator variable (*StckDum*). To do this we need to identify the first quartile of the May stock variable over the 1950 - 2021 sample period. We can then create a new column in the *mean_data* data frame within which the indicator takes on a value of one if the actual value for May stocks is below the first quartile and zero otherwise. Keep in mind that at this stage we are working with annual data rather than monthly data. The new column is added to *mean_data* as follows:
+To further construct our data set we need to create the $\Phi_j$ low stock carry over indicator variable (*StckDum*). To do this we need to identify the first quartile of the May stock variable over the 1950 - 2021 sample period. We can then create a new column in the monthly data set within which the indicator takes on a value of one if the current level of May stocks is below the first quartile of long term annual May stocks and zero otherwise.  
+
+The first step is use the *quantile()* function and the May stocks column of the annual data which was used for graphing (i.e., *mean_data*) to determine the lower threshold for defining low stocks
 
 ```{r}
-mean_data <- mean_data %>%
-  mutate(quant_cut = quantile(mean_data$stckMay, 0.25),
-         stckDum = ifelse(stckMay<quant_cut,1,0))
-```
-
-For our econometric analysis we need to work with monthly data, which means we need to return to the imported data which is contained in the *hay_data* data frame. The imported data is in levels so we need to create a data frame with one less row so that we have a place to store the data when it is expressed in first differences. To do this let's delete the top row and *price* column of *hay_data* and call this new data frame *diff_data*.
-
-```{r}
-diff_data <- select(hay_data, c("year","month"))
-diff_data <- diff_data[-1,]
-```
-
-Lets now add the first difference of monthly prices from *hay_data* to our newly-created *diff_data* data frame.
-
-```{r}
- diff_data <- diff_data %>% 
-  mutate(price_diff = diff(hay_data$price))
- head(diff_data)
-```
-
-The next step is to convert the low stock indicator price series from annual format into a monthly format. For example, if 1976 is a low stock year, then in the *diff_data* data frame each of the 12 months for the 1976 entry should take on a value of 1. The easiest way to do this is to merge the annual *mean_data* data frame with the monthly *diff_data* data frame using *year* as the common variable. In the process of doing this *diff_data* has been renamed *full_data*.
-
-```{r}
-full_data <- merge(x = diff_data, y = mean_data[,c("year","stckDum")], by = "year", all.x = TRUE)
-
-# alternative function
-# full_data <- left_join(x = diff_data, y = mean_data[,c("year","stckDum")], by = "year")
-
-head(full_data)
-```
-
-The next step in the construction of the final data set is to create a set of the 11 monthly dummy variables and then add this set to the *full_data* data frame. Part of the procedure is reordering the columns to ensure they start in January rather than May.
-
-```{r}
-D <- hay_data$month
-dummies <- model.matrix(~D+0)
-
-col_order <- c("DJan","DFeb","DMar","DApr","DMay","DJun","DJul","DAug","DSep","DOct","DNov")
-dummies <- dummies[, col_order]
+(quant_cut = quantile(mean_data$stckMay, 0.25))
 
 ```
 
-After we difference these dummies we can add them to our *full_data* data frame.
+We can now use the *quant_cut* variable to create the indicator variable in the original monthly data frame, *hay_data*: 1 if May stocks are less than the threshold and zero otherwise. The new *stckDum* column is added to *mean_data* as follows:
 
 ```{r}
-dummies_diff <- diff(dummies)
-full_data <- cbind(full_data,dummies_diff)
-head(full_data, 4)
+hay_data <- hay_data %>%
+  mutate(stckDum = ifelse(stckMay<quant_cut,1,0) )
+head(hay_data)
 ```
 
-The final step for constructing the data set is to create interaction variables. Recall that these interaction variables are created by multiplying the set of 11 differenced dummy variables by the low stock carry over indicator variable. The interaction variables are created directly within the *full_data* data frame as follows:
+The procedure for adding monthly dummies to the current data frame is somewhat tedious but it is easy to understand:
 
 ```{r}
-full_data <- full_data %>% 
-  mutate(IJan = DJan*stckDum,
-         IFeb = DFeb*stckDum,
-         IMar = DMar*stckDum,
-         IApr = DApr*stckDum,
-         IMay = DMay*stckDum,
-         IJun = DJun*stckDum,
-         IJul = DJul*stckDum,
-         IAug = DAug*stckDum,
-         ISep = DSep*stckDum,
-         IOct = DOct*stckDum,
-         INov = DNov*stckDum)
+hay_data <- hay_data %>% 
+  mutate(d1 = ifelse(month=="Jan",1,0), 
+         d2 = ifelse(month=="Feb",1,0),
+         d3 = ifelse(month=="Mar",1,0),
+         d4 = ifelse(month=="Apr",1,0),
+         d5 = ifelse(month=="May",1,0),
+         d6 = ifelse(month=="Jun",1,0),
+         d7 = ifelse(month=="Jul",1,0),
+         d8 = ifelse(month=="Aug",1,0),
+         d9 = ifelse(month=="Sep",1,0),
+         d10 = ifelse(month=="Oct",1,0),
+         d11 = ifelse(month=="Nov",1,0))
+head(hay_data, 15)
+```
 
-head(full_data, 4)
+In a similar way the interaction variables can be created and added to the data frame:
+
+```{r}
+hay_data <- hay_data %>% 
+  mutate(i0 = stckDum, 
+         i1 = d1*stckDum,
+         i2 = d2*stckDum,
+         i3 = d3*stckDum,
+         i4 = d4*stckDum,
+         i5 = d5*stckDum,
+         i6 = d6*stckDum,
+         i7 = d7*stckDum,
+         i8 = d8*stckDum,
+         i9 = d9*stckDum,
+         i10 = d10*stckDum,
+         i11 = d11*stckDum)
+head(hay_data, 15)
+```
+
+The next step is to add the first differences of all variables to the current data frame. At the end of using the *mutate()* function to add the differenced variable, the top row is removed because there is no useable data in the first row.
+
+
+```{r}
+diff_data <- hay_data %>%
+  mutate(price_diff = price - lag(price), 
+         d1Diff = d1 - lag(d1), 
+         d2Diff = d2 - lag(d2), 
+         d3Diff = d3 - lag(d3),
+         d4Diff = d4 - lag(d4),
+         d5Diff = d5 - lag(d5),
+         d6Diff = d6 - lag(d6),
+         d7Diff = d7 - lag(d7),
+         d8Diff = d8 - lag(d8),
+         d9Diff = d9 - lag(d9),
+         d10Diff = d10 - lag(d10),
+         d11Diff = d11 - lag(d11),
+         i0Diff = i0 - lag(i0),
+         i1Diff = i1 - lag(i1),
+         i2Diff = i2 - lag(i2),
+         i3Diff = i3 - lag(i3),
+         i4Diff = i4 - lag(i4),
+         i5Diff = i5 - lag(i5),
+         i6Diff = i6 - lag(i6),
+         i7Diff = i7 - lag(i7),
+         i8Diff = i8 - lag(i8),
+         i9Diff = i9 - lag(i9),
+         i10Diff = i10 - lag(i10),
+         i11Diff = i11 - lag(i11)) %>%
+  slice(-1) #drops first row 
 ```
 
 ## Estimated Model Without Interaction Variables
 We will begin our econometric analysis by estimating the simple version of the model (i.e., the one without the interaction variables). We don't want to estimate an intercept and so we add a 0 to the end of our variable list. The coefficient estimates are stored in a vector for the purpose of graphical analysis.
 
 ```{r}
-regP_diff <- lm(price_diff ~ DJan + DFeb + DMar + DApr + DMay + DJun + DJul + DAug + DSep + DOct + DNov + 0, data = full_data)
+regP_diff <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + 0, data = diff_data)
 summary(regP_diff)
 matrix_coef1 <- summary(regP_diff)$coefficients
 coeff1 <- as.data.frame(matrix_coef1[,1])
 colnames(coeff1) <- "dum"
- 
+coeff1 
 ```
 
 The regression results reveal strong pricing seasonality. Notice that all of the month dummies are statistically significant except for June and October. The $R^2$ value of 0.302 indicates that 30 percent of the monthly pricing variation is due to recurring seasonal effects. A more robust model which allowed pricing seasonality to change over time is likely to have an even higher $R^2$ value. In other words, the current model assumes that the seasonal price differences are the same in 2021 as they were in 1950, and this is a rather strong assumption.
@@ -250,7 +261,7 @@ plot1 <- ggplot(coeff1, aes(x=label, y=dum)) +
 plot1
 ```
 
-In this graph we can interpret the height of the column for month $i$ as the long term average difference in the month $i$ price and the December price with no restrictions on stock carry over. The full set of prices roughly conform to the saw-toothed pricing pattern, which was emphasized in the previous module. Hay stocks are at a maximum in December, which is the beginning of the livestock feeding season. Between January and May the long term average monthly price of hay increases relative to the December price, presumably at a rate which reflects the monthly cost of storage. BY June the cattle feeding season is over and new hay stocks begin to arrive. For the months of June and July the price of hay drops sharply, which is consistent with the saw-toothed pricing theory. From August onward the price begins to rise once again, presumably at a rate which reflects the monthly cost of storage. 
+In this graph we can interpret the height of the column for month $i$ as the long term average difference in the month $i$ price and the December price with no restrictions on stock carry over. The full set of prices roughly conform to the saw-toothed pricing pattern, which was emphasized in the previous module. Storage of hay begins in July and the price increases gradually through the hay storage season (August to November) and the livestock feeding season (December to April). When the hay harvest begins the following June, the price drops sharply with the arrival of new stocks. This is precisely what is predicted by the saw-toothed theory of intertemporal prices for a storable commodity which is produced just once each year. If the intertemporal LOP holds then the rate of increase in the prices as shown in the previous plot is our estimate of the monthly cost of storing hay. 
 
 ## Estimated Model with Interaction Terms
 
@@ -259,14 +270,15 @@ Let's re-estimate the model but this time with the interaction variables include
 We begin by estimating the unrestricted model and saving the estimated coefficients.
 
 ```{r}
-regP_diff2 <- lm(price_diff ~ DJan + DFeb + DMar + DApr + DMay + DJun + DJul + DAug + DSep + DOct + DNov + IJan + IFeb + IMar + IApr + IMay + IJun + IJul + IAug + ISep + IOct + INov + 0, data = full_data)
+regP_diff2 <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff 
+                  + i0Diff  + i1Diff + i2Diff + i3Diff + i4Diff + i5Diff + i6Diff + i7Diff + i8Diff + i9Diff + i10Diff + i11Diff +  0, data = diff_data)
 summary(regP_diff2)
 matrix_coef2 <- summary(regP_diff2)$coefficients
 coeff2 <- as.data.frame(matrix_coef2[,1])
-
+coeff2
 ```
 
-For this unrestricted regression there are fewer statistically significant coefficients on the 11 dummies (now only February through June are significant). However, the estimated coefficients for the May through October interaction variables are highly statistically significant. Notice also that the $R^2$ value has risen from 0.302 in the restricted model to 0.343 in the current unrestricted model. A F test could be used to determine if the inclusion of the interaction terms is statistically significant as a whole. Based on the increase in the $R^2$ it is very likely the case that the interaction variables as a whole are statistically important.  
+For this unrestricted regression there are fewer statistically significant coefficients on the 11 dummies (now only February through June are significant). However, the estimated coefficients for the May through October interaction variables are highly statistically significant. Notice also that the $R^2$ value has risen from 0.302 in the restricted model to 0.359 in the current unrestricted model. A F test could be used to determine if the inclusion of the interaction terms is statistically significant as a whole. Based on the increase in the $R^2$ it is very likely that the interaction variables as a whole are statistically important.  
 
 We would like to have the estimated coefficients for the 11 dummies and the 11 interaction variables in separate columns rather than one long column. We can filter out the estimated dummy coefficients and the interaction variable coefficients and then add names to the columns as follows:
 
@@ -313,11 +325,9 @@ plot2B <- ggplot(coeff2, aes(x=label, y=dum_plus_inter)) +
 plot2B
 ```
 
-The first of these two new graphs has the same general saw-toothed properties of the previous graph. The main difference is that in this model of normal year only pricing, the long term May price relative to the long term December price is much higher than in the previous case where all years were considered. This outcome is possibly the result of a much lower December price in a normal year as compared to all years.
+Both graphs have the same general saw-toothed properties of the previous graph. Interestingly, the price rise during the August to November storage season is much lower with normal stocks than with low stocks. The opposite result was expected because the monthly cost of storage should be higher with the higher stocks. One possibility is that the actual cost of storing hay is quite low since hay bales are often stacked in a field and covered with plastic. Perhaps the price rises much more quickly in a low stock year because the market is sending a signal that more hay should be stored until the following spring in case the feeding season is longer than expected when stocks are low.
 
-A comparison of the second graph, which shows low stock carry over pricing seasonality, to first graph, which shows normal stock carry over pricing seasonality, provides the most important results of this analysis. For example, when the livestock feeding season is over and the new grass arrives in June, the long term average price drops to approximately equal to the long term average December price in a normal stock carry over year and well below the long term average December price in a low stock carry over year. This outcome is expected because in a normal carry over year the December price preceding the feeding season and after the feeding season are both relatively low. In contrast, in a low stock carry over year (likely the result of a drought), the December price preceding the feeding season is relatively high (because stocks are scarce) and the December price following the feeding season is relatively low (because stocks are once again plentiful)
-
-A comparison of the two graphs also shows the price is at a maximum in May for a low stock carry over year, and in April for a low stock carry over year. This means that when carry over stocks are low prices fall over a longer period of time (May to July versus June to July ). One way to interpret this result is that the saw-toothed pricing pattern is less pronounced when stocks are low because convenience yield is emerging as a more important determinant of the pricing pattern. Remember from the Introduction that convenience yield explains falling prices in the presence of positive stocks. This softening of the saw- toothed pattern when stocks are low is examined in greater detail in the second half of this module. It is recommend that you revisit the discussion in this section after working through the model of convenience yield in the second half of this module.
+Another important difference between the two graphs is that in a normal year, the price drop with the onset of a new hay harvest returns the price to approximately the same level that the price cycle started at in the previous year, and price drop is over relatively quickly (most of the price drop takes place in June and July), With low stocks, the price drop is much more sread out and pronounced, starting in June and going through to August. Why is hay being store when the price is falling over a several month period? This is where the theory of convenience yield comes into play. when stocks are low very little is carried over because convenience yield is high. As new stocks become available the price continues to drop until September, and only then does the price begin to rise. I expect you are feeling the frustration of many economists who feel that the current theory of pricing does a poor job predicting seasonal pricing patterns and explaining comparisons such as what is being done here.
  
 # A Formal Model of Convenience Yield
 
@@ -514,8 +524,113 @@ This module should be viewed as a bridge between our study of pricing fundamenta
 
 Another module will focus on the connection between convenience yield and slope of the forward curve: contango (forward slope) and backwardation (negative slop). The slope of the forward curve is important for institutional traders who rely on "roll yield" in their long-only positions to generate profits. As you can see, there is no shortage of interesting and important topics which we will be examining in the next few modules.
 
+# Appendix I
+The purpose of this Appendix is to provide a detailed discussion about estimating dummy variables and first difference models.
 
-## Appendix
+When a dummy variable is included in an econometric model, the estimated coefficient on the dummy is interpreted as the difference between the conditional mean of the dependent variable for those observations when the dummy takes on a value of 1 versus 0. When data is non-stationary, we take the first difference to make the data stationary before proceeding with econometric estimation. In the October 14th class exercise, we had both types of differences. There was some confusion about the relationship between the two types of differences. The purpose this note is clear up the confusion regarding the two types of differences.
+
+I will refer to the first type as "dummy difference" and the second type as "stationarity difference".
+
+The bottom line is as follows:
+
+* The "dummy difference" method must be used in all models that use either an indicator variable such as the one we used for high stocks (equivalent to a single dummy variable) or a larger set of dummies (e.g., quarterly or monthly dummies).
+* The "stationarity difference" method is optional, and is only used if the underlying data is non stationary (i.e., the mean value of the dependent variable is not constant over time).
+* Time series models of commodity prices often do not use dummy variables and so the dummy difference method is not required. Time series models are often non-stationary and so the stationary difference method is commonly used.
+* The one case where time series models of commodity prices do use dummy variables is when the goal is to estimate seasonality. In most cases the data which has seasonality is also non stationary, and so we must use both the dummy difference and the stationary difference method.
+* Regardless of whether you estimate the model in levels (i.e., without taking the first difference to ensure the data is stationary) or in first difference format, the estimated coefficients have the same interpretation. 
+* Even though the interpretation of the estimated coefficients are the same, the value of the estimated coefficients are typically somewhat different when you estimate the model in levels versus first differences. The less stationary the data, the greater the difference between the two sets of estimates. 
+
+## Dummy Difference Only
+Suppose the price series is stationary and so there is no need to difference the data to make the series stationary. Also suppose we have monthly data over several years. We are interested in estimating the long-term average monthly price (i.e., the seasonality).
+
+Let $P_{j,t}$ denote the price in month $t$ of year $j$. Suppose we estimate the following model:
+$$P_{j,t} = \beta_0 + e_{j,t} $$
+In this case our estimate of $\beta_0$ is the long-term average price across all months and years. The data is stationary by assumption, and so our model is well specified (i.e., $\beta_0$ is indeed constant).
+
+Suppose we believed that prices were on average higher in the first six months than the last six months (i.e., there exists bi-annual seasonality). To estimate this model we might consider including two dummy variables: $D_{1,t}$ and $D_{2,t}$. We assume that $D_{1,t}$ takes on a value of 1 if the current month $t$ as indicated on the $D_{1,t}$ subscript is one of the first six months of the year, and zero otherwise. Similarly, We assume that $D_{2,t}$ takes on a value of 1 if the current month $t$ as indicated by the $D_{2,t}$ subscript is one of the last six months of the year, and zero otherwise.
+
+We can write the above equation with the two dummies included as follows:
+$$P_{j,t} = \beta_0 + \beta_1 D_{1,t} + \beta_2 D_{2,t} + e_{j,t} $$
+If you wrote out the right hand side variables starting in a January (remembering that $\beta_0$ is multiplied by a "1"), the data would look like
+
+1   1   0  
+1   1   0  
+1   1   0  
+1   1   0  
+1   1   0  
+1   1   0  
+1   0   1  
+1   0   1  
+1   0   1  
+1   0   1  
+1   0   1  
+1   0   1  
+1   1   0  
+etc
+
+If you were able to estimate this model then your estimate of $\beta_0$ would continue to be your long term average price across all months and years. Now $\beta_1$ is the difference between the long term average price for just the first six months versus all months. Similarly, $\beta_2$ is the difference between the long term average price for just the last six months versus all months.
+
+If you put the above data into the X matrix, and the prices into a Y matrix you could attempt to estimate the three $\beta$s using the familiar formula: $\beta = (X'X)^{-1}X'Y$. However, regardless of whether you are using Excel, Stata or R, you will receive an error message telling you that there is a singularity in your data. This occurs because if you sum the values in the last two columns of the above data set, the resulting column is a vector of 1s. The first column is also a vector of 1s. This is where the singularity problem arises. The X matrix cannot be inverted when one column can be expressed as a linear combination of two or more other columns.
+
+One way to proceed is keep both dummies and estimate the model without a constant. In this case the estimated $\beta_1$ is the long term average price for the first six months, and the estimated $\beta_2$ is the long term average price for the last six months. This approach is seldom used in applied work. Rather, it is conventional to keep the intercept and to drop one of the dummies. 
+
+Let's drop the second dummy, and so now our model simplifies to 
+$$P_{j,t} = \beta_0 + \beta_1 D_{1,t} + e_{j,t} $$
+This model can be estimated but how should we interpret our estimates of $\beta_0$ and $\beta_1$? In this case $\beta_0$ is the long run average price when $D_{1,t}=0$ (i.e., the last six months) and $\beta_0+\beta_1$ is the long run average price when $D_{1,t}=1$ (i.e., the first six months). If we subtract the first from the latter we are left with $\beta_1$ being the long run average price when $D_{1,t}=1$ (i.e., the first six months) minus the long run average price when $D_{1,t}=0$ (i.e., the last six months). More simply stated, $\beta_1$ is a measure of how much higher the long run average price is during the first six months versus the last six months.
+
+Consider now the model that you estimated during the October 14th lecture. Let $j$ denote the year and $t$ denote the quarter. If you want to estimate the model with quarterly dummies, then for the reasons discussed above, one dummy must be excluded from the model. If we exclude the quarter 4 dummy then the model becomes
+$$P_{j,t} = \beta_0 + \beta_1 D_{1,t} + \beta_2 D_{2,t} + \beta_3 D_{3,t} + e_{j,t}  $$
+In this case we interpret $\beta_0$ as the long term average price for Q4 since this was the quarter which was excluded from the analysis. Similarly, we interpret $\beta_1$, $\beta_2$ and $\beta_3$ as the long term average prices in quarters 1, 2 and 3, respectively, minus the long term average price in Q4. Thus, $\beta_i$ is the seasonal price difference relative to the omitted quarter. If you choose to exclude a different quarter then your estimates of the $\beta_1$, $\beta_2$ and $\beta_3$ coefficients will change. 
+
+In the analysis of commodity prices, the time period with the lowest price (e.g, harvest) is commonly excluded. This makes it possible to interpret a particular $\beta_i$ values as the cost of storing the commodity from harvest to the period $i$. Why? Because according to the LOP, the average long term monthly price increase will equal the monthly cost of storage. Thus the cumulative price increase must equal the cumulative storage cost.
+
+## Stationarity Difference Only
+Suppose there was no seasonality in the data and so there is no need to include monthly or quarterly dummies to control for the seasonality. However, suppose price is non stationary, which means that the mean of the price series is not constant over time. In particular, assume $P_{j,t} = \beta_0 + z_{j,t}$ where 
+$$z_{j,t}=\alpha + z_{j,t-1} + e_{j,t}$$
+In other words, the error term of the pricing function follows a random walk with drift. The price series, $P_{j,t} = \beta_0 + z_{j,t}$, must be made stationary before we can use it in most econometric analysis.
+
+The standard way to make a price series stationary is to take the first difference. If you are working with quarterly data, this means subtracting the price in the previous quarter from the price in the current quarter. That is, $P_{j,t}-P_{j,t-1}$. If we substitute in the expression for $\beta_0 + z_{j,t}$ we get
+$$P_{j,t}-P_{j,t-1} = z_{j,t}-z_{j,t-1} $$ 
+However, an earlier equation shows that $z_{j,t}-z_{j,t-1}=\alpha + e_{j,t}-e_{j,t-1}$. This means that 
+
+$$P_{j,t}-P_{j,t-1}=\alpha + e_{j,t}-e_{j,t-1} $$ 
+It can now be seen that the series of price differences is stationary because there are no terms on the right hand side which causes the mean value to drift over time.
+
+## Combine Dummy Difference and Stationary Difference
+Suppose our price series is non stationary as described above, and we want to use dummy variables to estimate seasonality. This means that we must take the first difference as in the previous section to make the price series stationary. As well, we must exclude the Q4 dummy and then interpret the estimated coefficient on the dummy $D_{i,t}$ as the difference in the long term average price for quarter $i$ and quarter 4.
+
+We begin with 
+$$P_{j,t} = \beta_0 + \beta_1 D_{1,t} + \beta_2 D_{2,t} + \beta_3 D_{3,t} + z_{j,t}$$
+After substituting in $$z_{j,t}-z_{j,t-1}=\alpha + e_{j,t}-e_{j,t-1}$$ 
+The first difference of this equation can be expressed as
+$$P_{j,t} - P_{j,t-1} = \alpha + \beta_1( D_{1,t}-D_{1,t-1}) + \beta_2 (D_{2,t}-D_{2,t-1}) + \beta_3 (D_{3,t}-D_{3,t-1}) + e_{j,t}- e_{j,t-1}$$
+ How should the estimated coefficients of this model be interpreted? In the previous model $\beta_0$ was the long term average price in Q4. However, $\beta_0$ has disappeared from the equation. As well, the dummies in brackets now take on three possible values: -1, 0 and 1. Does this mean that we can no longer interpret $\beta_i$ as the difference between the long run average price  in quarter $i$ and quarter 4? It is shown in the Github reading that the answer is no; $\beta_i$ continues to have the same interpretation as before.
+ 
+The one remaining issue to discuss is the effects of long term price inflation on the $\beta_i$ estimates. Suppose price increases by a constant \$2 per tonne per quarter over a large number of quarters due to economy wide inflation. If we estimate the above model, our estimate of $\alpha$ will be 2 because the $\alpha$ coefficient is an estimate of the long term average price drift over time. The problem is that the seasonal price differences will become amplified over time due to the inflation, and the dummy variables do not reflect this growth. This means that the estimates of $\beta$ will pick up the average level of seasonality over the long time period. This average level is likely to be much smaller than the current level of seasonality due to on going price inflation. This was the situation encountered when estimating seasonality in U.S. hay prices in the first half of Module 2C.
+
+There are different ways to model growth in seasonality over time. However, for our purposes it is best to eliminate the inflation before estimating the dummy variable model. The most common way to do this is to divide each price by the consumer price index (CPI). If the commodity's price is inflating at the same rate as the CPI then $\alpha=0$ and the above model becomes
+$$P_{j,t} - P_{j,t-1} = \alpha + \beta_1( D_{1,t}-D_{1,t-1}) + \beta_2 (D_{2,t}-D_{2,t-1}) + \beta_3 (D_{3,t}-D_{3,t-1}) + e_{j,t}- e_{j,t-1}$$
+
+## Interaction Variables
+The inclusion of a high-stocks indicator variable means that the dummy variable equation expressed in levels can be written as
+$$P_{j,t} = \beta_0 + \beta_1 D_{1,t} + \beta_2 D_{2,t} + \beta_3 D_{3,t} + \gamma_0 \Phi_{j,t} + \gamma_1 D_{1,t}\Phi_{j,t} + \gamma_2 D_{2,t}\Phi_{j,t} + \gamma_3 D_{3,t}\Phi_{j,t} +e_{j,t}$$
+The quarterly indicator variable, $\Phi_{j,t}$ takes on a value of 0 if the year in question has normal stocks, and a value of 1 if it has high stocks.
+
+How can we interpret the coefficients. If the three dummies and the indicator all take on a value of zero, we are left with $\beta_0$. This must mean that $\bar P_4^N =\beta_0$ is the long term average price in Q4 of a normal stock year. If the three dummies take on a value of zero and the indicator takes on a value of 1, we are left with $\beta_0+\gamma_0$. This must meant that $\bar P_4^Y =\beta_0+\gamma_0$ is the long term average price in Q4 of a high stock year. It now follows that $\bar P_i^N = \beta_0+\beta_i$ is the long term average price in quarter $i$ of a normal year, and $\bar P_i^Y = \beta_0+\gamma_0+\beta_i+\gamma_i$ is the long term average price in quarter $i$ of a high stock year. 
+
+We can use the previous expressions to write 
+$$\gamma_i=(\bar P_i^Y- \bar P_i^N)-(\bar P_4^Y- \bar P_4^N)$$ 
+Thus, $\gamma_i$ is the quarter $i$ versus quarter 4 difference in the price gap, where the gap is the long term average price difference between a high stock year and a normal year. The previous expression can be rearranged and rewritten as
+$$\gamma_i=(\bar P_i^Y- \bar P_4^Y)-(\bar P_i^N- \bar P_4^N)$$ 
+This means that $\gamma_i$ can also be interpreted as the high stock versus normal stock difference in the price gap, where the gap is the long term average price difference between quarter $i$ and quarter 4.
+
+Similar to the model without interaction terms, this new model can be written and estimated in first differences to ensure that the price data is stationary:
+$$P_{j,t} - P_{j,t-1} = \alpha + \beta_1( D_{1,t}-D_{1,t-1}) + \beta_2 (D_{2,t}-D_{2,t-1}) + \beta_3 (D_{3,t}-D_{3,t-1}) + \gamma_0(\Phi_{j,t}-\Phi_{j,t-1}) + \gamma_1( D_{1,t}\Phi_{j,t}-D_{1,t-1}\Phi_{j,t-1}) + \gamma_2 (D_{2,t}\Phi_{j,t}-D_{2,t-1}\Phi_{j,t-1}) + \gamma_3 (D_{3,t}\Phi_{j,t}-D_{3,t-1}\Phi_{j,t-1}) +e_{j,t}- e_{j,t-1}$$
+In the student exercise and Module 2C the drift parameter, $\alpha$, is assumed to equal zero.
+
+Despite this rather complicated equation, the estimates of the $\beta$ and $\gamma$ coefficients remain the same as in the previous case where the model was specified in levels.
+
+# Appendix II
 The purpose of this Appendix is to demonstrate the LOP and the stock adjustment equation hold for the base case set of eight simulated prices. The verification begins by substituting the equilibrium price into the inverse demand schedule to obtain the quarterly consumption, $X_t$, Then substitute quarterly consumption into the stock adjustment equation to derive the quarterly stock levels, $S_t$. Finally, substitute the derived values of $S_t$ and the equilibrium prices into the LOP equation, $P_{t+1}-P_t-(m_0 + m_1 S_t)$, to verify that the equation holds.
 
 ```{r}

@@ -32,82 +32,62 @@ plot_stocks <- ggplot(mean_data, aes(x = year)) +
   labs(title = "May and December Corn Stocks", y = "tons ('000s)", x = "Date") +
   theme(plot.title = element_text(size=10)) +
   scale_color_manual(name = "Month", values = c("May" = "blue", "Dec" = "red"))
- plot_stocks
+plot_stocks
 
 # sumstats of May stocks
 summary(mean_data$stckMay) 
 
-# calculate the 25% quartile for May stocks - threshold for low stocks
-quant_cut = quantile(mean_data$stckMay, 0.25)
+# dummy var based on quartile value
+mean_data <- mean_data %>%
+  mutate(quant_cut = quantile(mean_data$stckMay, 0.25),
+         stckDum = ifelse(stckMay<quant_cut,1,0))
 
-# add the low stocks indicator variable (based on quartile value) to monthly data
-hay_data <- hay_data %>%
-  mutate(stckDum = ifelse(stckMay<quant_cut,1,0) )
-head(hay_data)
+# remove the first row
+diff_data <- select(hay_data, c("year","month"))
+diff_data <- diff_data[-1,]
 
-# Add 11 monthly dummies to merged monthly data
-hay_data <- hay_data %>% 
-  mutate(d1 = ifelse(month=="Jan",1,0), 
-         d2 = ifelse(month=="Feb",1,0),
-         d3 = ifelse(month=="Mar",1,0),
-         d4 = ifelse(month=="Apr",1,0),
-         d5 = ifelse(month=="May",1,0),
-         d6 = ifelse(month=="Jun",1,0),
-         d7 = ifelse(month=="Jul",1,0),
-         d8 = ifelse(month=="Aug",1,0),
-         d9 = ifelse(month=="Sep",1,0),
-         d10 = ifelse(month=="Oct",1,0),
-         d11 = ifelse(month=="Nov",1,0))
-head(hay_data, 15)
+# Take the first difference
+diff_data <- diff_data %>% 
+  mutate(price_diff = diff(hay_data$price))
+head(diff_data)
 
-# add 12 interaction variables to monthly data
-hay_data <- hay_data %>% 
-  mutate(i0 = stckDum, 
-         i1 = d1*stckDum,
-         i2 = d2*stckDum,
-         i3 = d3*stckDum,
-         i4 = d4*stckDum,
-         i5 = d5*stckDum,
-         i6 = d6*stckDum,
-         i7 = d7*stckDum,
-         i8 = d8*stckDum,
-         i9 = d9*stckDum,
-         i10 = d10*stckDum,
-         i11 = d11*stckDum)
-head(hay_data, 15)
+# Convert to monthly format
+full_data <- merge(x = diff_data, y = mean_data[,c("year","stckDum")], by = "year", all.x = TRUE)
+# alternative function
+# full_data <- left_join(x = diff_data, y = mean_data[,c("year","stckDum")], by = "year")
 
-# add the first differences to the monthly data
-diff_data <- hay_data %>%
-  mutate(price_diff = price - lag(price), 
-         d1Diff = d1 - lag(d1), 
-         d2Diff = d2 - lag(d2), 
-         d3Diff = d3 - lag(d3),
-         d4Diff = d4 - lag(d4),
-         d5Diff = d5 - lag(d5),
-         d6Diff = d6 - lag(d6),
-         d7Diff = d7 - lag(d7),
-         d8Diff = d8 - lag(d8),
-         d9Diff = d9 - lag(d9),
-         d10Diff = d10 - lag(d10),
-         d11Diff = d11 - lag(d11),
-         i0Diff = i0 - lag(i0),
-         i1Diff = i1 - lag(i1),
-         i2Diff = i2 - lag(i2),
-         i3Diff = i3 - lag(i3),
-         i4Diff = i4 - lag(i4),
-         i5Diff = i5 - lag(i5),
-         i6Diff = i6 - lag(i6),
-         i7Diff = i7 - lag(i7),
-         i8Diff = i8 - lag(i8),
-         i9Diff = i9 - lag(i9),
-         i10Diff = i10 - lag(i10),
-         i11Diff = i11 - lag(i11)) %>%
-  slice(-1) #drops first row 
+head(full_data)
 
-head(diff_data, 10)
+# Create 11 monthly dummy vars
+D <- hay_data$month
+dummies <- model.matrix(~D+0)
+
+col_order <- c("DJan","DFeb","DMar","DApr","DMay","DJun","DJul","DAug","DSep","DOct","DNov")
+dummies <- dummies[, col_order]
+
+# Add dummy vars to df
+dummies_diff <- diff(dummies)
+full_data <- cbind(full_data,dummies_diff)
+head(full_data, 4)
+
+# Create interaction terms
+full_data <- full_data %>% 
+  mutate(IJan = DJan*stckDum,
+         IFeb = DFeb*stckDum,
+         IMar = DMar*stckDum,
+         IApr = DApr*stckDum,
+         IMay = DMay*stckDum,
+         IJun = DJun*stckDum,
+         IJul = DJul*stckDum,
+         IAug = DAug*stckDum,
+         ISep = DSep*stckDum,
+         IOct = DOct*stckDum,
+         INov = DNov*stckDum)
+
+head(full_data, 4)
 
 # Estimate model without interaction vars
-regP_diff <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + 0, data = diff_data)
+regP_diff <- lm(price_diff ~ DJan + DFeb + DMar + DApr + DMay + DJun + DJul + DAug + DSep + DOct + DNov + 0, data = full_data)
 summary(regP_diff)
 matrix_coef1 <- summary(regP_diff)$coefficients
 coeff1 <- as.data.frame(matrix_coef1[,1])
@@ -126,11 +106,11 @@ plot1 <- ggplot(coeff1, aes(x=label, y=dum)) +
   labs(title = "Seasonal Price Estimates for Hay (Restricted Model)",
        x = "Current Month - December",
        y = "$ per ton")
+
 plot1
 
-# Estimating the model with the interaction variables
-regP_diff2 <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff 
-                  + i0Diff  + i1Diff + i2Diff + i3Diff + i4Diff + i5Diff + i6Diff + i7Diff + i8Diff + i9Diff + i10Diff + i11Diff +  0, data = diff_data)
+# Estimating the unrestricted model 
+regP_diff2 <- lm(price_diff ~ DJan + DFeb + DMar + DApr + DMay + DJun + DJul + DAug + DSep + DOct + DNov + IJan + IFeb + IMar + IApr + IMay + IJun + IJul + IAug + ISep + IOct + INov + 0, data = full_data)
 summary(regP_diff2)
 matrix_coef2 <- summary(regP_diff2)$coefficients
 coeff2 <- as.data.frame(matrix_coef2[,1])
