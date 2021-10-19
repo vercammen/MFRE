@@ -114,27 +114,29 @@ We see that the average level of stocks is about 22 million tons (keep in mind t
 An 18 percent carry over rate is similar to the stock carry over rate for the major U.S. grains. The previous table shows that the first quartile is about 18 million tons. This means that 25 percent of the May stock observations were below 18 million tons. In the analysis below 18 million is used as the threshold for defining a "low stock" year. Even though 18 million is not much below the average of 22 million, we will see that there is a large difference in the seasonal pattern of prices for a normal year versus a low stock year.
 
 ## Dummy Variables with Interaction Terms
-In our study of the U.S. potato CPI in Module 1E we used a set of 11 monthly dummies (December was omitted and serves as the reference point) for measuring seasonality in potato prices. We will do the same thing here except now we will use conditional monthly dummies in additional to the regular unconditional dummies. Specifically, we will create an indicator variable which takes on a value of one if May stocks are low (i.e., less than the first quartile, which is approximately 18 million tons) and a value of zero otherwise. We will then create a new set of 11 interaction variables, where each variable is the product of the regular monthly dummy and the indicator variable. This will become clearer with a formal specification of the enhanced model.
+In our study of the U.S. potato CPI in Module 1E we used a set of 11 monthly dummies (December was omitted and serves as the reference point) for measuring seasonality in potato prices. We will do the same thing here except now we will omit January instead of December, and we will use conditional monthly dummies in additional to the regular unconditional dummies. Specifically, we will create an indicator variable which takes on a value of one if May stocks are low (i.e., less than the first quartile, which is approximately 18 million tons) and a value of zero otherwise. We will then create a new set of 11 interaction variables, where each variable is the product of the regular monthly dummy and the indicator variable. This will become clearer with a formal specification of the enhanced model.
+
+The reason why January is omitted rather than December is because January of the current year precedes May (which is when we are measuring stocks) whereas December comes after May. We want to compare monthly prices to an earlier reference month rather than a latter one so that we can interpret price differences as the cost of storage.
 
 The enhanced dummy variable model can be written in levels as
  
-$$P_{j,t}= \beta_0+\sum_{i=1}^{11}\beta_i D_{i,t} + \gamma_0\Phi_{j,t}+\sum_{i=1}^{11}\gamma_i D_{i,t}\Phi_{j,t}  +  e_{j,t}$$
+$$P_{j,t}= \beta_0+\sum_{i=2}^{12}\beta_i D_{i,t} + \gamma_0\Phi_{j,t}+\sum_{i=2}^{12}\gamma_i D_{i,t}\Phi_{j,t}  +  e_{j,t}$$
 In this equation the variable $\Phi_{j,t}$ is an indicator variable which takes on a value of 1 if year $j$ stocks are low and a value of 0 otherwise.
 
-The Appendix provides a detailed discussion about how to interpret the estimated coefficients of a dummy variable model with interaction terms. By way of a summary, $\beta_0$ is the long run average price in December of a normal year, and $\beta_0+\gamma_0$ is the long average price in December of a low-stock year. Similarly, $\beta_0+\beta_i$ is the long run average price in month $i$ of a normal year, and $\beta_0+\gamma_0+\beta_i+\gamma_i$ is the long average price in month $i$ of a low stock year.
+The Appendix provides a detailed discussion about how to interpret the estimated coefficients of a dummy variable model with interaction terms. By way of a summary, $\beta_0$ is the long run average price in January of a normal year, and $\beta_0+\gamma_0$ is the long average price in January of a low-stock year. Similarly, $\beta_0+\beta_i$ is the long run average price in month $i$ of a normal year, and $\beta_0+\gamma_0+\beta_i+\gamma_i$ is the long average price in month $i$ of a low stock year.
 
 Let $\bar P_i^N$ and $\bar P_i^L$ denote the long average price in month $i$ in a normal stock year and a low stock year, respectively. Using the expressions from above it can be shown that 
-$$\beta_i=\bar P_i^N-\bar P_{12}^N $$
+$$\beta_i=\bar P_i^N-\bar P_{1}^N $$
 and
-$$\gamma_i = (\bar P_i^L-\bar P_{12}^L)-(\bar P_i^N -\bar P_{12}^N)  $$
+$$\gamma_i = (\bar P_i^L-\bar P_{1}^L)-(\bar P_i^N -\bar P_{1}^N)  $$
 or
 
-$$\gamma_i = (\bar P_i^L-\bar P_i^N)-(\bar P_{12}^L -\bar P_{12}^N)  $$
-These equations tell us that $\beta_i$ is the difference in the long run average price in month $i$ and December, both in a normal year. Similarly, $\gamma_i$ can be interpreted as the as the difference in the low versus normal stocks price gap where the gap is defined as the long run average price difference between month $i$ and December. Using the last equation, $\gamma_i$ can also be interpreted as the month $i$ to month $12$ difference in the price gap where the gap is the long run average price difference for low versus normal stocks.  
+$$\gamma_i = (\bar P_i^L-\bar P_i^N)-(\bar P_{1}^L -\bar P_{1}^N)  $$
+These equations tell us that $\beta_i$ is the difference in the long run average price in month $i$ and January, both in a normal year. Similarly, $\gamma_i$ can be interpreted as the as the difference in the low versus normal stocks price gap where the gap is defined as the long run average price difference between month $i$ and January. Using the last equation, $\gamma_i$ can also be interpreted as the month $i$ to month $1$ difference in the price gap where the gap is the long run average price difference for low versus normal stocks.  
 
 The previous plot reveals a high degree of non-stationarity in the price of hay. It is therefore necessary to estimate the model in first differences as follows:
 
-$$P_{j,t}-P_{j,t-1}= \sum_{i=1}^{11}\beta_i (D_{i,t} - D_{i,t-1}) + \gamma_0(\Phi_{j,t} - \Phi_{j,t-1})+ \sum_{i=1}^{11}\gamma_i (D_{i,t}\Phi_{j,t} - D_{i,t-1}\Phi_{j,t-1}) +  e_{j,t}-e_{j,t-1}$$
+$$P_{j,t}-P_{j,t-1}= \sum_{i=2}^{12}\beta_i (D_{i,t} - D_{i,t-1}) + \gamma_0(\Phi_{j,t} - \Phi_{j,t-1})+ \sum_{i=2}^{12}\gamma_i (D_{i,t}\Phi_{j,t} - D_{i,t-1}\Phi_{j,t-1}) +  e_{j,t}-e_{j,t-1}$$
 
 It is important to understand that even though this equation is estimated in first difference format, the interpretation of the estimated coefficients remain the same as the case where the model was estimated in levels. See the Appendix for a more detailed discussion about estimating the model in first differences.
 
@@ -170,7 +172,8 @@ hay_data <- hay_data %>%
          d8 = ifelse(month=="Aug",1,0),
          d9 = ifelse(month=="Sep",1,0),
          d10 = ifelse(month=="Oct",1,0),
-         d11 = ifelse(month=="Nov",1,0))
+         d11 = ifelse(month=="Nov",1,0),
+         d12 = ifelse(month=="Dec",1,0))
 head(hay_data, 15)
 ```
 
@@ -189,7 +192,8 @@ hay_data <- hay_data %>%
          i8 = d8*stckDum,
          i9 = d9*stckDum,
          i10 = d10*stckDum,
-         i11 = d11*stckDum)
+         i11 = d11*stckDum,
+         i12 = d12*stckDum)
 head(hay_data, 15)
 ```
 
@@ -210,6 +214,7 @@ diff_data <- hay_data %>%
          d9Diff = d9 - lag(d9),
          d10Diff = d10 - lag(d10),
          d11Diff = d11 - lag(d11),
+         d12Diff = d12 - lag(d12),
          i0Diff = i0 - lag(i0),
          i1Diff = i1 - lag(i1),
          i2Diff = i2 - lag(i2),
@@ -221,15 +226,16 @@ diff_data <- hay_data %>%
          i8Diff = i8 - lag(i8),
          i9Diff = i9 - lag(i9),
          i10Diff = i10 - lag(i10),
-         i11Diff = i11 - lag(i11)) %>%
+         i11Diff = i11 - lag(i11),
+         i12Diff = i12 - lag(i12)) %>%
   slice(-1) #drops first row 
 ```
 
 ## Estimated Model Without Interaction Variables
-We will begin our econometric analysis by estimating the simple version of the model (i.e., the one without the interaction variables). We don't want to estimate an intercept and so we add a 0 to the end of our variable list. The coefficient estimates are stored in a vector for the purpose of graphical analysis.
+We will begin our econometric analysis by estimating the simple version of the model (i.e., the one without the interaction variables).Remember that January is the omitted dummy variable. We don't want to estimate an intercept and so we add a 0 to the end of our variable list. The coefficient estimates are stored in a vector for the purpose of graphical analysis.
 
 ```{r}
-regP_diff <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + 0, data = diff_data)
+regP_diff <- lm(price_diff ~ d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + d12Diff + 0, data = diff_data)
 summary(regP_diff)
 matrix_coef1 <- summary(regP_diff)$coefficients
 coeff1 <- as.data.frame(matrix_coef1[,1])
@@ -237,13 +243,13 @@ colnames(coeff1) <- "dum"
 coeff1 
 ```
 
-The regression results reveal strong pricing seasonality. Notice that all of the month dummies are statistically significant except for June and October. The $R^2$ value of 0.302 indicates that 30 percent of the monthly pricing variation is due to recurring seasonal effects. A more robust model which allowed pricing seasonality to change over time is likely to have an even higher $R^2$ value. In other words, the current model assumes that the seasonal price differences are the same in 2021 as they were in 1950, and this is a rather strong assumption.
+The regression results reveal strong pricing seasonality. Notice that all of the month dummies are statistically significant except for March, June and October. The $R^2$ value of 0.302 indicates that 30 percent of the monthly pricing variation is due to recurring seasonal effects. A more robust model which allowed pricing seasonality to change over time is likely to have an even higher $R^2$ value. In other words, the current model assumes that the seasonal price differences are the same in 2021 as they were in 1950, and this is a rather strong assumption.
 
 Lets graph the estimated coefficients for the 11 dummy variables. To do this we need to first create a set of X axis labels and bind them to our set of coefficient estimates. The labels are R factor variables, and R insists on ordering them alphabetically rather than they way they are listed. To prevent this from happening we use the *levels* function within the *factor* function as follows.
 
 ```{r}
-label <- factor(c("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"),
-         levels = c("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"))
+label <- factor(c("Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
+         levels = c("Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
 
 coeff1 <- cbind(coeff1, label)
 ```
@@ -261,24 +267,24 @@ plot1 <- ggplot(coeff1, aes(x=label, y=dum)) +
 plot1
 ```
 
-In this graph we can interpret the height of the column for month $i$ as the long term average difference in the month $i$ price and the December price with no restrictions on stock carry over. The full set of prices roughly conform to the saw-toothed pricing pattern, which was emphasized in the previous module. Storage of hay begins in July and the price increases gradually through the hay storage season (August to November) and the livestock feeding season (December to April). When the hay harvest begins the following June, the price drops sharply with the arrival of new stocks. This is precisely what is predicted by the saw-toothed theory of intertemporal prices for a storable commodity which is produced just once each year. If the intertemporal LOP holds then the rate of increase in the prices as shown in the previous plot is our estimate of the monthly cost of storing hay. 
+In this graph we can interpret the height of the column for month $i$ as the long term average difference in the month $i$ price and the January price with no restrictions on stock carry over. The full set of prices roughly conform to the saw-toothed pricing pattern, which was emphasized in the previous module. Storage of hay begins in July and the price increases gradually through the hay storage season (August to November) and the livestock feeding season (December to April). When the hay harvest begins the following June, the price drops sharply with the arrival of new stocks. This is precisely what is predicted by the saw-toothed theory of intertemporal prices for a storeable commodity which is produced just once each year. If the intertemporal LOP holds then the rate of increase in the prices as shown in the previous plot is our estimate of the monthly cost of storing hay. 
 
 ## Estimated Model with Interaction Terms
 
 Let's re-estimate the model but this time with the interaction variables included. After estimating the model we will separately graph the estimated dummy coefficients and the sum of the estimated dummy coefficients and the interaction variable coefficients so we can more effectively see how low stocks affects the seasonality in hay prices.
 
-We begin by estimating the unrestricted model and saving the estimated coefficients.
+We begin by estimating the unrestricted model (once again omitting the January dummy) and saving the estimated coefficients.
 
 ```{r}
-regP_diff2 <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff 
-                  + i0Diff  + i1Diff + i2Diff + i3Diff + i4Diff + i5Diff + i6Diff + i7Diff + i8Diff + i9Diff + i10Diff + i11Diff +  0, data = diff_data)
+regP_diff2 <- lm(price_diff ~ d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + d12Diff
+                  + i0Diff  + i2Diff + i3Diff + i4Diff + i5Diff + i6Diff + i7Diff + i8Diff + i9Diff + i10Diff + i11Diff + i12Diff + 0, data = diff_data)
 summary(regP_diff2)
 matrix_coef2 <- summary(regP_diff2)$coefficients
 coeff2 <- as.data.frame(matrix_coef2[,1])
 coeff2
 ```
 
-For this unrestricted regression there are fewer statistically significant coefficients on the 11 dummies (now only February through June are significant). However, the estimated coefficients for the May through October interaction variables are highly statistically significant. Notice also that the $R^2$ value has risen from 0.302 in the restricted model to 0.359 in the current unrestricted model. A F test could be used to determine if the inclusion of the interaction terms is statistically significant as a whole. Based on the increase in the $R^2$ it is very likely that the interaction variables as a whole are statistically important.  
+For this unrestricted regression there are fewer statistically significant coefficients on the 11 dummies (now only February, April and May are significant). However, the estimated coefficients for the May through November interaction variables are highly statistically significant. The $\gamma_0$ intercept term is positive and significant, which tells us that the January price is on average higher in a low stock year versus a normal stock year -- an expected result. Notice also that the $R^2$ value has risen from 0.302 in the restricted model to 0.342 in the current unrestricted model. A F test could be used to determine if the inclusion of the interaction terms is statistically significant as a whole. Based on the increase in the $R^2$ it is very likely that the interaction variables as a whole are statistically important.  
 
 We would like to have the estimated coefficients for the 11 dummies and the 11 interaction variables in separate columns rather than one long column. We can filter out the estimated dummy coefficients and the interaction variable coefficients and then add names to the columns as follows:
 
@@ -327,7 +333,7 @@ plot2B
 
 Both graphs have the same general saw-toothed properties of the previous graph. Interestingly, the price rise during the August to November storage season is much lower with normal stocks than with low stocks. The opposite result was expected because the monthly cost of storage should be higher with the higher stocks. One possibility is that the actual cost of storing hay is quite low since hay bales are often stacked in a field and covered with plastic. Perhaps the price rises much more quickly in a low stock year because the market is sending a signal that more hay should be stored until the following spring in case the feeding season is longer than expected when stocks are low.
 
-Another important difference between the two graphs is that in a normal year, the price drop with the onset of a new hay harvest returns the price to approximately the same level that the price cycle started at in the previous year, and price drop is over relatively quickly (most of the price drop takes place in June and July), With low stocks, the price drop is much more sread out and pronounced, starting in June and going through to August. Why is hay being store when the price is falling over a several month period? This is where the theory of convenience yield comes into play. when stocks are low very little is carried over because convenience yield is high. As new stocks become available the price continues to drop until September, and only then does the price begin to rise. I expect you are feeling the frustration of many economists who feel that the current theory of pricing does a poor job predicting seasonal pricing patterns and explaining comparisons such as what is being done here.
+Another important difference between the two graphs is that in a normal year, the price drop with the onset of a new hay harvest returns the price to approximately the same level that the price cycle started at in the previous year, and price drop is over relatively quickly (most of the price drop takes place in June and July), With low stocks, the price drop is much more spread out and pronounced, starting in June and going through to August. Why is hay being store when the price is falling over a several month period? This is where the theory of convenience yield comes into play. when stocks are low very little is carried over because convenience yield is high. As new stocks become available the price continues to drop until September, and only then does the price begin to rise. I expect you are feeling the frustration of many economists who feel that the current theory of pricing does a poor job predicting seasonal pricing patterns and explaining comparisons such as what is being done here.
  
 # A Formal Model of Convenience Yield
 

@@ -18,13 +18,13 @@ plot_price <- ggplot(mean_data, aes(x = year, y = price)) +
   geom_line() + 
   labs(title = "Yearly Avg Hay Price", y= "$/ton") + 
   theme(plot.title = element_text(size=10))
-plot_price
+#plot_price
 
 plot_production <- ggplot(mean_data, aes(x = year, y = production)) +  
   geom_line() + 
   labs(title = "Yearly Hay Production", y= "tons ('000s)") + 
   theme(plot.title = element_text(size=10))
-plot_production
+#plot_production
 
 plot_stocks <- ggplot(mean_data, aes(x = year)) + 
   geom_line(aes(y = stckMay, color = "May")) + 
@@ -32,7 +32,7 @@ plot_stocks <- ggplot(mean_data, aes(x = year)) +
   labs(title = "May and December Corn Stocks", y = "tons ('000s)", x = "Date") +
   theme(plot.title = element_text(size=10)) +
   scale_color_manual(name = "Month", values = c("May" = "blue", "Dec" = "red"))
- plot_stocks
+# plot_stocks
 
 # sumstats of May stocks
 summary(mean_data$stckMay) 
@@ -57,7 +57,8 @@ hay_data <- hay_data %>%
          d8 = ifelse(month=="Aug",1,0),
          d9 = ifelse(month=="Sep",1,0),
          d10 = ifelse(month=="Oct",1,0),
-         d11 = ifelse(month=="Nov",1,0))
+         d11 = ifelse(month=="Nov",1,0),
+         d12 = ifelse(month=="Dec",1,0))
 head(hay_data, 15)
 
 # add 12 interaction variables to monthly data
@@ -73,7 +74,8 @@ hay_data <- hay_data %>%
          i8 = d8*stckDum,
          i9 = d9*stckDum,
          i10 = d10*stckDum,
-         i11 = d11*stckDum)
+         i11 = d11*stckDum,
+         i12 = d12*stckDum)
 head(hay_data, 15)
 
 # add the first differences to the monthly data
@@ -90,6 +92,7 @@ diff_data <- hay_data %>%
          d9Diff = d9 - lag(d9),
          d10Diff = d10 - lag(d10),
          d11Diff = d11 - lag(d11),
+         d12Diff = d12 - lag(d12),
          i0Diff = i0 - lag(i0),
          i1Diff = i1 - lag(i1),
          i2Diff = i2 - lag(i2),
@@ -101,13 +104,14 @@ diff_data <- hay_data %>%
          i8Diff = i8 - lag(i8),
          i9Diff = i9 - lag(i9),
          i10Diff = i10 - lag(i10),
-         i11Diff = i11 - lag(i11)) %>%
+         i11Diff = i11 - lag(i11),
+         i12Diff = i12 - lag(i12)) %>%
   slice(-1) #drops first row 
 
 head(diff_data, 10)
 
 # Estimate model without interaction vars
-regP_diff <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + 0, data = diff_data)
+regP_diff <- lm(price_diff ~ d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + d12Diff + 0, data = diff_data)
 summary(regP_diff)
 matrix_coef1 <- summary(regP_diff)$coefficients
 coeff1 <- as.data.frame(matrix_coef1[,1])
@@ -115,8 +119,8 @@ colnames(coeff1) <- "dum"
 coeff1
 
 # Graph coefs of 11 dummy vars
-label <- factor(c("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"),
-                levels = c("Jan","Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"))
+label <- factor(c("Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
+                levels = c("Feb","Mar", "Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
 
 coeff1 <- cbind(coeff1, label)
 
@@ -129,8 +133,8 @@ plot1 <- ggplot(coeff1, aes(x=label, y=dum)) +
 plot1
 
 # Estimating the model with the interaction variables
-regP_diff2 <- lm(price_diff ~ d1Diff + d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff 
-                  + i0Diff  + i1Diff + i2Diff + i3Diff + i4Diff + i5Diff + i6Diff + i7Diff + i8Diff + i9Diff + i10Diff + i11Diff +  0, data = diff_data)
+regP_diff2 <- lm(price_diff ~ d2Diff + d3Diff + d4Diff + d5Diff + d6Diff + d7Diff + d8Diff + d9Diff + d10Diff + d11Diff + d12Diff
+                  + i0Diff  + i2Diff + i3Diff + i4Diff + i5Diff + i6Diff + i7Diff + i8Diff + i9Diff + i10Diff + i11Diff +  i12Diff + 0, data = diff_data)
 summary(regP_diff2)
 matrix_coef2 <- summary(regP_diff2)$coefficients
 coeff2 <- as.data.frame(matrix_coef2[,1])
