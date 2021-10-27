@@ -1,0 +1,77 @@
+---
+title: "Assignment 2 - Q1"
+author: "Student Name"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(dplyr, here)
+```
+
+# Question 1 - codes and comments (1 point)
+
+*Change to your own words based on the code you will use. Put as many comments as you can to explain the steps you do. You will only submit the pdf/html file.*
+
+I first load the 2 data sets. 
+
+```{r}
+price_data <- read.csv(here("data", "price.csv"))
+stock_data <- read.csv(here("data", "stocks.csv"))
+```
+
+Add an indicator variable to the stocks data frame: 1 if annual stocks > 108 and 0 otherwise.  
+
+```{r}
+# your code
+head(price_data) #make sure you print your data every time, similar to Dr. Vercammen's guide
+```
+
+Add quarter dummies
+
+```{r}
+# your code
+
+# head(all_data)
+```
+
+Add interaction term 
+
+```{r}
+# your code
+
+# head(all_data)
+```
+
+Add interaction term 
+
+```{r}
+# your code
+
+# head(all_data)
+```
+
+Now I estimate the dummary variable model in first difference format with interaction terms.  
+
+```{r}
+# your code
+
+# model <- lm(y ~ x1 + x2 + 0, data = all_data)
+# summary(model)
+```
+
+# Question 1 - explanation (1.5 points)
+
+(a) What is your estimate of $B_3$ measuring?
+
+    - Type answer here
+
+(b) What is your estimate of $\gamma_0$ + $B_2$ measuring?
+
+    - Type answer here
+
+(c) What is your estimate of $\gamma_3$ measuring? 
+
+    - Type answer here
