@@ -1,0 +1,148 @@
+---
+title: "FRE 501 Assignment 2 - Q1"
+author: "Suggested Solution"
+output:
+  bookdown::html_document2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(dplyr, here)
+```
+
+# Question 1 - codes and comments (1 point)
+
+I first load the 2 data sets. 
+
+```{r}
+price_data <- read.csv(here("data", "price.csv"))
+stock_data <- read.csv(here("data", "stocks.csv"))
+```
+
+I merge the two data frames together to create `all_data`. 
+
+```{r}
+all_data <- left_join(price_data, stock_data, by = c("year"))
+head(all_data)
+```
+
+Next, I create the following variables:
+
+    - quarter dummies
+    - high stock dummy (= 1 if stocks > 108)
+    - interaction term
+    - price difference 
+    - "dummy differences"
+    - "stationarity differences" 
+    - "interaction differences" 
+
+```{r}
+all_data <- all_data %>%
+  mutate(q1 = ifelse(quarter == 1, 1, 0),     # quarter dummies
+         q2 = ifelse(quarter == 2, 1, 0),
+         q3 = ifelse(quarter == 3, 1, 0),
+         highstock = ifelse(stocks > 108, 1, 0), # high stock dummy 
+         highstock_q1 = highstock * q1,      # interaction
+         highstock_q2 = highstock * q2,
+         highstock_q3 = highstock * q3, 
+         d_price = price - lag(price),        # stationarity diff
+         d_q1 = q1 - lag(q1),                 # dummy diff
+         d_q2 = q2 - lag(q2),
+         d_q3 = q3 - lag(q3),
+         d_highstock = highstock - lag(highstock),  # stock diff 
+         d_highstock_q1 = highstock_q1 - lag(highstock_q1), # interaction diff
+         d_highstock_q2 = highstock_q2 - lag(highstock_q2),
+         d_highstock_q3 = highstock_q3 - lag(highstock_q3)) %>% 
+  slice(-1)                                  # drop first row
+
+head(all_data)
+```
+
+Finally, I estimate the first differenced model with interaction terms
+
+```{r}
+model <- lm(d_price ~ d_q1 + d_q2 + d_q3 + d_highstock + d_highstock_q1 + 
+              d_highstock_q2 + d_highstock_q3 + 0, data = all_data)
+summary(model)
+```
+
+# Question 1 - explanation (1.5 points)
+
+To answer the following questions, it is best to think about the problems in levels. 
+
+  1. $\beta_0$ is the LR average price in Q4 of a normal year, or 
+
+\begin{equation}
+P_4^N = \beta_0 (\#eq:one)
+\end{equation}
+
+  2. If we are in a high stock year, then we add $\gamma_0$, regardless of what month we are in. Thus, $\beta_0 + \gamma_0$ is the LR average price of Q4 of a high stock year, or:
+  
+\begin{equation}
+P_4^H = \beta_0 + \gamma_0 (\#eq:two)
+\end{equation}
+
+  3. Moving away from Q4 to a different quarter, we either add $\beta_i$ if in a normal stock year, or $\beta_i + \gamma_i$ if in a high stock year. 
+  
+  4. Thus, $\beta_0 + \beta_i$ is the LR average price in quarter $i$ of a normal year, and $\beta_0 + \gamma_0 + \beta_i + \gamma_i$ is the LR average price in quarter $i$ of a high stock year, or
+  
+\begin{equation}
+P_i^N = \beta_0 + \beta_i (\#eq:three)
+\end{equation}
+
+\begin{equation}
+P_i^H = \beta_0 + \gamma_0 + \beta_i + \gamma_i (\#eq:four)
+\end{equation}
+
+  5.  Given these definitions, we can determine the meaning of the individual coefficients by subtraction. Rearranging \@ref(eq:three) and plugging in \@ref(eq:one), we get
+
+\begin{equation}
+\beta_i = P_i^N - \beta_0 \\ 
+\beta_i = P_i^N - P_4^N (\#eq:five)
+\end{equation}
+
+Equation \@ref(eq:five) gives us the LR price difference between quarters $i$ and 4 in a normal year.
+
+  6. To get $\beta_i + \gamma_i$, we rearrange Equation \@ref(eq:four) and plug in \@ref(eq:two),
+
+\begin{equation}
+\beta_i + \gamma_i = P_i^4 - (\beta_0 + \gamma_0) \\ 
+\beta_i + \gamma_i = P_i^4 - P_4^H (\#eq:six)
+\end{equation}  
+  
+  7. If we subtract $\beta_i$ from Equation \@ref(eq:six) from both sides of the equation and plug in Equation \@ref(eq:three) and Equation \@ref(eq:two) we get
+  
+\begin{equation}
+\gamma_i = P_i^H - P_4^H - \beta_i \\ 
+\gamma_i = P_i^H - P_4^H - (P_i^N - P_4^N) (\#eq:seven)
+\end{equation}  
+  
+  8. It follows from Equation \@ref(eq:five) that
+  
+\begin{equation}
+\beta_i - \beta_j = P_i^N - P_4^N - (P_j^N - P_4^N) \\ 
+\beta_i - \beta_j = P_i^N - P_j^N (\#eq:eight)
+\end{equation}  
+  
+  9. It also follows from Equation \@ref(eq:seven) that
+  
+\begin{equation}
+\gamma_i - \gamma_j= P_i^H - P_4^H - (P_i^N - P_4^N) - [P_j^H - P_4^H - (P_j^N - P_4^N)] \\
+\gamma_i - \gamma_j = P_i^H - P_4^H - (P_j^H + P_j^N) (\#eq:nine)
+\end{equation}  
+  
+We can now answer the following questions.
+
+**What is your estimate of $B_3$ measuring?**
+
+  - From \@ref(eq:five), **$\beta_3 = P_3^N - P_4^N$**
+
+**What is your estimate of $\gamma_0$ - $B_2$ measuring?**
+
+  - From \@ref(eq:two), $\gamma_0 = P_4^H - P_4^N$
+  - From \@ref(eq:five), $\beta_2 = P_2^N - P_4^N$
+  - **$\gamma_0 - \beta_2 = P_4^H - P_2^N$**
+
+**What is your estimate of $\gamma_3$ measuring?**
+
+  - From \@ref(eq:seven), **$\gamma_3 = P_3^H - P_4^H - (P_3^N - P_4^N)$**

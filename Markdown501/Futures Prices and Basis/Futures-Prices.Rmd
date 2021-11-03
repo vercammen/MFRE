@@ -24,10 +24,25 @@ What price should we *expect* for an expiring December futures contract in early
 
 The previous result assumes risk neutral pricing. In reality the futures price may be above or below the expected spot price by an amount equal to the risk premium. We will revisit this topic later but for now it is sufficient to assume risk neutral pricing. What remains to be determined is the determination of the expected spot price at some distant time in the future. The pricing models we have been using do not have uncertainty and so the expected price is equal to the actual price which will eventually emerge. In this module we incorporate uncertainty into the eight quarter pricing model so that we can identify expected spot prices and futures prices in a meaningful way.
 
+$$P_{t+1}-P_t = m_0+m_1S_t $$
+$$
+\begin{align*}
+S_1 &= S_0 + H_1 - x_1  \\
+S_2 &= S_1 - X_2 \\
+S_3 &= S_2 - X_3 \\
+S_4 &= S_3 - X_4 \\
+S_5 &= S_4 + H_5 - X_5 \\
+S_6 &= S_5 - X_6 \\
+S_7 &= S_6 - X_7 \\
+S_8 &= S_7 - X_8 = \bar S + D
+\end{align*}
+$$
+
 ## USDA Forecasts
 Recall that in the eight quarter model the price in quarter $t$ can be expressed as
 
-$$P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D   $$
+$$P_$$P_t = \delta_0^t + \delta_1^t \tilde H_5 + \delta_2^t \tilde D   $$
+
 In this equation, $\tilde H_5$ is the random level of year 2 harvest, which is revealed in Q5, and $\tilde D$ is the random level of demand for stocks which are carried out of year 2 (i.e., long-term In the above equation, $\tilde H_5$ is random year 2 harvest, the value of which becomes known in Q5, and $\tilde D$ is the random demand for ending year 2 stocks (i.e., long term net demand).
 
 Let $\hat H_t$ denote the forecast of year two harvest in quarter $t=1,2,3,4$. As well, let $\hat D_t$ denote the forecast of long term net demand in quarter $t=1,2...,8$. We believe that prices are determined using the forecasted values of $\tilde H_5$ and $\tilde D$. Thus,

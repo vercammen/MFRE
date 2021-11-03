@@ -1,0 +1,89 @@
+---
+title: "Estimating the Corn Beta with the S&P 500 Index"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(dplyr, ggplot2, here,  gridExtra, lubridate)
+```
+```
+
+# Exercise Overview
+This exercise has five steps:
+
+* Import the data
+* Graph the data
+* Calculate the correlation between the S&P and corn price
+* Make the data stationary by calculating the return of each series.
+* Estimate the beta equation: $P_C = \alpha + \beta (S\&P)$
+
+## Step One
+To load the data note the following:
+
+* The trade_day variable is read in as a character and must be converted to a date
+* Specifically, in "beta_data$trade_day <- as.Date(beta_data$trade_day, format = c("%d-%b-%y"))" the symbol "%b" means the month is spelled in text (3 character, jan/feb/mar)
+
+```{r}
+
+beta_data <- read.csv(here("Data", "corn_beta.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE) 
+head(beta_data)
+```
+
+## Step 2: Graph the data using two side by side graphs
+The graphs do no render properly when created with Markdown. To see the graph run the code only version of this program "beta.R".
+
+```{r}
+ 
+plot_sandp <- ggplot(beta_data, aes(x = trade_day, y = sandp)) +
+  geom_line() +
+  labs(title = "S&P", y = "US$", x = "Date") +
+  theme(plot.title = element_text(size = 10))
+
+plot_corn <- ggplot(beta_data, aes(x = trade_day, y = corn)) +
+  geom_line() +
+  labs(title = "Corn", y = "US$", x = "Date") +
+  theme(plot.title = element_text(size = 10))
+
+# grid.arrange(plot_sandp, plot_corn, ncol = 2)
+```
+
+## Step Three: Calculate the correlation coefficient
+The goal is to calculate the correlation coeffient between the daily S&P 500 and the daily futures price of corn.
+
+Enter your code to calculate the correlation coefficient
+```{r}
+# enter code here
+```
+
+What do you conclude about the strength of the correlation? What do the plots of the two price series suggest about the possibility of stochastic trends in both data series, which can result in a strong spurious correlation.
+
+## Step Four: Make the Data Stationary
+
+When working with price data it is usually necessary to either take the first difference or transform the data into returns in order to make the series stationary. The second approach is most commonly used.
+
+Transforming a data series into returns requires calculting the first difference in the log of the price series: $ln(P_t)-ln(P_{t-1})$. 
+
+Using the above definitions, use the *mutate* function to add "sandp_rtn" and "corn_rtn" to your data frame. Because you are taking first differences you must use "slice(-1)" to delete the first row after the transformation.
+
+Enter your code to add the returns data series to the *beta_data* data frame.Don't forget to slide off the first row after adding the new variables.
+
+```{r}
+ # enter code here.
+```
+
+## Calculate the correlation between the return of the S&P and corn and then estimate corn's beta. 
+
+The beta is the estimate of the slope coefficient when the return of corn is regressed on the return of the S&P 500 index.
+
+Enter the code for recalculating the correlation, and for estimating the beta.
+
+```{r}
+# enter code here
+```
+
+The correlation has dropped from 0.715 when using the unadjusted prices to 0.097 when using the data transformed into returns. What do you conclude about the revised strength of the correlation between the S&P 500 and the price of corn?
+
+The slope estimate of 0.134 is our estimate of corn's beta. It is similar in magnitude to the estimated correlation, which is to be expected because the two measures are closely related. In the October 
