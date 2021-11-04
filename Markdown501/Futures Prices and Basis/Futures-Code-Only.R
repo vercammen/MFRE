@@ -21,7 +21,7 @@ spot <- priceSpot[row_select,]
 
 # call the "get_simulated()" function with a specified row number for retrieving simulated prices.
 prices <- get_simulated(row_select)
-print (prices, digits = 3)
+print (prices, digits = 4)
 
 # Plot the first row of the pricing matrix
 forward <- as.data.frame(prices[1,])
@@ -33,23 +33,70 @@ forward_plot <-ggplot(data=forward, aes(x=labels, y=ForwardQ1)) +
   geom_bar(stat="identity") + ggtitle("Q1 Forward Curve") +
   labs(x= "Expiry Date of Futures Contract") + labs(y= "$/bushel") +
   coord_cartesian(ylim=c(3, 4))
-forward_plot
+#forward_plot
 
 # plot the Q2 forward curve for row 8 in the simulated prices
 row_select2 <-8
 prices2 <- get_simulated(row_select2)
+
 forward2 <- as.data.frame(prices2[2,-1])
 
 colnames(forward2)<- "ForwardQ2"
 labels2 <- c("Q2","Q3","Q4","Q5","Q6","Q7","Q8")
 forward2 <- cbind(labels2,forward2)
+forward2
 
 forward_plot2 <-ggplot(data=forward2, aes(x=labels2, y=ForwardQ2)) +
   geom_bar(stat="identity") + ggtitle("Q2 Forward Curve") +
   labs(x= "Expiry Date of Futures Contract") + labs(y= "$/bushel") +
   coord_cartesian(ylim=c(1, 3))
-forward_plot2
+#forward_plot2
 
+# we want to calculate the Q3 to Q7 price spread for the second quarter.
+# we need to bind together the second columns of price3 and price7
+
+futures_2_3 <- price3 %>% select(P_2_3)
+futures_2_7 <- price7 %>% select(P_2_7)
+futures_2_3_7 <- cbind(futures_2_3,futures_2_7,harvest[,2],demand[,2])
+colnames(futures_2_3_7)[3:4] <- c("H5_frcst","D_frcst")
+
+futures_2_3_7 <- futures_2_3_7 %>% 
+  mutate(Sprd_3_7 = P_2_7 - P_2_3)
+
+head(futures_2_3_7, 20)
+
+# calculate the mean and standard deviation of the five columns
+mean_2_3_7 <- futures_2_3_7 %>% summarise_if(is.numeric, mean)
+sd_2_3_7 <- futures_2_3_7 %>% summarise_if(is.numeric, sd)
+mean_2_3_7
+sd_2_3_7
+# calculate the maximum spread value
+max(futures_2_3_7$Sprd_3_7)
+
+
+
+# calculate Q4 carry over stocks (S0 + H1 - x1 - x2 - x3 - x4).
+a <- 16.21
+b <- 3.5
+stocks_4 <- 14.377 + 2.015 - (4*a/b - (1/b)*(priceSpot$spot1 + priceSpot$spot2 + priceSpot$spot3 + priceSpot$spot4))   
+
+# Add this to the futures_2_3_7 data frame
+futures_2_3_7 <- cbind(futures_2_3_7,stocks_4)
+head(futures_2_3_7)
+
+# regress the spread on the stock variables
+reg_sprd <- lm(stocks_4 ~ D_frcst + H5_frcst, data = futures_2_3_7)
+summary(reg_sprd)
+stocks_fit <- reg_sprd$fitted.values
+
+# regress the price spread on the fitted stocks variable and H5
+reg_sprd2 <- lm(Sprd_3_7 ~ H5_frcst + stocks_fit , data = futures_2_3_7)
+summary(reg_sprd2)
+
+
+# regress the price spread on the two forecast and the fitted stocks variable
+reg_sprd3 <- lm(Sprd_3_7 ~ stocks_fit + H5_frcst, data = futures_2_3_7)
+summary(reg_sprd3)
 
 
 # add the forecast variables to the pricing vector.
@@ -73,10 +120,6 @@ spd7_8 <- ifelse(prices$pQ7=="NA", 0, prices$pQ8-prices$pQ7)
 spread <- cbind(spd1_2, spd2_3, spd3_4, spd4_5, spd5_6, spd6_7, spd7_8)
 print(spread, digits = 4)
 
-# calculate Q4 carry over stocks (S0 + H1 - x1 - x2 - x3 - x4).
-a <- 16.21
-b <- 3.5
-stocks_4 <- 14.377 + 2.015 - (4*a/b - (1/b)*(priceSpot$spot1 + priceSpot$spot2 + priceSpot$spot3 + priceSpot$spot4))   
 
 # bind spot prices to the futures prices in the simulated data frames (Q2,Q3, Q4 and Q5) 
 spot2 <- priceSpot %>% select(spot1, spot2)

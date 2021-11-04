@@ -142,24 +142,25 @@ The reduced carry over from Q4 to Q5 also significantly alters the saw-toothed p
 ## Futures Price Spreads - Theory
 A price spread is defined as the futures price of a contract with a more distant expiry date minus the futures price of a contract with a less distance expiry date (e.g., the Q3 futures price minus the Q2 futures price). It is important to keep this in mind because a Q2 to Q3 price spread means the Q3 price minus the Q2 price and not vice versa. The size and the sign of the price spreads reflect the slope of the forward curve. For example, large positive values for the price spread imply a steep upward sloping forward curve, which is typically associates with large stocks and thus a high cost of storage. 
 
-Price spreads across marketing years are of particular importance because they reflect the relative abundance and scarcity of the commodity across neighboring crop years. In this eight quarter model it is useful to examine the spread in the prices of the Q3 and Q7 contracts when in Q2. Before examining the simulation results it is useful to consider the predictions based on theory alone.
+Price spreads across marketing years are of particular importance because they reflect the relative abundance and scarcity of the commodity across neighboring crop years. In this eight quarter model the goal is to examine the two-year spread properties of the Q2 forward curve. The particular focus will be the spread in the prices of the Q3 and Q7 contracts. Before examining the simulation results it is useful to consider the predictions based on theory alone.
 
-Let's begin with the case case set of Q1 forward prices, which are displayed in the first column chart above. Here it can be seen that the Q3 and Q7 prices have almost identical values. You might be thinking that the Q3 to Q7 price spread should equal the cost of carrying stocks from Q3 to Q7 because stocks are being carried over from Q4 to Q5. But it doesn't work this way. We know $P_3 = P_1 +C_{1,3}$ and $P_7 = P_5 +C_{5,7}$ where $C_{1,3}$ and $C_{5,7}$ is the carrying cost from Q1 to Q3 and from Q5 to Q7, respectively. If the subtract the first equation from the second we get $P_7 - P_3 = P_5 - P_1 + (C_{5,7}-C_{1,3})$. In the base case stocks are equally available in both cases and so we should expect $P_1 \approx P_5$ and $C_{5,7} \approx C_{1,3}$. Thus, in the base case we should expect the Q3 to Q7 price spread to approximately equal to zero. The prices from the base case as shown in teh first column chart above confirm that this is indeed the case.
+Let's begin with the case case set of Q1 forward prices, which are displayed in the first column chart above. Here it can be seen that the Q3 and Q7 prices have almost identical values. You might be thinking that the Q3 to Q7 price spread should equal the cost of carrying stocks from Q3 to Q7 because stocks are being carried over from Q4 to Q5. But it doesn't work this way. We know $P_3 = P_1 +C_{1,3}$ and $P_7 = P_5 +C_{5,7}$ where $C_{1,3}$ and $C_{5,7}$ is the carrying cost from Q1 to Q3 and from Q5 to Q7, respectively. If we subtract the first equation from the second we get $P_7 - P_3 = P_5 - P_1 + (C_{5,7}-C_{1,3})$. In the base case stocks are equally available in both cases and so we should expect $P_1 \approx P_5$ and $C_{5,7} \approx C_{1,3}$. Thus, in the base case we should expect the Q3 to Q7 price spread to approximately equal to zero. The prices from the base case as shown in the first column chart above confirm that this is indeed the case.
 
-Let's now consider forecasts which are different than the base case. We will keep things simple by assuming four forecast combinations.
+Let's now consider forecasts which are different than the base case. You might think that high Q2 production and low Q8 carry out stocks (and vice versa) are substitutes since both cause the relative abundance or scarcity in year 2. If there is a relative abundance in year 2 then our instinct is that year 2 prices should be relatively low and year 1 prices should be relatively high. This would cause the Q3 to Q7 price spread to be negative.
 
-* Well above average forecast for $H_5$ and high positive value for $D$.
-* Well above average forecast for $H_5$ and high negative value for $D$.
-* Well below average forecast for $H_5$ and high positive value for $D$.
-* Well below average forecast for $H_5$ and high negative value for $D$.
+But this way of thinking about the problem is not correct because it misses the important role of storage in stabilizing the prices across the two years. Suppose in the extreme case that there was no cost of storage. In this case either a large Q5 harvest or a low Q8 carry out demand would cause traders to carry over less from Q4 to Q5. In fact, they would continue to reduce their carry over until the prices would be equal in all eight quarters. In this extreme case, the forecast would have no impact on the Q3 to Q7 price spread.
 
-In the first case where Q5 forecasted production and Q8 carry out demand are both high the net abundance of corn stocks in Q7 relative to Q3 is ambiguous. In this case the Q3 to Q7 price spread may be positive or negative, depending on whether the larger than expected Q5 harvest outstrips the larger than expected Q8 carry out demand or vice versa. 
+But now consider the more realistic case where storage is costly. To simplify the discussion the term "Q8 carry out" will refer to the forecasted level of stocks which will be carried out of Q8 (i.e., long term stock demand). As well, let the term "Q5 production" refer to the forecasted level of the size of the harvest in Q5. The term "Q4 carry over" will refer to the volume of stocks which are carried over from Q4 to Q5. Finally, the term "year 2 harvest storage" refers to the storage exclusively associated with the year 2 harvest. Total year 2 storage consists of Q4 carry over plus year 2 harvest storage.
 
-In the second case where Q5 forecasted production is high and Q8 carry out demand is weak the Q7 price would be much lower than the Q3 price if carry over stocks from Q4 to Q5 are not adjusted. Carry over stocks from Q4 to Q5 are reduced in response to this negative price spread and this reduction will make the spread less negative. However, stock carry over cannot become negative and so it may be the case that in the final equilibrium the Q7 futures will trade below the Q3 futures, and the equilibrium spread is negative.
+With these definitions in place we can separately analyze how a revision to the Q8 carry out forecast and a revision to the Q5 production forecast impact the Q3 to Q7 price spread. For the Q8 carry out forecast it is important to recognize that the impact on the price spread can be exclusively attributed to the change in the Q4 carry over. A forecast for higher Q8 carry out will necessarily increase the volume of Q4 carry over. An increase in the volume of Q4 carry over will necessarily increase the Q3 futures price and dampen the demand-induced increase in the Q7 futures price. Both futures prices will increase but the  increase is largest for the Q7 price since the direct response to higher demand must be larger than the stock adjustment response. The net effect is that the Q3 to Q7 price spread will increase. In the opposite case where the Q8 carry out demand decreases, the Q3 to Q7 price spread will decrease.
 
-In the third case where Q5 forecasted production is low and Q8 carry out demand is strong traders have a strong incentive to carry over additional stocks from Q4 to Q5. Using the price spread equation that we derived above we have $P_7 - P_3 = P_5 - P_1 + (C_{5,7}-C_{1,3})$. In this case $P_7 > P_3$ and $C_{5,7}-C_{1,3}$ is likely to have a negative value but will be small in absolute value. Consequently, the Q3 to Q7 price spread will take on a positive value, which is necessarily less than the cost of storage between Q3 and Q7.
+Next consider the case of lower Q5 production. Now there are two effects to consider. The Q4 carry over effect is similar to the previous case of a change to Q8 carry out. The lower Q5 production will increase the Q4 carry over. This will cause the Q3 futures price to increase but the increase is smaller than the increase in the Q7 futures because the increase in the Q4 carry over does not fully offset the reduced supply in year 2. The net effect is for an increase in the Q3 to Q7 price spread. An increase in Q5 production has the opposite impact. Overall, when considering only the Q4 carry over effect we should expect a negative relationship between Q5 production and the size of the Q3 to Q7 price spread.
 
-In the fourth and final case where Q5 forecasted production is low and Q8 carry out demand is weak the situation is once again ambiguous. If the reduced harvest outstrips the weak demand then stocks in the second year will be scarce relative to the first year. In this case additional stocks will be carried from Q4 to Q5 and the Q3 to Q7 price spread will be similar to the previous case (i.e., positive and approximately equal to the Q1 and Q5 price difference). If instead the weak demand outstrips the reduced harvest then second year stocks will be relatively abundant. In this case the Q3 price may rise above the Q7 price although not by as much as would be expected in the second case above.
+The second effect associated with lower Q5 production is channeled through year 2 harvest storage. Lower Q5 production reduces year 2 harvest storage and this results in a lower year 2 unit carrying cost. The lower year 2 cost decreases the Q7 futures price without impacting the Q3 futures price. Thus, the Q3 to Q7 price spread must decrease. The situation is opposite for the case of higher Q5 production. The overall year 2 harvest storage effect is a positive relationship between Q5 production and the Q3 to Q7 price spread. 
+
+If we combine the Q4 carry over effect with the year 2 harvest storage effect we see the overall effect of a change in Q5 production on the Q3 to Q7 price spread is ambiguous. In the econometri analysis below this ambiguity is confirmed because the two effects can be separately estimated and shown to have opposite signs.
+
+What remains to discuss is the sign of the Q3 to Q7 price spread. In the base case the price spread is approximately zero and so that provides a strong hint regarding what to expect for the sign of the price spread with different forecast combinations. Using the results from above, if Q8 carry out demand strengthens (weakens) relative to the base case then the Q3 to Q7 price spread should take on a positive (negative) value. In contrast, if the Q5 production increaes (decreases) relative to the base case then the price spread may turn positive or may turn negative because theory tells us that the Q5 production has an ambiguous impact on the Q3 to Q7 price spread.
 
 ## Futures Price Spreads - Simulations
 Let's begin the analysis of the simulated price spreads by re-examining the prices from row 8 of the 5000 pricing outcomes. To following code displays the set of eight forward curves for this particular case.
@@ -169,8 +170,84 @@ print(prices2, digits = 4)
 
 ```
 
-In the top row of prices, which is the Q1 forward curve for the base case, the Q3 to Q7 price spread is approximately equal to zero, which is what we previously confirmed. The second row of prices is the Q2 forward curve. Recall that in this particular case Q5 harvest was forecasted to take on an unusually large value and the Q8 carry out stocks was forecasted to take on a large negative value. This case corresponds to the second theoretical case above. Consequently, theory prices a negative Q3 to Q7 price spread. The prices in the second row confirm this outcome because the Q3 price of 1.692 is greater than the Q7 price of 1.656.
+In the top row of prices, which is the Q1 forward curve for the base case, the Q3 to Q7 price spread is approximately equal to zero, which is what we previously confirmed. The second row of prices is the Q2 forward curve. Recall that in this particular case Q5 harvest was forecasted to take on an unusually large value and the Q8 carry out stocks was forecasted to take on a large negative value. According the above theory the smaller demand will result in a decrease in the Q3 to Q7 price spread to a negative value. Regarding the increase in Q5 production, theory tells us that the Q3 to Q7 price spread may decrease and turn negative via the Q4 carry over effect, or may increase and turn positive due to the year 2 harvest storage effect. Despite the theoretical ambiguity we see that the price spread is negative (the Q3 futures price is 1.692 and the Q7 futures price is 1.656). 
 
+
+
+
+
+
+
+Let's now use the 5000 simulated prices to examine in a more statistically accurate way the Q3 to Q7 price spread in the second quarter of the eight quarter simulated market. In particular, let's examine the distribution of Q3 to Q7 spread values to determine the fraction of time the spread is positive versus negative as well as calculate the mean and standard deviation. As a secondary goal we should examine how, on average, changes in the forecasted values for Q5 production and Q8 carry out demand, cause changes in the Q3 to Q7 futures price spread.
+
+To accomplish this task we need to merge the second columns of the following data frames (the second column corresponds to Q2): *price3*, *price7*, *harvest* and *demand*. After the merge rename the two forecast variables
+
+```{r}
+futures_2_3 <- price3 %>% select(P_2_3)
+futures_2_7 <- price7 %>% select(P_2_7)
+futures_2_3_7 <- cbind(futures_2_3,futures_2_7,harvest[,2],demand[,2])
+colnames(futures_2_3_7)[3:4] <- c("D_frcst","H5_frcst")
+
+```
+
+We can now create the Q3 to Q7 spread variable for the Q2 forward curve.
+
+```{r}
+futures_2_3_7 <- futures_2_3_7 %>% 
+  mutate(Sprd_3_7 = P_2_7 - P_2_3)
+
+head(futures_2_3_7, 10)
+
+```
+
+Our data frame now contains for each of the 5000 simulated sets of forecasts and price the Q3 and Q7 prices from the Q2 forward curve, the price spread between these two prices and the Q2 forecast values for $H_5$ and $D$. Now is a good time to calculate the mean and standard deviation of the price spread across the simulated values as well as the maximum and minimum spread in the sample.
+
+```{r}
+mean_2_3_7 <- futures_2_3_7 %>% summarise_if(is.numeric, mean)
+sd_2_3_7 <- futures_2_3_7 %>% summarise_if(is.numeric, sd)
+mean_2_3_7
+sd_2_3_7
+max(futures_2_3_7$Sprd_3_7)
+min(futures_2_3_7$Sprd_3_7)
+
+```
+
+These summary statistics confirm that the mean values of the Q3 and Q7 futures prices are approximately equal to the values of these two prices in the base case, as reflected by the Q1 forward curve. As well, the mean values of the two forecast variables are approximately equal to the base case values of these two variables. More interesting is the outcome that the mean value of the Q3 to Q7 price spread is approximately equal to zero. This outcome is expected given the discussion above and the spread equation $P_7 - P_3 = P_5 - P_1 + (C_{5,7}-C_{1,3})$,
+
+The standard deviation of the price spread is 0.0353. As well, and the maximum price spread in the 5000 simulated values is 0.128 and the minimum is -0.126. The variation in the spread values are small relative to what is observed in the real world. The main reason for this outcome is that prices in this model are stationary in the long run whereas this is not the case with real world commodity prices.
+
+# Determinants of the Price Spread
+In our theoretical analysis above we made four predictions.
+
+
+* The spread will take on a negative value if the year 2 harvest is forecasted to be large and/or the demand for Q8 carry out stocks is forecasted to be weak (i.e., $D<0$).
+* The spread will take on a positive value if the year 2 harvest is forecasted to be small and/or the demand for Q8 carry out stocks is forecasted to be strong.
+* The spread will take on a negative or positive value (i.e., the impact is ambiguous) if the Q5 harvest forecast and the Q8 carry out forecast are either both strong or both weak. 
+
+These results together suggest that the impact of the Q5 harvest forecast and the Q3 to Q7 price spread should take on the opposite sign. Conversely, the impact of the Q8 stock carry out forecast and the Q3 to Q7 price spread should take on the same sign.
+
+We also expect a relationship between the level of stocks which are carried over from Q4 to Q5 and the Q3 to Q7 price spread. A smaller carry over is a signal of relative abundance in year 2, in which case the Q3 to Q7 price spread is expected to be negative. The opposite is true if the carry over takes on a relatively large value.
+
+We can test these hypothesized relationship using regression analysis. Let's begin by regressing the Q3 to Q7 price spread on the outcomes of the two forecast variables (keep in mind that all variables are measured in Q2). 
+
+
+```{r}
+mean_2_3_7 <- futures_2_3_7 %>% summarise_if(is.numeric, mean)
+sd_2_3_7 <- futures_2_3_7 %>% summarise_if(is.numeric, sd)
+mean_2_3_7
+sd_2_3_7
+max(futures_2_3_7$Sprd_3_7)
+min(futures_2_3_7$Sprd_3_7)
+
+```
+
+# regress the spread on the two forecast variables
+
+```{r}
+reg_sprd <- lm(Sprd_3_7 ~ H5_frcst + D_frcst, data = futures_2_3_7)
+summary(reg_sprd)
+
+```
 
 
 
