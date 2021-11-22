@@ -1,0 +1,74 @@
+---
+title: "Q4 code tips sheet"
+output: pdf_document
+---
+
+# Accessing values in a regression
+
+Here are some codes you can use to access the value of the coefficients after running a regression. We first load the `iris` (a type of flower) dataset and run a regression to determine the factors that affect the length of an iris petal. 
+
+```{r}
+# load packages
+pacman::p_load(dplyr, tidyverse)
+
+# load data
+data(iris)
+
+# look at what the data is like
+head(iris)
+
+# run a linear model
+model1 <- lm(Petal.Width ~ Sepal.Length + Sepal.Width + Petal.Length, data = iris)
+summary(model1)
+
+# get the intercept
+model1$coefficients[1]
+
+# get coefficient of petal.length
+model1$coefficients['Petal.Length']
+
+# to get the coefficients of sepal.length and sepal.width (second and third variables in the reg)
+model1$coefficients[2:3]
+```
+# Pivot Tables in R
+
+You can use `group_by()` and `summarise()` functions to replicate Pivot Tables in R. The `iris` dataset contains 3 species (`table(iris$Species)`) and we want to see the average petal length and width of each species.
+
+```{r, message = F}
+petal_pivot <- iris %>%
+  group_by(Species) %>%
+  summarise(avg_width = mean(Petal.Width),
+           avg_length = mean(Petal.Length))
+
+petal_pivot
+```
+
+The `petal_pivot` object is a tibble, which is a special type of a dataframe (if you type `class(petal_pivot)`, it will say `tbl_df`). To access values in a tibble, you will have to use double brackets instead of single brackets like you would with a data frame. Alternatively, you can call use the variable name with the `$` operator to look at the `avg_length` column and use single brackets to extract the value for the setosa row. 
+
+```{r}
+petal_pivot[[1, 3]]
+petal_pivot$avg_length[petal_pivot$Species == "setosa"]
+```
+
+
+# Creating vectors using `rep()` and `seq()`
+
+To replicate elements of vectors, such as your July futures price, you can use the `rep()` function (documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/rep)). The syntax is `rep(value, number_of_times)`. The code to create a vector that contains the value `2` ten times would be
+
+```{r}
+repeating_vector <- rep(2, 10)
+repeating_vector
+```
+
+To generate a sequence of numbers, such as in the Chicago and Texas spot prices, you may want to use the `seq()` function (see documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/seq)). The syntax is `seq(start_value, end_value, by = increment_value)`. The code to create a vector that starts at 1 and increases by the value of 3 until it reaches the value 20 is
+
+```{r}
+sequence <- seq(1, 20, by = 3)
+sequence
+```
+You can also use the `seq()` function if you only know the starting value, the increment, and the desired length of the sequence. The code to create a vector that starts at 1 and increases by the value of 3 until the vector reaches the length of 7 is
+
+```{r}
+sequence2 <- seq(1, by = 3, length = 7)
+sequence2
+```
