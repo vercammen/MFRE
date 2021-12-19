@@ -62,7 +62,7 @@ An important ETF which serves as both a direct investment and an index which oth
 Figure \@ref(fig:bloombergindex) shows the current (December 2021) and proposed new composition of the Bloomberg Commodity Index (see press release for  more details). Notice that about 20 percent of the index is allocated to grains, about 22.5 percent to the soft commodities and about 5 percent to livestock. 
  
 ```{r bloombergindex, echo=FALSE, fig.cap = "Bloomberg Commodity Index Component Weights", fig.align='center', out.width = "65%"}
-knitr::include_graphics("Images/bloomberg.jpg")
+knitr::include_graphics("Images/bloomberg.png")
 ```
 
 A highly specialized agricultural commodity investment is the  [Teucrium Corn ETF](https://www.teucrium.com/etfs/corn), which is designed to track corn futures only. This relatively small ETF had a return of nearly 40 percent on a net asset base of about \$135 million as of early December 2021. During this same time period the Teucrium Corn ETF held roughly an equal number of long positions in the March 2022, May 2022 and December 2022 corn contracts. The lack of diversification of this asset makes it relatively high risk to [hold](https://www.teucrium.com/holdings/corn).
@@ -208,14 +208,8 @@ Our goal in this section is to join together the prices of the five monthly futu
 ```{r, echo = F}
 
 # read the data
-data1 <- read.csv(here("Data", "example_data_1.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE) 
-data2 <- read.csv(here("Data", "example_data_2.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE) 
-
-roll1 <- data1                                        # Duplicate vector
-roll1[is.na(roll1)] <- ""                       # Replace NA with blank
-
-roll2 <- data2                                        # Duplicate vector
-roll2[is.na(roll2)] <- ""                       # Replace NA with blank
+roll1 <- readRDS(here("Data", "roll1.RDS"))
+roll2 <- readRDS(here("Data", "roll2.RDS"))
 ```
 
 

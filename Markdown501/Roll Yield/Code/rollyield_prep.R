@@ -26,19 +26,23 @@ compare <- read_excel(here("Data", "Corn Forward Curve Compare.xlsx"),
 # note: str_wrap(x, 3) from {stringr} allows me to add a line break in the x labels 
 # after 3 characters, which is the length of the month names
 
-corn_july20 <- ggplot(compare, aes(x = stringr::str_wrap(contracts, 3), y = july_2_2020)) +
+corn_july20  <- ggplot(compare, aes(x = contracts, y = july_2_2020)) +
   geom_col(fill = "lightblue") +
   coord_cartesian(ylim = c(3, 3.80)) + # restricted the y axis limits
   theme_classic(base_size = 15) + # increase size of axis and labels
   geom_text(aes(label = round(july_2_2020,2)), vjust = -0.5, size = 3) + # add value labels
-  labs(x = "Contracts", y = "Futures: July 2, 2020 ($/bu)")
+  labs(x = "Contracts", y = "Futures: July 2, 2020 ($/bu)") +
+  scale_x_discrete(labels = function(contracts) str_wrap(contracts, width = 3))
+corn_july20
 
-corn_june21 <- ggplot(compare, aes(x = stringr::str_wrap(contracts, 3), y = june_2_2021)) +
+corn_june21 <- ggplot(compare, aes(x = contracts, y = june_2_2021)) +
   geom_col(fill = "orange") +
   coord_cartesian(ylim = c(4.5, 6.8)) +
   theme_classic(base_size = 15) +
   geom_text(aes(label = round(june_2_2021,2)), vjust = -0.5, size = 3) +
-  labs(x = "Contracts", y = "Futures: July 2, 2020 ($/bu)")
+  labs(x = "Contracts", y = "Futures: July 2, 2020 ($/bu)") + 
+  scale_x_discrete(labels = function(contracts) str_wrap(contracts, width = 3))
+corn_june21
 
 # corn_futures will do a grouped bar chart similar to the notes, 
 # but not with a dual axis
@@ -65,7 +69,7 @@ corn_futures <- ggplot(compare_long, aes(x = stringr::str_wrap(contracts,3),
 
 # ggsave(corn_july20, file = here("Images", "corn_forward_curve_20.png"), width = 8, height = 4)
 # ggsave(corn_june21, file = here("Images", "corn_forward_curve_21.png"),  width = 8, height = 4)
-# ggsave(corn_futures, file = here("Images", "corn_forward_curve.png"), width = 8, height = 4)  
+# ggsave(corn_futures, file = here("Images", "corn_forward_curve.png"), width = 8, height = 4)
 
 
 ###########################################################
@@ -115,7 +119,7 @@ combined <- Reduce(function(x, y) merge(x, y, all=TRUE),
 
 # do the same as above but for 2021 data
 # make sure Excel file is not opened. You will get an error. 
-crude_spot21 <- read_excel(here("Data", "Crude Futures Data 2018 - 2019.xlsx"), 
+crude_spot21 <- read_excel(here("Data", "Crude Futures Data 2021.xlsx"), 
                            sheet = 2, skip = 2) %>%
   clean_names() %>%
   rename(spot = cushing_ok_wti_spot_price_fob_dollars_per_barrel) %>%
@@ -142,10 +146,11 @@ nov_21 <- data_cleaning21(read_excel(here("Data", "Crude Futures Data 2021.xlsx"
                                      sheet = "Nov 21")) %>% rename(nov_21 = last)
 dec_21 <- data_cleaning21(read_excel(here("Data", "Crude Futures Data 2021.xlsx"), 
                                      sheet = "Dec 21")) %>% rename(dec_21 = last)
-
+jan_22 <- data_cleaning21(read_excel(here("Data", "Crude Futures Data 2021.xlsx"), 
+                                     sheet = "Jan 22")) %>% rename(jan_22 = last)
 # combine 2021 dataframes
 combined_21 <- Reduce(function(x, y) merge(x, y, all=TRUE), 
-                      list(crude_spot21, aug_21, sep_21, oct_21, nov_21, dec_21))
+                      list(crude_spot21, aug_21, sep_21, oct_21, nov_21, dec_21, jan_22))
 
 # create graph in p.20 of notes
 # Slight diff in Excel: Dr. Vercammen inserted the avg of previous day and following 
@@ -189,7 +194,7 @@ forward_curve <- combined %>%
 forward_contango <- ggplot(forward_curve, aes(x = time, y = futures)) + 
   geom_col(fill = "lightblue") + 
   coord_cartesian(ylim = c(69,69.75)) + # set the coordinates to match excel graph
-  labs(title = "Forward Curve for WTI Crude Oil: Oct 22, 2018", subtitle = "Last trading day for November contract", y = "$/barrel", x = "Date") +
+  labs(title = "Forward Curve for WTI Crude Oil: Oct 22, 2018", subtitle = "Last trading day for November contract", y = "$/barrel", x = "Contract Maturity") +
   scale_x_date(date_labels = "%b %y") + 
   theme_classic() +
   geom_text(aes(label = futures), vjust = -0.5, size = 3.5)
@@ -225,7 +230,7 @@ wti_futures_backwardation
 # Forward curve for oil - Aug 20, 2021
 forward_curve_back <- combined_21 %>% 
   filter(time == "2021-08-20") %>%
-  select(sep_21, oct_21, nov_21, dec_21) %>%
+  select(sep_21, oct_21, nov_21, dec_21, jan_22) %>%
   pivot_longer(everything(), 
                names_to = "time",
                values_to = "futures") %>%
@@ -236,7 +241,7 @@ forward_backwardation <- ggplot(forward_curve_back, aes(x = time, y = futures)) 
   geom_col(fill = "lightblue") + 
   coord_cartesian(ylim = c(61,62.5)) + 
   labs(title = "Forward Curve for WTI Crude Oil: Aug 20, 2021", 
-       subtitle = "Last trading day for September contract", y = "$/barrel", x = "Date") +
+       subtitle = "Last trading day for September contract", y = "$/barrel", x = "Contract Maturity") +
   scale_x_date(date_labels = "%b %y") + 
   theme_classic() +
   geom_text(aes(label = futures), vjust = -0.5, size = 3.5)
@@ -246,6 +251,24 @@ forward_backwardation
 # ggsave(wti_futures_backwardation, file = here("Images", "wti_futures_back.png"), width = 8)
 # ggsave(forward_backwardation, file = here("Images", "forward_backwardation.png"))
 
+###########################################################
+# Construct Roll example tables
+###########################################################
+
+data1 <- read.csv(here("Data", "example_data_1.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE) 
+
+data2 <- read.csv(here("Data", "example_data_2.csv"), header=TRUE, sep=",", stringsAsFactors = FALSE) 
+
+roll1 <- data1                                        # Duplicate vector
+roll1[is.na(roll1)] <- ""                       # Replace NA with blank
+roll1 
+
+roll2 <- data2                                        # Duplicate vector
+roll2[is.na(roll2)] <- ""                       # Replace NA with blank
+roll2 
+
+# saveRDS(roll1, here("Data", "roll1.RDS"))
+# saveRDS(roll2, here("Data", "roll2.RDS"))
 
 ###########################################################
 # Construct Sequence of Futures Joined Prices - Contango
